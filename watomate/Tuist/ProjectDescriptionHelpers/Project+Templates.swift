@@ -1,9 +1,10 @@
 import ProjectDescription
 
 extension Project {
-    public static func app(name: String, destinations: Destinations, dependencies: [TargetDependency]) -> Project {
+    public static func app(name: String, destinations: Destinations, infoPlist: [String: Plist.Value], dependencies: [TargetDependency]) -> Project {
         var targets = makeAppTargets(name: name,
                                      destinations: destinations,
+                                     infoPlist: infoPlist,
                                      dependencies: dependencies
         )
         return Project(name: name,
@@ -13,23 +14,7 @@ extension Project {
 
     // MARK: - Private
     
-    private static func makeAppTargets(name: String, destinations: Destinations, dependencies: [TargetDependency]) -> [Target] {
-        let infoPlist: [String: Plist.Value] = [
-            "CFBundleShortVersionString": "1.0",
-            "CFBundleVersion": "1",
-            "UILaunchStoryboardName": "LaunchScreen",
-            "UIApplicationSceneManifest": [
-                        "UIApplicationSupportsMultipleScenes": false,
-                        "UISceneConfigurations": [
-                            "UIWindowSceneSessionRoleApplication": [
-                                [
-                                    "UISceneConfigurationName": "Default Configuration",
-                                    "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"
-                                ],
-                            ]
-                        ]
-                    ],
-            ]
+    private static func makeAppTargets(name: String, destinations: Destinations, infoPlist: [String: Plist.Value], dependencies: [TargetDependency]) -> [Target] {
 
         let mainTarget = Target(
             name: name,
