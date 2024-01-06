@@ -9,7 +9,7 @@
 import UIKit
 import SnapKit
 
-class LoginViewController: UIViewController {
+class LoginViewController: CustomBarViewController {
     
     private lazy var emailTextField = {
         let textField = UnderlinedTextField()
@@ -45,7 +45,18 @@ class LoginViewController: UIViewController {
     private lazy var forgetLabel = {
         let attributes = [
             NSAttributedString.Key.font: UIFont(name: "Pretendard-Light", size: 16)!,
-            NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel,
+            NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel
+        ]
+        
+        let label = UILabel()
+        label.attributedText = NSAttributedString(string: "비밀번호를 잊었다면?", attributes: attributes)
+        return label
+    }()
+    
+    private lazy var underlineLabel = {
+        let attributes = [
+            NSAttributedString.Key.font: UIFont(name: "Pretendard-Regular", size: 16)!,
+            NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel.withAlphaComponent(0),
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
             NSAttributedString.Key.underlineColor: UIColor.label
         ]
@@ -57,39 +68,46 @@ class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        title = "로그인"
+        setTitle("로그인")
+        
+        emailTextField.becomeFirstResponder()
         
         setupLayout()
     }
     
     private func setupLayout() {
-        view.addSubview(emailTextField)
+        contentView.addSubview(emailTextField)
         emailTextField.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.top.equalToSuperview().inset(20)
             make.height.equalTo(50)
             make.leading.trailing.equalToSuperview().inset(35)
         }
         
-        view.addSubview(passwordTextField)
+        contentView.addSubview(passwordTextField)
         passwordTextField.snp.makeConstraints { make in
             make.top.equalTo(emailTextField.snp.bottom).offset(10)
             make.height.equalTo(50)
             make.leading.trailing.equalToSuperview().inset(35)
         }
         
-        view.addSubview(okButton)
+        contentView.addSubview(okButton)
         okButton.snp.makeConstraints { make in
             make.top.equalTo(passwordTextField.snp.bottom).offset(20)
             make.height.equalTo(45)
             make.leading.trailing.equalToSuperview().inset(35)
         }
         
-        view.addSubview(forgetLabel)
+        contentView.addSubview(forgetLabel)
         forgetLabel.snp.makeConstraints { make in
             make.top.equalTo(okButton.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
         }
+        
+        contentView.addSubview(underlineLabel)
+        underlineLabel.snp.makeConstraints { make in
+            make.edges.equalTo(forgetLabel.snp.edges)
+        }
     }
 
 }
+
