@@ -9,7 +9,11 @@
 import UIKit
 import SnapKit
 
-class LoginViewController: UIViewController {
+<<<<<<< HEAD
+class LoginViewController: PlainCustomBarViewController {
+=======
+class LoginViewController: PlainCustomBarViewController {
+>>>>>>> frontend/basic-ui
     
     private lazy var emailTextField = {
         let textField = UnderlinedTextField()
@@ -45,7 +49,33 @@ class LoginViewController: UIViewController {
     private lazy var forgetLabel = {
         let attributes = [
             NSAttributedString.Key.font: UIFont(name: "Pretendard-Light", size: 16)!,
-            NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel,
+<<<<<<< HEAD
+            NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel
+        ]
+        
+        let label = UILabel()
+        label.attributedText = NSAttributedString(string: "비밀번호를 잊었다면?", attributes: attributes)
+        return label
+    }()
+    
+    private lazy var underlineLabel = {
+        let attributes = [
+            NSAttributedString.Key.font: UIFont(name: "Pretendard-Regular", size: 16)!,
+            NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel.withAlphaComponent(0),
+=======
+            NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel
+        ]
+        
+        let label = UILabel()
+        label.attributedText = NSAttributedString(string: "비밀번호를 잊었다면?", attributes: attributes)
+        return label
+    }()
+    
+    private lazy var underlineLabel = {
+        let attributes = [
+            NSAttributedString.Key.font: UIFont(name: "Pretendard-Regular", size: 16)!,
+            NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel.withAlphaComponent(0),
+>>>>>>> frontend/basic-ui
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
             NSAttributedString.Key.underlineColor: UIColor.label
         ]
@@ -57,39 +87,82 @@ class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        title = "로그인"
+<<<<<<< HEAD
+        setTitle("로그인")
+        setLeftBackButton()
+        
+        emailTextField.becomeFirstResponder()
+=======
+        setTitle("로그인")
+        setLeftBackButton()
+        
+        emailTextField.becomeFirstResponder()
+>>>>>>> frontend/basic-ui
         
         setupLayout()
     }
     
     private func setupLayout() {
-        view.addSubview(emailTextField)
+<<<<<<< HEAD
+        contentView.addSubview(emailTextField)
         emailTextField.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.top.equalToSuperview().inset(20)
+=======
+        contentView.addSubview(emailTextField)
+        emailTextField.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(20)
+>>>>>>> frontend/basic-ui
             make.height.equalTo(50)
             make.leading.trailing.equalToSuperview().inset(35)
         }
         
-        view.addSubview(passwordTextField)
+<<<<<<< HEAD
+        contentView.addSubview(passwordTextField)
+=======
+        contentView.addSubview(passwordTextField)
+>>>>>>> frontend/basic-ui
         passwordTextField.snp.makeConstraints { make in
             make.top.equalTo(emailTextField.snp.bottom).offset(10)
             make.height.equalTo(50)
             make.leading.trailing.equalToSuperview().inset(35)
         }
         
-        view.addSubview(okButton)
+<<<<<<< HEAD
+        contentView.addSubview(okButton)
+=======
+        contentView.addSubview(okButton)
+>>>>>>> frontend/basic-ui
         okButton.snp.makeConstraints { make in
             make.top.equalTo(passwordTextField.snp.bottom).offset(20)
             make.height.equalTo(45)
             make.leading.trailing.equalToSuperview().inset(35)
         }
         
-        view.addSubview(forgetLabel)
+<<<<<<< HEAD
+        contentView.addSubview(forgetLabel)
+=======
+        contentView.addSubview(forgetLabel)
+>>>>>>> frontend/basic-ui
         forgetLabel.snp.makeConstraints { make in
             make.top.equalTo(okButton.snp.bottom).offset(20)
             make.centerX.equalToSuperview()
         }
+<<<<<<< HEAD
+        contentView.addSubview(underlineLabel)
+        underlineLabel.snp.makeConstraints { make in
+            make.edges.equalTo(forgetLabel.snp.edges)
+        }
     }
 
 }
+=======
+        
+        contentView.addSubview(underlineLabel)
+        underlineLabel.snp.makeConstraints { make in
+            make.edges.equalTo(forgetLabel.snp.edges)
+        }
+    }
+
+}
+
+>>>>>>> frontend/basic-ui
