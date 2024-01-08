@@ -2,6 +2,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let infoPlist: [String: Plist.Value] = [
+    "NSAppTransportSecurity": [
+        "NSAllowsArbitraryLoads": true,
+    ],
     "CFBundleShortVersionString": "1.0",
     "CFBundleVersion": "1",
     "UILaunchStoryboardName": "LaunchScreen",
