@@ -1,16 +1,15 @@
 //
-//  LoginViewController.swift
-//  Waffle
+//  JoinViewController.swift
+//  Watomate
 //
-//  Created by 이지현 on 12/31/23.
-//  Copyright © 2023 tuist.io. All rights reserved.
+//  Created by 이지현 on 1/1/24.
+//  Copyright © 2024 tuist.io. All rights reserved.
 //
 
 import UIKit
-import SnapKit
 
-class LoginViewController: PlainCustomBarViewController {
-    
+class JoinViewController: PlainCustomBarViewController {
+
     private lazy var emailTextField = {
         let textField = UnderlinedTextField()
         textField.placeholder = "이메일"
@@ -42,36 +41,41 @@ class LoginViewController: PlainCustomBarViewController {
         return button
     }()
     
-    private lazy var forgetLabel = {
-        let attributes = [
-            NSAttributedString.Key.font: UIFont(name: "Pretendard-Light", size: 16)!,
-            NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel
-        ]
-        
+    private lazy var infoLabel = {
         let label = UILabel()
-        label.attributedText = NSAttributedString(string: "비밀번호를 잊었다면?", attributes: attributes)
+        label.text = """
+        가입하면:
+        • 다른 기기에서 로그인 가능합니다.
+        • 다른 사용자들과 함께할 수 있습니다.
+        
+        가입과 동시에 와투메이트의 이용약관과 개인정보 정책에 동의하는 것으로 간주합니다.
+        """
+        label.numberOfLines = 0
+        label.textColor = .label
+        label.font = UIFont(name: "Pretendard-Light", size: 15)
+        label.setLineSpacing(spacing: 5)
         return label
     }()
     
-    private lazy var underlineLabel = {
-        let attributes = [
-            NSAttributedString.Key.font: UIFont(name: "Pretendard-Regular", size: 16)!,
-            NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel.withAlphaComponent(0),
-            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
-            NSAttributedString.Key.underlineColor: UIColor.label
-        ]
-        
+    private lazy var checkImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "circle", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
+        imageView.tintColor = .systemGray5
+        return imageView
+    }()
+    
+    private lazy var checkLabel = {
         let label = UILabel()
-        label.attributedText = NSAttributedString(string: "비밀번호를 잊었다면?", attributes: attributes)
+        label.text = "저는 14세 이상입니다"
+        label.font = UIFont(name: "Pretendard-Light", size: 15)
         return label
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setTitle("로그인")
+        view.backgroundColor = .systemBackground
+        setTitle("가입하기")
         setLeftBackButton()
-        
-        emailTextField.becomeFirstResponder()
         
         setupLayout()
     }
@@ -98,17 +102,24 @@ class LoginViewController: PlainCustomBarViewController {
             make.leading.trailing.equalToSuperview().inset(35)
         }
         
-        contentView.addSubview(forgetLabel)
-        forgetLabel.snp.makeConstraints { make in
+        contentView.addSubview(infoLabel)
+        infoLabel.snp.makeConstraints { make in
             make.top.equalTo(okButton.snp.bottom).offset(20)
-            make.centerX.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(35)
         }
         
-        contentView.addSubview(underlineLabel)
-        underlineLabel.snp.makeConstraints { make in
-            make.edges.equalTo(forgetLabel.snp.edges)
+        contentView.addSubview(checkImageView)
+        checkImageView.snp.makeConstraints { make in
+            make.top.equalTo(infoLabel.snp.bottom).offset(20)
+            make.leading.equalToSuperview().inset(35)
+            make.height.width.equalTo(23)
+        }
+        
+        contentView.addSubview(checkLabel)
+        checkLabel.snp.makeConstraints { make in
+            make.centerY.equalTo(checkImageView.snp.centerY)
+            make.leading.equalTo(checkImageView.snp.trailing).offset(6)
         }
     }
 
 }
-
