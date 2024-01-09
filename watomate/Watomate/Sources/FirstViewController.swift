@@ -135,7 +135,8 @@ class FirstViewController: UIViewController {
     }
     
     @objc private func loginButtonTapped() {
-        let nextViewController = LoginViewController()
+//        let nextViewController = LoginViewController()
+        let nextViewController = ProfileSetupViewController() 
         navigationController?.pushViewController(nextViewController, animated: true)
     }
     
