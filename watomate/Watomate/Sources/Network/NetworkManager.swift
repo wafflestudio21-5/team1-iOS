@@ -7,3 +7,14 @@
 //
 
 import Foundation
+import Alamofire
+
+class NetworkManager {
+    static let shared = NetworkManager()
+    
+    let session: Session
+    
+    private init() {
+        session = Session(interceptor: Interceptor())
+    }
+}

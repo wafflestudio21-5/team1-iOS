@@ -7,9 +7,14 @@
 //
 
 import Foundation
-import Alamofire
 
 class JoinViewModel {
+    private let authUseCase: AuthUseCase
+    
+    init(authUseCase: AuthUseCase) {
+        self.authUseCase = authUseCase
+    }
+    
     var email: String = ""
     var password: String = ""
     var isChecked: Bool = false
@@ -29,20 +34,36 @@ class JoinViewModel {
     }
     
     
-    func signUp() {
-        guard canSubmit && !isCalling else { return }
-        isCalling = true
-        
-        let param: Parameters = [
-            "email": email,
-            "password": password
-        ]
-        
-        let url = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/login/email"
-        AF.request(url, method: .post, parameters: param, encoding: JSONEncoding.default).responseJSON {[weak self] data in
-            self?.isCalling = false
-            print(data)
-        }
-        
-    }
+//    func signUp() -> Bool {
+//        guard canSubmit && !isCalling else { return false }
+//        isCalling = true
+//        
+//        let param: Parameters = [
+//            "email": email,
+//            "password": password
+//        ]
+//        
+//        let url = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/login/email"
+//        AF.request(url, method: .post, parameters: param, encoding: JSONEncoding.default).responseJSON {[weak self] data in
+//            self?.isCalling = false
+//            print(data)
+//        }
+//        return false 
+//    }
+    
+//    func signUp() async -> Bool {
+//        guard canSubmit && !isCalling else { return false }
+//        isCalling = true
+//        
+//        do {
+//            try await authUseCase.registerWithEmail(email: email, password: password)
+//            isCalling = false
+//            return true
+//        } catch {
+//            print(error)
+//            isCalling = false
+//            return false
+//        }
+//        
+//    }
 }

@@ -38,5 +38,8 @@ let project = Project.app(name: "Watomate",
                           infoPlist: infoPlist,
                           dependencies: [
                             .external(name: "SnapKit"),
-                            .external(name: "Alamofire")
+                            .external(name: "Alamofire"),
+                            .external(name: "KakaoSDKCommon"),
+                            .external(name: "KakaoSDKAuth"),
+                            .external(name: "KakaoSDKUser")
                          ])

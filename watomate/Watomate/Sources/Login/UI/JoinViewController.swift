@@ -191,7 +191,14 @@ class JoinViewController: PlainCustomBarViewController {
     }
     
     @objc private func okButtonTapped() {
-        viewModel.signUp()
+//        Task {
+//            let result = viewModel.signUp()
+//            if result {
+//                let nextViewController = ProfileEditViewController()
+//                navigationController?.pushViewController(nextViewController, animated: true)
+//            }
+//        }
+        navigationController?.setViewControllers([TabBarController(), ProfileEditViewController()], animated: true)
     }
     
     private func updateOkButtonState() {

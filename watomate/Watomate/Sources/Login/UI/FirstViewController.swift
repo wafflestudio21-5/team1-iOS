@@ -46,6 +46,22 @@ class FirstViewController: UIViewController {
         return label
     }()
     
+    private lazy var kakaoLoginButton = {
+        var titleContainer = AttributeContainer()
+        titleContainer.font = UIFont(name: "Pretendard-Regular", size: Constants.Login.buttonFontSize)
+        
+        let button = UIButton()
+        button.configuration = .filled()
+        button.configuration?.baseForegroundColor = .label
+        button.configuration?.baseBackgroundColor = .systemBackground
+        button.configuration?.attributedTitle = AttributedString("카카오 로그인", attributes: titleContainer)
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.systemGray5.cgColor
+        button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(kakaoLoginTapped), for: .touchUpInside)
+        return button
+    }()
+    
     private lazy var buttonStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -62,6 +78,7 @@ class FirstViewController: UIViewController {
         button.configuration?.baseForegroundColor = .label
         button.configuration?.baseBackgroundColor = .systemGray6
         button.configuration?.attributedTitle = AttributedString("게스트로 시작", attributes: titleContainer)
+        button.addTarget(self, action: #selector(guestButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -105,7 +122,7 @@ class FirstViewController: UIViewController {
         
         view.addSubview(titleStackView)
         titleStackView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview().offset(-20)
+            make.centerY.equalToSuperview().offset(-40)
             make.centerX.equalToSuperview()
         }
         
@@ -132,6 +149,13 @@ class FirstViewController: UIViewController {
             make.top.equalTo(buttonStackView.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview().inset(35)
         }
+        
+        view.addSubview(kakaoLoginButton)
+        kakaoLoginButton.snp.makeConstraints { make in
+            make.bottom.equalTo(buttonStackView.snp.top).offset(-10)
+            make.height.equalTo(40)
+            make.leading.trailing.equalToSuperview().inset(35)
+        }
     }
     
     @objc private func loginButtonTapped() {
@@ -146,5 +170,32 @@ class FirstViewController: UIViewController {
         navigationController?.pushViewController(nextViewController, animated: true)
     }
     
+    @objc private func guestButtonTapped() {
+//        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository())
+        navigationController?.setViewControllers([TabBarController()], animated: true)
+    }
+    
+    @objc private func kakaoLoginTapped() {
+//        if (UserApi.isKakaoTalkLoginAvailable()) {
+//            UserApi.shared.loginWithKakaoTalk { [weak self] (oauthToken, error) in
+//                if let error = error {
+//                    print(error)
+//                }
+//                else {
+//                    print("카카오 로그인 성공")
+//                    self?.label.text = "안녕하세요!!!!"
+//                }
+//            }
+//        } else {
+//            UserApi.shared.loginWithKakaoAccount { [weak self] oauthToken, error in
+//                if let error = error {
+//                    print(error)
+//                } else {
+//                    print("카카오 로그인 성공")
+//                    self?.label.text = "안녕하세요!!!!"
+//                }
+//            }
+//        }
+    }
 
 }

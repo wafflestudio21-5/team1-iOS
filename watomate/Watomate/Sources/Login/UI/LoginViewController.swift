@@ -10,12 +10,24 @@ import UIKit
 import SnapKit
 
 class LoginViewController: PlainCustomBarViewController {
+    private let viewModel: LoginViewModel
+    
+    init(viewModel: LoginViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private lazy var emailTextField = {
         let textField = UnderlinedTextField()
         textField.placeholder = "이메일"
         textField.font = UIFont(name: "Pretendard-Medium", size: 20)
         textField.setPlaceholderColor(.secondaryLabel)
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
         return textField
     }()
     
@@ -24,6 +36,9 @@ class LoginViewController: PlainCustomBarViewController {
         textField.placeholder = "비밀번호"
         textField.font = UIFont(name: "Pretendard-Medium", size: 20)
         textField.setPlaceholderColor(.secondaryLabel)
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
+        textField.textContentType = .oneTimeCode
         textField.isSecureTextEntry = true
         return textField
     }()
@@ -40,6 +55,9 @@ class LoginViewController: PlainCustomBarViewController {
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.systemGray5.cgColor
         button.layer.cornerRadius = 5
+        
+        button.addTarget(self, action: #selector(okButtonTapped), for: .touchUpInside)
+        button.isEnabled = false
         return button
     }()
     
@@ -69,10 +87,15 @@ class LoginViewController: PlainCustomBarViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setupNavigationBar()
+        setupLayout()
+        observeTextChanges()
+    }
+    
+    private func setupNavigationBar() {
         setTitle("로그인")
         setLeftBackButton()
-        
-        setupLayout()
     }
     
     private func setupLayout() {
@@ -106,6 +129,33 @@ class LoginViewController: PlainCustomBarViewController {
         contentView.addSubview(underlineLabel)
         underlineLabel.snp.makeConstraints { make in
             make.edges.equalTo(forgetLabel.snp.edges)
+        }
+    }
+    
+    private func observeTextChanges() {
+        emailTextField.addTarget(self, action: #selector(emailDidChange(_:)), for: .editingChanged)
+        passwordTextField.addTarget(self, action: #selector(passwordDidChange(_:)), for: .editingChanged)
+    }
+    
+    @objc private func emailDidChange(_ textField: UITextField) {
+        viewModel.email = textField.text ?? ""
+        updateOkButtonState()
+    }
+    
+    @objc private func passwordDidChange(_ textField: UITextField) {
+        viewModel.password = textField.text ?? ""
+        updateOkButtonState()
+    }
+    
+    @objc private func okButtonTapped() {
+        let nextViewController = TabBarController()
+        navigationController?.pushViewController(nextViewController, animated: true)
+    }
+    
+    private func updateOkButtonState() {
+        okButton.isEnabled = viewModel.canSubmit
+        if okButton.isEnabled {
+            okButton.configuration?.baseForegroundColor = .label
         }
     }
 

@@ -7,3 +7,8 @@
 //
 
 import Foundation
+
+struct LoginResponseDto: Codable {
+    let token: String
+//    let userId: String
+}
