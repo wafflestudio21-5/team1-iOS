@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 
 class JoinViewController: PlainCustomBarViewController {
 
@@ -28,7 +29,7 @@ class JoinViewController: PlainCustomBarViewController {
     
     private lazy var okButton = {
         var titleContainer = AttributeContainer()
-        titleContainer.font = UIFont(name: "Pretendard-Medium", size: 18)
+        titleContainer.font = UIFont(name: "Pretendard-Medium", size: Constants.Login.buttonFontSize)
         
         let button = UIButton()
         button.configuration = .filled()
@@ -38,6 +39,8 @@ class JoinViewController: PlainCustomBarViewController {
         button.layer.borderWidth = 1
         button.layer.borderColor = UIColor.systemGray5.cgColor
         button.layer.cornerRadius = 5
+        
+        button.addTarget(self, action: #selector(okButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -121,5 +124,31 @@ class JoinViewController: PlainCustomBarViewController {
             make.leading.equalTo(checkImageView.snp.trailing).offset(6)
         }
     }
+    
+    var isCalling = false
+    let profile = UIImage(systemName: "star")?.pngData()?.base64EncodedString()
+    
+    @objc private func okButtonTapped() {
+        print("click")
+        if(isCalling) {
+            print("loading... please wait")
+            return
+        }
+        isCalling = true
+        
+        let param: Parameters = [
+            "email": emailTextField.text ?? "",
+            "password": passwordTextField.text ?? ""
+        ]
+        
+        let url = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/login/email"
+        let req = AF.request(url, method: .post, parameters: param, encoding: JSONEncoding.default)
+        
+        req.responseJSON {[weak self] data in
+            self?.isCalling = false
+            print(data)
+        }
+    }
 
 }
+

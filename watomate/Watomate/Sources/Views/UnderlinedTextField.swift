@@ -11,6 +11,6 @@ import UIKit
 class UnderlinedTextField: UITextField {
     override func layoutSubviews() {
         super.layoutSubviews()
-        addBottomBorder()
+        addBottomBorder(withColor: .systemGray3)
     }
 }

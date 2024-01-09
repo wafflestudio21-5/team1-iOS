@@ -29,7 +29,7 @@ class LoginViewController: PlainCustomBarViewController {
     
     private lazy var okButton = {
         var titleContainer = AttributeContainer()
-        titleContainer.font = UIFont(name: "Pretendard-Medium", size: 18)
+        titleContainer.font = UIFont(name: "Pretendard-Medium", size: Constants.Login.buttonFontSize)
         
         let button = UIButton()
         button.configuration = .filled()
@@ -44,7 +44,7 @@ class LoginViewController: PlainCustomBarViewController {
     
     private lazy var forgetLabel = {
         let attributes = [
-            NSAttributedString.Key.font: UIFont(name: "Pretendard-Light", size: 16)!,
+            NSAttributedString.Key.font: UIFont(name: "Pretendard-Light", size: Constants.Login.buttonFontSize - 1)!,
             NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel
         ]
         
@@ -55,7 +55,7 @@ class LoginViewController: PlainCustomBarViewController {
     
     private lazy var underlineLabel = {
         let attributes = [
-            NSAttributedString.Key.font: UIFont(name: "Pretendard-Regular", size: 16)!,
+            NSAttributedString.Key.font: UIFont(name: "Pretendard-Regular", size: Constants.Login.buttonFontSize - 1)!,
             NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel.withAlphaComponent(0),
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
             NSAttributedString.Key.underlineColor: UIColor.label
@@ -70,8 +70,6 @@ class LoginViewController: PlainCustomBarViewController {
         super.viewDidLoad()
         setTitle("로그인")
         setLeftBackButton()
-        
-        emailTextField.becomeFirstResponder()
         
         setupLayout()
     }

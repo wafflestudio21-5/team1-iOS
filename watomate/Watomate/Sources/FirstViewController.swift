@@ -21,7 +21,7 @@ class FirstViewController: UIViewController {
     
     private lazy var mainImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "waffle")
+        imageView.image = UIImage(named: "main")
         return imageView
     }()
     
@@ -29,7 +29,9 @@ class FirstViewController: UIViewController {
         let label = UILabel()
         label.text = "wato mate"
         label.textColor = .label
-        label.font = UIFont(name: "Pretendard-Bold", size: 38)
+        label.font = UIFont(name: "Pretendard-Bold", size: 39)
+        label.minimumScaleFactor = 0.8
+        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
@@ -39,6 +41,8 @@ class FirstViewController: UIViewController {
         label.textColor = .label
         label.alpha = 0.8
         label.font = UIFont(name: "Pretendard-Light", size: 16)
+        label.minimumScaleFactor = 0.8
+        label.adjustsFontSizeToFitWidth = true
         return label
     }()
     
@@ -51,7 +55,7 @@ class FirstViewController: UIViewController {
     
     private lazy var guestButton = {
         var titleContainer = AttributeContainer()
-        titleContainer.font = UIFont(name: "Pretendard-Regular", size: 16)
+        titleContainer.font = UIFont(name: "Pretendard-Regular", size: Constants.Login.buttonFontSize)
         
         let button = UIButton()
         button.configuration = .filled()
@@ -63,7 +67,7 @@ class FirstViewController: UIViewController {
     
     private lazy var loginButton = {
         var titleContainer = AttributeContainer()
-        titleContainer.font = UIFont(name: "Pretendard-Regular", size: 16)
+        titleContainer.font = UIFont(name: "Pretendard-Regular", size: Constants.Login.buttonFontSize)
         
         let button = UIButton()
         button.configuration = .filled()
@@ -76,7 +80,7 @@ class FirstViewController: UIViewController {
     
     private lazy var joinButton = {
         let attributes = [
-            NSAttributedString.Key.font: UIFont(name: "Pretendard-Regular", size: 16)!,
+            NSAttributedString.Key.font: UIFont(name: "Pretendard-Regular", size: Constants.Login.buttonFontSize)!,
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
             NSAttributedString.Key.underlineColor: UIColor.secondaryLabel
         ]
@@ -85,6 +89,7 @@ class FirstViewController: UIViewController {
         button.configuration = .plain()
         button.configuration?.baseForegroundColor = .label
         button.setAttributedTitle(NSAttributedString(string: "가입하기", attributes: attributes), for: .normal)
+        button.addTarget(self, action: #selector(joinButtonTapped), for: .touchUpInside)
         return button
     }()
 
@@ -100,11 +105,12 @@ class FirstViewController: UIViewController {
         
         view.addSubview(titleStackView)
         titleStackView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-20)
+            make.centerX.equalToSuperview()
         }
         
         mainImageView.snp.makeConstraints { make in
-            make.height.width.equalTo(250)
+            make.height.width.equalTo(200)
         }
         
         titleStackView.addArrangedSubview(mainImageView)
@@ -130,6 +136,11 @@ class FirstViewController: UIViewController {
     
     @objc private func loginButtonTapped() {
         let nextViewController = LoginViewController()
+        navigationController?.pushViewController(nextViewController, animated: true)
+    }
+    
+    @objc private func joinButtonTapped() {
+        let nextViewController = JoinViewController()
         navigationController?.pushViewController(nextViewController, animated: true)
     }
     
