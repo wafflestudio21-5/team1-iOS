@@ -24,6 +24,7 @@ class LoginViewController: PlainCustomBarViewController {
         textField.placeholder = "비밀번호"
         textField.font = UIFont(name: "Pretendard-Medium", size: 20)
         textField.setPlaceholderColor(.secondaryLabel)
+        textField.isSecureTextEntry = true
         return textField
     }()
     

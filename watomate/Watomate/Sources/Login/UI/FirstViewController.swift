@@ -135,13 +135,14 @@ class FirstViewController: UIViewController {
     }
     
     @objc private func loginButtonTapped() {
-//        let nextViewController = LoginViewController()
-        let nextViewController = ProfileSetupViewController() 
+        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository())
+        let nextViewController = LoginViewController(viewModel: LoginViewModel(authUseCase: authUseCase))
         navigationController?.pushViewController(nextViewController, animated: true)
     }
     
     @objc private func joinButtonTapped() {
-        let nextViewController = JoinViewController()
+//        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository())
+        let nextViewController = JoinViewController(viewModel: JoinViewModel(authUseCase: AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository())))
         navigationController?.pushViewController(nextViewController, animated: true)
     }
     

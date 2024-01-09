@@ -1,5 +1,5 @@
 //
-//  ProfileSetupViewController.swift
+//  ProfileEditViewController.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/9/24.
@@ -9,7 +9,7 @@
 import UIKit
 import SnapKit
 
-class ProfileSetupViewController: PlainCustomBarViewController {
+class ProfileEditViewController: PlainCustomBarViewController {
     
     private lazy var containerView = {
         let view = UIView()

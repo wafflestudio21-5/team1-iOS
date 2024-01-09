@@ -10,12 +10,24 @@ import UIKit
 import Alamofire
 
 class JoinViewController: PlainCustomBarViewController {
-
+    private let viewModel: JoinViewModel
+    
+    init(viewModel: JoinViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private lazy var emailTextField = {
         let textField = UnderlinedTextField()
         textField.placeholder = "이메일"
         textField.font = UIFont(name: "Pretendard-Medium", size: 20)
         textField.setPlaceholderColor(.secondaryLabel)
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
         return textField
     }()
     
@@ -24,6 +36,10 @@ class JoinViewController: PlainCustomBarViewController {
         textField.placeholder = "비밀번호"
         textField.font = UIFont(name: "Pretendard-Medium", size: 20)
         textField.setPlaceholderColor(.secondaryLabel)
+        textField.textContentType = .oneTimeCode
+        textField.isSecureTextEntry = true
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
         return textField
     }()
     
@@ -41,6 +57,7 @@ class JoinViewController: PlainCustomBarViewController {
         button.layer.cornerRadius = 5
         
         button.addTarget(self, action: #selector(okButtonTapped), for: .touchUpInside)
+        button.isEnabled = false
         return button
     }()
     
@@ -60,10 +77,31 @@ class JoinViewController: PlainCustomBarViewController {
         return label
     }()
     
+    private lazy var checkContainerView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 6
+    
+        stackView.addArrangedSubview(checkImageView)
+        stackView.addArrangedSubview(checkLabel)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(checkTapped))
+        stackView.isUserInteractionEnabled = true
+        stackView.addGestureRecognizer(tapGesture)
+        
+        return stackView
+    }()
+    
     private lazy var checkImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "circle", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
         imageView.tintColor = .systemGray5
+        imageView.contentMode = .scaleAspectFit
+        
+        imageView.snp.makeConstraints { make in
+            make.height.width.equalTo(23)
+        }
+        
         return imageView
     }()
     
@@ -77,10 +115,15 @@ class JoinViewController: PlainCustomBarViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        
+        setupNavigationBar()
+        setupLayout()
+        observeTextChanges()
+    }
+    
+    private func setupNavigationBar() {
         setTitle("가입하기")
         setLeftBackButton()
-        
-        setupLayout()
     }
     
     private func setupLayout() {
@@ -111,42 +154,50 @@ class JoinViewController: PlainCustomBarViewController {
             make.leading.trailing.equalToSuperview().inset(35)
         }
         
-        contentView.addSubview(checkImageView)
-        checkImageView.snp.makeConstraints { make in
+        contentView.addSubview(checkContainerView)
+        checkContainerView.snp.makeConstraints { make in
             make.top.equalTo(infoLabel.snp.bottom).offset(20)
-            make.leading.equalToSuperview().inset(35)
-            make.height.width.equalTo(23)
-        }
-        
-        contentView.addSubview(checkLabel)
-        checkLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(checkImageView.snp.centerY)
-            make.leading.equalTo(checkImageView.snp.trailing).offset(6)
+            make.leading.trailing.equalToSuperview().inset(35)
         }
     }
     
-    var isCalling = false
-    let profile = UIImage(systemName: "star")?.pngData()?.base64EncodedString()
+    private func observeTextChanges() {
+        emailTextField.addTarget(self, action: #selector(emailDidChange(_:)), for: .editingChanged)
+        passwordTextField.addTarget(self, action: #selector(passwordDidChange(_:)), for: .editingChanged)
+    }
+    
+    @objc private func emailDidChange(_ textField: UITextField) {
+        viewModel.email = textField.text ?? ""
+        updateOkButtonState()
+    }
+    
+    @objc private func passwordDidChange(_ textField: UITextField) {
+        viewModel.password = textField.text ?? ""
+        updateOkButtonState()
+    }
+    
+    @objc private func checkTapped() {
+        viewModel.isChecked.toggle()
+        let isChecked = viewModel.isChecked
+        if isChecked {
+            checkImageView.image = UIImage(systemName: "checkmark.circle.fill", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
+            checkImageView.tintColor = .label
+        } else {
+            checkImageView.image = UIImage(systemName: "circle", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
+            checkImageView.tintColor = .systemGray5
+        }
+        checkImageView.image = UIImage(systemName: isChecked ? "checkmark.circle.fill" : "circle", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
+        updateOkButtonState()
+    }
     
     @objc private func okButtonTapped() {
-        print("click")
-        if(isCalling) {
-            print("loading... please wait")
-            return
-        }
-        isCalling = true
-        
-        let param: Parameters = [
-            "email": emailTextField.text ?? "",
-            "password": passwordTextField.text ?? ""
-        ]
-        
-        let url = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/login/email"
-        let req = AF.request(url, method: .post, parameters: param, encoding: JSONEncoding.default)
-        
-        req.responseJSON {[weak self] data in
-            self?.isCalling = false
-            print(data)
+        viewModel.signUp()
+    }
+    
+    private func updateOkButtonState() {
+        okButton.isEnabled = viewModel.canSubmit
+        if okButton.isEnabled {
+            okButton.configuration?.baseForegroundColor = .label
         }
     }
 
