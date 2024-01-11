@@ -1,18 +1,17 @@
 //
-//  ViewController.swift
+//  ProfileViewController.swift
 //  Watomate
 //
-//  Created by 이지현 on 12/31/23.
+//  Created by 이수민 on 2023/12/31.
 //  Copyright © 2023 tuist.io. All rights reserved.
 //
 
 import UIKit
 
-class ViewController: UIViewController {
+class ProfileViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red 
 
         // Do any additional setup after loading the view.
     }
