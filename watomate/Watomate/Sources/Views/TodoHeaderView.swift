@@ -1,25 +1,50 @@
 //
-//  ProfileViewController.swift
+//  TodoHeaderView.swift
 //  Watomate
 //
-//  Created by 이수민 on 2023/12/31.
-//  Copyright © 2023 tuist.io. All rights reserved.
+//  Created by 권현구 on 1/13/24.
+//  Copyright © 2024 tuist.io. All rights reserved.
 //
 
 import UIKit
-import SnapKit
 
-class ProfileViewController: UIViewController {
-    
-    private lazy var scrollView = {
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.isScrollEnabled = true
-        scrollView.alwaysBounceVertical = true
-        scrollView.backgroundColor = .systemBackground
-        return scrollView
+class TodoHeaderView: UITableViewHeaderFooterView {
+
+    static let reuseIdentifier = "TodoHeaderView"
+
+    private lazy var goalView = {
+        let goalView = GoalStackView()
+        goalView.setTitleFont(font: .boldSystemFont(ofSize: 18))
+        return goalView
     }()
+
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
+        setupLayout()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupLayout() {
+        addSubview(goalView)
+        goalView.translatesAutoresizingMaskIntoConstraints = false
+        goalView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(16)
+            make.top.bottom.equalToSuperview().inset(10)
+            make.trailing.lessThanOrEqualToSuperview().inset(16)
+        }
+    }
     
+    func setTitle(with title: String) {
+        self.goalView.setTitle(with: title)
+    }
+}
+
+class ProfileHeaderView: UITableViewHeaderFooterView {
+    static let reuseIdentifier = "ProfileHeaderView"
+
     private lazy var profileImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "photo.fill"))
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -79,66 +104,46 @@ class ProfileViewController: UIViewController {
         return stackView
     }()
     
-    private lazy var archiveStackView = {
+    private lazy var archiveLabel = {
         let label = UILabel()
         label.text = "보관함"
         label.font = .boldSystemFont(ofSize: 18)
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 30
-        stackView.alignment = .leading
-        stackView.addArrangedSubview(label)
-        stackView.addArrangedSubview(GoalStackView().withTitle(title: "sample goal 1"))
-        stackView.addArrangedSubview(GoalStackView().withTitle(title: "sample goal 2"))
-        stackView.addArrangedSubview(GoalStackView().withTitle(title: "sample goal 3"))
-        return stackView
-    }()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupTopBarItems()
-        setupLayout()
-    }
-    
-    private var usernameLabel = {
-        let label = UILabel()
-        label.text = "Username"
-        label.font = .boldSystemFont(ofSize: 20)
         return label
     }()
-    
-    private func setupTopBarItems() {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: .none, action: .none)
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: usernameLabel)
+
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
+        setupLayout()
     }
-    
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private func setupLayout() {
         profileStackView.addArrangedSubview(profileImageView)
         profileStackView.addArrangedSubview(followerStackView)
         profileStackView.addArrangedSubview(followingStackView)
-        
-        scrollView.addSubview(profileStackView)
-        scrollView.addSubview(archiveStackView)
-        
-        view.addSubview(scrollView)
-        scrollView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(24)
-        }
-        
+
         profileImageView.snp.makeConstraints { make in
             make.height.width.equalTo(60)
         }
         
-        profileStackView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).inset(16)
-            make.height.equalTo(60)
-        }
+        let headerStackView = UIStackView()
+        headerStackView.axis = .vertical
+        headerStackView.spacing = 30
+        headerStackView.alignment = .leading
+        headerStackView.translatesAutoresizingMaskIntoConstraints = false
         
-        archiveStackView.snp.makeConstraints { make in
-            make.top.equalTo(profileStackView.snp.bottom).offset(40)
-            make.leading.trailing.equalToSuperview()
+        headerStackView.addArrangedSubview(profileStackView)
+        headerStackView.addArrangedSubview(archiveLabel)
+
+        
+        addSubview(headerStackView)
+        headerStackView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(16)
+            make.top.bottom.equalToSuperview().inset(10)
+            make.trailing.lessThanOrEqualToSuperview().inset(16)
         }
     }
 }

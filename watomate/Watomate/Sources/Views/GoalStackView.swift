@@ -18,7 +18,7 @@ class GoalStackView: UIStackView {
     
     private lazy var titleLabel = {
         let label = UILabel()
-        label.text = "sample goal"
+//        label.text = "sample goal"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -64,5 +64,13 @@ class GoalStackView: UIStackView {
     func withTitle(title: String) -> GoalStackView {
         self.titleLabel.text = title
         return self
+    }
+    
+    func setTitle(with title: String) {
+        self.titleLabel.text = title
+    }
+    
+    func setTitleFont(font: UIFont) {
+        self.titleLabel.font = font
     }
 }
