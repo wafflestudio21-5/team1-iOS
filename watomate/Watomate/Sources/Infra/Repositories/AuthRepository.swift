@@ -11,6 +11,10 @@ import Foundation
 
 protocol AuthRepositoryProtocol {
     func signupWithEmail(email: String, password: String) async throws -> LoginInfo
+    func signupWithKakao(kakaoId: Int64) async throws -> LoginInfo
+    func signupGuest() async throws -> LoginInfo
+    func loginWithEmail(email: String, password: String) async throws -> LoginInfo
+    func loginWithKakao(kakaoId: Int64) async throws -> LoginInfo
 }
 
 class AuthRepository: AuthRepositoryProtocol {
@@ -23,6 +27,30 @@ class AuthRepository: AuthRepositoryProtocol {
     
     func signupWithEmail(email: String, password: String) async throws -> LoginInfo {
         let dto = try await session.request(AuthRouter.signupWithEmail(email: email, password: password))
+            .serializingDecodable(SignupResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func signupWithKakao(kakaoId: Int64) async throws -> LoginInfo {
+        let dto = try await session.request(AuthRouter.signupWithKakao(kakaoId: kakaoId))
+            .serializingDecodable(SignupResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func signupGuest() async throws -> LoginInfo {
+        let dto = try await session.request(AuthRouter.signupGuest)
+            .serializingDecodable(SignupResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func loginWithEmail(email: String, password: String) async throws -> LoginInfo {
+        let dto = try await session.request(AuthRouter.loginWithEmail(email: email, password: password))
+            .serializingDecodable(SignupResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func loginWithKakao(kakaoId: Int64) async throws -> LoginInfo {
+        let dto = try await session.request(AuthRouter.loginWithKakao(kakaoId: kakaoId))
             .serializingDecodable(SignupResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }

@@ -30,6 +30,16 @@ let infoPlist: [String: Plist.Value] = [
         "Pretendard-SemiBold.otf",
         "Pretendard-Thin.otf",
     ],
+    "LSApplicationQueriesSchemes": [
+        "kakaolink",
+        "kakaokompassauth",
+    ],
+    "CFBundleURLTypes": [
+        [
+            "CFBundleTypeRole": "Editor",
+            "CFBundleURLSchemes": "kakao"
+        ],
+    ]
 ]
 
 // Creates our project using a helper function defined in ProjectDescriptionHelpers
@@ -38,5 +48,6 @@ let project = Project.app(name: "Watomate",
                           infoPlist: infoPlist,
                           dependencies: [
                             .external(name: "SnapKit"),
-                            .external(name: "Alamofire")
+                            .external(name: "Alamofire"),
+                            .external(name: "KakaoSDK")
                          ])
