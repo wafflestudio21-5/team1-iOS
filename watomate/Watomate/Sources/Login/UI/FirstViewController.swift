@@ -6,6 +6,9 @@
 //  Copyright © 2023 tuist.io. All rights reserved.
 //
 
+import KakaoSDKAuth
+import KakaoSDKUser
+
 import UIKit
 import SnapKit
 
@@ -103,32 +106,6 @@ class FirstViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         setupLayout()
-        
-//        if let infoDict = Bundle.main.infoDictionary {
-//            printFormattedInfoDictionary(infoDict)
-//        }
-//
-//        func printFormattedInfoDictionary(_ dict: [String: Any], indent: Int = 0) {
-//            for (key, value) in dict {
-//                let indentation = String(repeating: "    ", count: indent) // 4 spaces for indentation
-//                if let subDict = value as? [String: Any] {
-//                    // 값이 딕셔너리인 경우, 재귀적으로 함수를 호출합니다.
-//                    print("\(indentation)\"\(key)\": [")
-//                    printFormattedInfoDictionary(subDict, indent: indent + 1)
-//                    print("\(indentation)],")
-//                } else if let array = value as? [Any] {
-//                    // 값이 배열인 경우, 배열의 각 항목을 출력합니다.
-//                    print("\(indentation)\"\(key)\": [")
-//                    for item in array {
-//                        print("\(indentation)    \(item),")
-//                    }
-//                    print("\(indentation)],")
-//                } else {
-//                    // 그 외의 경우, 단순하게 키와 값을 출력합니다.
-//                    print("\(indentation)\"\(key)\": \"\(value)\",")
-//                }
-//            }
-//        }
     }
     
 
@@ -198,26 +175,40 @@ class FirstViewController: UIViewController {
     }
     
     @objc private func kakaoLoginTapped() {
-//        if (UserApi.isKakaoTalkLoginAvailable()) {
-//            UserApi.shared.loginWithKakaoTalk { [weak self] (oauthToken, error) in
-//                if let error = error {
-//                    print(error)
-//                }
-//                else {
-//                    print("카카오 로그인 성공")
-//                    self?.label.text = "안녕하세요!!!!"
-//                }
-//            }
-//        } else {
-//            UserApi.shared.loginWithKakaoAccount { [weak self] oauthToken, error in
-//                if let error = error {
-//                    print(error)
-//                } else {
-//                    print("카카오 로그인 성공")
-//                    self?.label.text = "안녕하세요!!!!"
-//                }
-//            }
-//        }
+        if (UserApi.isKakaoTalkLoginAvailable()) {
+            UserApi.shared.loginWithKakaoTalk { [weak self] (oauthToken, error) in
+                if let error = error {
+                    print(error)
+                }
+                else {
+                    print("카카오 로그인 성공")
+                    UserApi.shared.logout { [weak self] (error) in
+                        if let error = error {
+                            print(error)
+                        }
+                        else {
+                            print("로그아웃 성공")
+                        }
+                    }
+                }
+            }
+        } else {
+            UserApi.shared.loginWithKakaoAccount { [weak self] oauthToken, error in
+                if let error = error {
+                    print(error)
+                } else {
+                    print("카카오 로그인 성공")
+                    UserApi.shared.logout { [weak self] (error) in
+                        if let error = error {
+                            print(error)
+                        }
+                        else {
+                            print("로그아웃 성공")
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
