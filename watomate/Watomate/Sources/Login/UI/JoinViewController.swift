@@ -6,11 +6,14 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
-import UIKit
 import Alamofire
+import Combine
+import UIKit
 
 class JoinViewController: PlainCustomBarViewController {
     private let viewModel: JoinViewModel
+    
+    private var cancellables = Set<AnyCancellable>()
     
     init(viewModel: JoinViewModel) {
         self.viewModel = viewModel
@@ -35,6 +38,7 @@ class JoinViewController: PlainCustomBarViewController {
         textField.setPlaceholderColor(.secondaryLabel)
         textField.autocorrectionType = .no
         textField.autocapitalizationType = .none
+        textField.addTarget(self, action: #selector(emailDidChange), for: .editingChanged)
         return textField
     }()
     
@@ -47,6 +51,7 @@ class JoinViewController: PlainCustomBarViewController {
         textField.isSecureTextEntry = true
         textField.autocorrectionType = .no
         textField.autocapitalizationType = .none
+        textField.addTarget(self, action: #selector(passwordDidChange), for: .editingChanged)
         return textField
     }()
     
@@ -116,7 +121,7 @@ class JoinViewController: PlainCustomBarViewController {
         
         setupNavigationBar()
         setupLayout()
-        observeTextChanges()
+        bindViewModel()
         hideKeyboardWhenTappedAround()
     }
     
@@ -149,24 +154,51 @@ class JoinViewController: PlainCustomBarViewController {
         stackView.addArrangedSubview(checkContainerView)
     }
     
-    private func observeTextChanges() {
-        emailTextField.addTarget(self, action: #selector(emailDidChange(_:)), for: .editingChanged)
-        passwordTextField.addTarget(self, action: #selector(passwordDidChange(_:)), for: .editingChanged)
+    private func bindViewModel() {
+        let output = viewModel.transform(input: viewModel.input.eraseToAnyPublisher())
+        
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .signupSucceed:
+                    self?.transitionToMainScreen()
+                case .signupFailed(let errorMessage):
+                    self?.showAlert(message: errorMessage)
+                case .toggleCheckButton(let isChecked):
+                    self?.updateCheckmarkStatus(isChecked: isChecked)
+                case .toggleOkButton(let isEnabled):
+                    self?.updateOkButtonState(isEnabled: isEnabled)
+                }
+            }.store(in: &cancellables)
     }
     
-    @objc private func emailDidChange(_ textField: UITextField) {
-        viewModel.email = textField.text ?? ""
-        updateOkButtonState()
+    @objc private func emailDidChange() {
+        viewModel.input.send(.emailEdited(email: emailTextField.text ?? ""))
     }
     
-    @objc private func passwordDidChange(_ textField: UITextField) {
-        viewModel.password = textField.text ?? ""
-        updateOkButtonState()
+    @objc private func passwordDidChange() {
+        viewModel.input.send(.passwordEdited(password: passwordTextField.text ?? ""))
     }
     
     @objc private func checkTapped() {
-        viewModel.isChecked.toggle()
-        let isChecked = viewModel.isChecked
+        viewModel.input.send(.checkButtonTapped)
+
+    }
+    
+    @objc private func okButtonTapped() {
+        viewModel.input.send(.okButtonTapped)
+    }
+    
+    private func transitionToMainScreen() {
+        navigationController?.setViewControllers([TabBarController(), ProfileEditViewController()], animated: true)
+    }
+    
+    private func updateOkButtonState(isEnabled: Bool) {
+        okButton.isEnabled = isEnabled
+        okButton.setColor(titleColor: isEnabled ? .label : .systemGray5)
+    }
+    
+    private func updateCheckmarkStatus(isChecked: Bool) {
         if isChecked {
             checkImageView.image = UIImage(systemName: "checkmark.circle.fill", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
             checkImageView.tintColor = .label
@@ -174,27 +206,12 @@ class JoinViewController: PlainCustomBarViewController {
             checkImageView.image = UIImage(systemName: "circle", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
             checkImageView.tintColor = .systemGray5
         }
-        updateOkButtonState()
     }
     
-    @objc private func okButtonTapped() {
-//        Task {
-//            let result = viewModel.signUp()
-//            if result {
-//                let nextViewController = ProfileEditViewController()
-//                navigationController?.pushViewController(nextViewController, animated: true)
-//            }
-//        }
-        navigationController?.setViewControllers([TabBarController(), ProfileEditViewController()], animated: true)
-    }
-    
-    private func updateOkButtonState() {
-        okButton.isEnabled = viewModel.canSubmit
-        if okButton.isEnabled {
-            okButton.setColor(titleColor: .label)
-        } else {
-            okButton.setColor(titleColor: .systemGray5)
-        }
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default ))
+        present(alert, animated: true)
     }
 
 }

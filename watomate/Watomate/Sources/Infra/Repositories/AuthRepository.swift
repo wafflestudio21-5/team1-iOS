@@ -10,7 +10,7 @@ import Alamofire
 import Foundation
 
 protocol AuthRepositoryProtocol {
-    func signupWithEmail(email: String, password: String) async throws -> SignupResponseDto
+    func signupWithEmail(email: String, password: String) async throws -> LoginInfo
 }
 
 class AuthRepository: AuthRepositoryProtocol {
@@ -21,8 +21,9 @@ class AuthRepository: AuthRepositoryProtocol {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
     
-    func signupWithEmail(email: String, password: String) async throws -> SignupResponseDto {
-        return try await session.request(AuthRouter.signupWithEmail(email: email, password: password))
+    func signupWithEmail(email: String, password: String) async throws -> LoginInfo {
+        let dto = try await session.request(AuthRouter.signupWithEmail(email: email, password: password))
             .serializingDecodable(SignupResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
     }
 }

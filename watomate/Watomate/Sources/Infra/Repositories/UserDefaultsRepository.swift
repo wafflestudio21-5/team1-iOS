@@ -14,6 +14,7 @@ protocol UserDefaultsRepositoryProtocol {
 }
 
 enum UserDefaultsKey: String {
+    case isLoggedIn
     case accessToken
     case userId
 }

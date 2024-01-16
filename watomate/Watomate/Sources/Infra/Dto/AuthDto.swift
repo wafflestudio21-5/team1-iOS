@@ -8,8 +8,12 @@
 
 import Foundation
 
-struct SignupResponseDto: Codable {
+struct SignupResponseDto: Decodable {
     let resultCode: Int
     let token: String
     let userId: Int
+    
+    func toDomain() -> LoginInfo {
+        return LoginInfo(id: userId, token: token)
+    }
 }
