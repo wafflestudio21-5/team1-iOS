@@ -20,7 +20,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
 //        window.rootViewController = TabBarController()
-        window.rootViewController = UINavigationController(rootViewController: FirstViewController())
+        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), kakaoRepository: KakaoRepository())
+        window.rootViewController = UINavigationController(rootViewController: FirstViewController(viewModel: FirstViewModel(authUseCase: authUseCase)))
         window.makeKeyAndVisible()
         self.window = window
     }

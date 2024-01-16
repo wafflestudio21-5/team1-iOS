@@ -6,11 +6,14 @@
 //  Copyright © 2023 tuist.io. All rights reserved.
 //
 
+import Combine
 import UIKit
 import SnapKit
 
 class LoginViewController: PlainCustomBarViewController {
     private let viewModel: LoginViewModel
+    
+    private var cancellables = Set<AnyCancellable>()
     
     init(viewModel: LoginViewModel) {
         self.viewModel = viewModel
@@ -35,6 +38,7 @@ class LoginViewController: PlainCustomBarViewController {
         textField.setPlaceholderColor(.secondaryLabel)
         textField.autocorrectionType = .no
         textField.autocapitalizationType = .none
+        textField.addTarget(self, action: #selector(emailDidChange), for: .editingChanged)
         return textField
     }()
     
@@ -47,6 +51,7 @@ class LoginViewController: PlainCustomBarViewController {
         textField.autocapitalizationType = .none
         textField.textContentType = .oneTimeCode
         textField.isSecureTextEntry = true
+        textField.addTarget(self, action: #selector(passwordDidChange), for: .editingChanged)
         return textField
     }()
     
@@ -66,13 +71,14 @@ class LoginViewController: PlainCustomBarViewController {
         ]
         
         let label = UILabel()
+        label.textAlignment = .center
         label.attributedText = NSAttributedString(string: "비밀번호를 잊었다면?", attributes: attributes)
         return label
     }()
     
     private lazy var underlineLabel = {
         let attributes = [
-            NSAttributedString.Key.font: UIFont(name: "Pretendard-Regular", size: Constants.Login.buttonFontSize - 1)!,
+            NSAttributedString.Key.font: UIFont(name: "Pretendard-Regular", size: Constants.Login.infoFontSize)!,
             NSAttributedString.Key.foregroundColor: UIColor.secondaryLabel.withAlphaComponent(0),
             NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
             NSAttributedString.Key.underlineColor: UIColor.label
@@ -80,6 +86,7 @@ class LoginViewController: PlainCustomBarViewController {
         
         let label = UILabel()
         label.attributedText = NSAttributedString(string: "비밀번호를 잊었다면?", attributes: attributes)
+        label.textAlignment = .center
         return label
     }()
 
@@ -88,7 +95,7 @@ class LoginViewController: PlainCustomBarViewController {
         
         setupNavigationBar()
         setupLayout()
-        observeTextChanges()
+        bindViewModel()
         hideKeyboardWhenTappedAround()
     }
     
@@ -125,33 +132,47 @@ class LoginViewController: PlainCustomBarViewController {
         }
     }
     
-    private func observeTextChanges() {
-        emailTextField.addTarget(self, action: #selector(emailDidChange(_:)), for: .editingChanged)
-        passwordTextField.addTarget(self, action: #selector(passwordDidChange(_:)), for: .editingChanged)
+    private func bindViewModel() {
+        let output = viewModel.transform(input: viewModel.input.eraseToAnyPublisher())
+        
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .loginSucceed:
+                    self?.transitionToMainScreen()
+                case .loginFailed(let errorMessage):
+                    self?.showAlert(message: errorMessage)
+                case .toggleOkButton(let isEnabled):
+                    self?.updateOkButtonState(isEnabled: isEnabled)
+                }
+            }.store(in: &cancellables)
     }
     
-    @objc private func emailDidChange(_ textField: UITextField) {
-        viewModel.email = textField.text ?? ""
-        updateOkButtonState()
+    @objc private func emailDidChange() {
+        viewModel.input.send(.emailEdited(email: emailTextField.text ?? ""))
     }
     
-    @objc private func passwordDidChange(_ textField: UITextField) {
-        viewModel.password = textField.text ?? ""
-        updateOkButtonState()
+    @objc private func passwordDidChange() {
+        viewModel.input.send(.passwordEdited(password: passwordTextField.text ?? ""))
     }
     
     @objc private func okButtonTapped() {
-        let nextViewController = TabBarController()
-        navigationController?.pushViewController(nextViewController, animated: true)
+        viewModel.input.send(.okButtonTapped)
     }
     
-    private func updateOkButtonState() {
-        okButton.isEnabled = viewModel.canSubmit
-        if okButton.isEnabled {
-            okButton.setColor(titleColor: .label)
-        } else {
-            okButton.setColor(titleColor: .systemGray5)
-        }
+    private func transitionToMainScreen() {
+        navigationController?.setViewControllers([TabBarController(), ProfileEditViewController()], animated: true)
+    }
+    
+    private func updateOkButtonState(isEnabled: Bool) {
+        okButton.isEnabled = isEnabled
+        okButton.setColor(titleColor: isEnabled ? .label : .systemGray5)
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default ))
+        present(alert, animated: true)
     }
 
 }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct SignupResponseDto: Decodable {
+struct LoginResponseDto: Decodable {
     let resultCode: Int
     let token: String
     let userId: Int
@@ -17,3 +17,13 @@ struct SignupResponseDto: Decodable {
         return LoginInfo(id: userId, token: token)
     }
 }
+
+struct GuestResponseDto: Decodable {
+    let token: String
+    let userId: Int
+    
+    func toDomain() -> LoginInfo {
+        return LoginInfo(id: userId, token: token)
+    }
+}
+

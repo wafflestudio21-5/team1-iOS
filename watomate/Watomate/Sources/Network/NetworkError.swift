@@ -17,6 +17,7 @@ enum NetworkError: Int, Error {
     case timeout
     case decodingError
     case otherError
+    case kakaoLoginError
 }
 
 extension NetworkError: LocalizedError {
@@ -38,6 +39,8 @@ extension NetworkError: LocalizedError {
             return NSLocalizedString("Data Decoding Error", comment: "Decoding Error")
         case .otherError:
             return NSLocalizedString("Unknown Error Occurred", comment: "Other Error")
+        case .kakaoLoginError:
+            return NSLocalizedString("Kakao Login Error", comment: "Kakao Login Error")
         }
     }
 }

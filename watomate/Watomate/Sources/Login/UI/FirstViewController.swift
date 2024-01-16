@@ -6,13 +6,23 @@
 //  Copyright © 2023 tuist.io. All rights reserved.
 //
 
-import KakaoSDKAuth
-import KakaoSDKUser
-
-import UIKit
+import Combine
 import SnapKit
+import UIKit
 
 class FirstViewController: UIViewController {
+    private let viewModel: FirstViewModel
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(viewModel: FirstViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private lazy var titleContainerView = UIView()
     
@@ -106,12 +116,27 @@ class FirstViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         setupLayout()
+        bindViewModel()
     }
     
 
     private func setupLayout() {
         setupButtons()
         setupTitleView()
+    }
+    
+    private func bindViewModel() {
+        let output = viewModel.transform(input: viewModel.input.eraseToAnyPublisher())
+        
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .kakaoLoginSuceed, .guestLoginSuceed:
+                    self?.transitionToMainScreen()
+                case .kakaoLoginFailed(let errorMessage), .guestLoginFailed(let errorMessage):
+                    self?.showAlert(message: errorMessage)
+                }
+            }.store(in: &cancellables)
     }
     
     private func setupButtons() {
@@ -158,57 +183,34 @@ class FirstViewController: UIViewController {
     }
     
     @objc private func loginButtonTapped() {
-        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository())
+        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), kakaoRepository: KakaoRepository())
         let nextViewController = LoginViewController(viewModel: LoginViewModel(authUseCase: authUseCase))
         navigationController?.pushViewController(nextViewController, animated: true)
     }
     
     @objc private func joinButtonTapped() {
-//        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository())
-        let nextViewController = JoinViewController(viewModel: JoinViewModel(authUseCase: AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository())))
+        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), kakaoRepository: KakaoRepository())
+        let nextViewController = JoinViewController(viewModel: JoinViewModel(authUseCase: authUseCase))
         navigationController?.pushViewController(nextViewController, animated: true)
     }
     
     @objc private func guestButtonTapped() {
-//        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository())
+        viewModel.input.send(.guestLoginTapped)
+    }
+    
+    
+    @objc private func kakaoLoginTapped() {
+        viewModel.input.send(.kakaoLoginTapped)
+    }
+    
+    private func transitionToMainScreen() {
         navigationController?.setViewControllers([TabBarController()], animated: true)
     }
     
-    @objc private func kakaoLoginTapped() {
-        if (UserApi.isKakaoTalkLoginAvailable()) {
-            UserApi.shared.loginWithKakaoTalk { [weak self] (oauthToken, error) in
-                if let error = error {
-                    print(error)
-                }
-                else {
-                    print("카카오 로그인 성공")
-                    UserApi.shared.logout { [weak self] (error) in
-                        if let error = error {
-                            print(error)
-                        }
-                        else {
-                            print("로그아웃 성공")
-                        }
-                    }
-                }
-            }
-        } else {
-            UserApi.shared.loginWithKakaoAccount { [weak self] oauthToken, error in
-                if let error = error {
-                    print(error)
-                } else {
-                    print("카카오 로그인 성공")
-                    UserApi.shared.logout { [weak self] (error) in
-                        if let error = error {
-                            print(error)
-                        }
-                        else {
-                            print("로그아웃 성공")
-                        }
-                    }
-                }
-            }
-        }
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default ))
+        present(alert, animated: true)
     }
 
 }

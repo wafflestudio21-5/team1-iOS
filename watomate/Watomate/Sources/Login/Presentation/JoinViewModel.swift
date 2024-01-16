@@ -6,11 +6,10 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
-import Alamofire
 import Combine
 import Foundation
 
-final class JoinViewModel {
+final class JoinViewModel: ViewModelType {
     enum Input {
         case emailEdited(email: String)
         case passwordEdited(password: String)
@@ -71,48 +70,17 @@ final class JoinViewModel {
         isCalling = true
         
         Task { [weak self] in
+            guard let self else { return }
             do {
-                guard let self else { return }
-                let loginInfo = try await self.authUseCase.signupWithEmail(email: self.email, password: self.password)
-                self.authUseCase.saveLoginInfo(loginInfo: loginInfo)
-                User.shared.id = loginInfo.id
-                User.shared.token = loginInfo.token
+                try await self.authUseCase.signupWithEmail(email: self.email, password: self.password)
                 self.output.send(.signupSucceed)
                 self.isCalling = false
             } catch {
-                self?.output.send(.signupFailed(errorMessage: error.localizedDescription))
-                self?.isCalling = false
+                self.output.send(.signupFailed(errorMessage: error.localizedDescription))
+                self.isCalling = false
             }
             
         }
     }
 }
 
-//class JoinViewModel {
-//    private let authUseCase: AuthUseCase
-//    
-//    init(authUseCase: AuthUseCase) {
-//        self.authUseCase = authUseCase
-//    }
-//    
-//    let output = PassthroughSubject<String, Error>()
-//    
-//    var email: String = ""
-//    var password: String = ""
-//    var isChecked: Bool = false
-//    
-//    private var isCalling: Bool = false
-//    
-//    var isEmailValid: Bool {
-//        email.isEmail
-//    }
-//    
-//    var isPasswordValid: Bool {
-//        password.count > 3
-//    }
-//    
-//    var canSubmit: Bool {
-//        isEmailValid && isPasswordValid && isChecked
-//    }
-//
-//}

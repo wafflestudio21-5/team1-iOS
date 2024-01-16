@@ -11,8 +11,11 @@ import Foundation
 class User {
     static let shared = User()
     
-    var id: Int?
     var token: String?
+    var isLoggedin: Bool = false
+    var loginMethod: LoginMethod?
+    
+    var id: Int?
     var username: String?
     
     private init() { }
