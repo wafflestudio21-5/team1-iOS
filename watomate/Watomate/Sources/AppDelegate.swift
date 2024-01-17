@@ -9,8 +9,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         if let urlTypes = Bundle.main.infoDictionary?["CFBundleURLTypes"] as? [[String: Any]] {
-            if let appKey = urlTypes[0]["CFBundleURLSchemes"] {
-                guard let appKey = appKey as? String else { return true }
+            if let urlSchemes = urlTypes[0]["CFBundleURLSchemes"] as? [String] {
+                let appKey = urlSchemes[0]
                 let startIndex = appKey.index(appKey.startIndex, offsetBy: 5)
                 KakaoSDK.initSDK(appKey: String(appKey[startIndex...]))
             }
