@@ -23,7 +23,6 @@ class SymbolCircleView: UIView {
     init(symbolImage: UIImage?) {
         super.init(frame: .zero)
         self.symbolImage = symbolImage
-        updateBorderColor()
     }
     
     required init?(coder: NSCoder) {
@@ -47,17 +46,6 @@ class SymbolCircleView: UIView {
         symbolImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(frame.width / 5)
         }
-    }
-    
-    private func updateBorderColor() {
-        registerForTraitChanges([UITraitUserInterfaceStyle.self], handler: { (self: Self, previousTraitCollection: UITraitCollection) in
-            guard let borderColor = self.borderColor else { return }
-            if self.traitCollection.userInterfaceStyle == .light {
-                self.layer.borderColor = borderColor.cgColor
-            } else {
-                self.layer.borderColor = borderColor.cgColor
-            }
-        })
     }
     
     func setBackgroundColor(_ color: UIColor) {

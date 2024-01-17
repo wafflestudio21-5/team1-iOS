@@ -39,12 +39,18 @@ let infoPlist: [String: Plist.Value] = [
             "CFBundleTypeRole": "Editor",
             "CFBundleURLSchemes": "kakao"
         ],
-    ]
+    ],
+    "UISupportedInterfaceOrientations":
+    [
+        "UIInterfaceOrientationPortrait",
+    ],
 ]
+
+let destination: Set<ProjectDescription.Destination> = [.iPhone]
 
 // Creates our project using a helper function defined in ProjectDescriptionHelpers
 let project = Project.app(name: "Watomate",
-                          destinations: .iOS,
+                          destinations: destination,
                           infoPlist: infoPlist,
                           dependencies: [
                             .external(name: "SnapKit"),

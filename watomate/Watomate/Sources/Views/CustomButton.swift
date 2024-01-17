@@ -29,7 +29,6 @@ class CustomButton: UIButton {
         super.init(frame: .zero)
         
         configure()
-        updateBorderColor()
     }
     
     private func configure() {
@@ -59,17 +58,6 @@ class CustomButton: UIButton {
         layer.borderWidth = width
         layer.borderColor = color.cgColor
         layer.cornerRadius = cornerRadius
-    }
-    
-    private func updateBorderColor() {
-        registerForTraitChanges([UITraitUserInterfaceStyle.self], handler: { (self: Self, previousTraitCollection: UITraitCollection) in
-            guard let borderColor = self.borderColor else { return }
-            if self.traitCollection.userInterfaceStyle == .light {
-                self.layer.borderColor = borderColor.cgColor
-            } else {
-                self.layer.borderColor = borderColor.cgColor
-            }
-        })
     }
     
 }

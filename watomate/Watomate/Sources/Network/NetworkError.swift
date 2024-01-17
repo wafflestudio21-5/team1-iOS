@@ -12,6 +12,7 @@ enum NetworkError: Int, Error {
     case badRequest = 400
     case unauthorized = 401
     case notFound = 404
+    case methodError = 405
     case serverError = 500
     case internetOffline
     case timeout
@@ -29,6 +30,8 @@ extension NetworkError: LocalizedError {
                     return NSLocalizedString("Unauthorized", comment: "Unauthorized")
         case .notFound:
             return NSLocalizedString("Not Found", comment: "Not Found")
+        case .methodError:
+            return NSLocalizedString("Method Not Allowed", comment: "Method Not Allowed")
         case .serverError:
             return NSLocalizedString("Server Error", comment: "Server Error")
         case .internetOffline:
