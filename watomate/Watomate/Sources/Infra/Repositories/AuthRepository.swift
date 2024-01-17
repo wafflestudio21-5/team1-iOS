@@ -50,11 +50,17 @@ class AuthRepository: AuthRepositoryProtocol {
     }
     
     func loginWithKakao(kakaoId: Int64) async throws -> LoginInfo {
-        let dto = try await session.request(AuthRouter.loginWithKakao(kakaoId: kakaoId))
-            .serializingDecodable(LoginResponseDto.self, decoder: decoder).handlingError()
-        if dto.resultCode == 2 {
-            return try await signupWithKakao(kakaoId: kakaoId)
+        do {
+            let dto = try await session.request(AuthRouter.loginWithKakao(kakaoId: kakaoId))
+                .serializingDecodable(LoginResponseDto.self, decoder: decoder).handlingError()
+            return dto.toDomain()
+        } catch {
+            if let error = error as? NetworkError{
+                if error.statusCode == 422 {
+                    return try await signupWithKakao(kakaoId: kakaoId)
+                }
+            }
+            throw error
         }
-        return dto.toDomain()
     }
 }

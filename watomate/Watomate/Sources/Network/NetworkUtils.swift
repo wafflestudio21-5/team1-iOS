@@ -26,8 +26,15 @@ extension DataTask {
         case let .success(dto):
             return dto
         case let .failure(error):
+            if let data = response.data {
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                if let errorDto = try? decoder.decode(ErrorDto.self, from: data) {
+                    throw NetworkError.errorWithMessage(message: errorDto.errorMsg)
+                }
+            }
             if let statusCode = response.response?.statusCode {
-                if let networkError = NetworkError(rawValue: statusCode) {
+                if let networkError = NetworkError.error(from: statusCode) {
                     throw networkError
                 }
             }

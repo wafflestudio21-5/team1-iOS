@@ -9,7 +9,6 @@
 import Foundation
 
 struct LoginResponseDto: Decodable {
-    let resultCode: Int
     let token: String
     let userId: Int
     
