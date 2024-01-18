@@ -9,15 +9,22 @@
 import Alamofire
 import Foundation
 
-class TodoItemRepository: TodoItemRepositoryProtocol {
+class TodoRepository: TodoRepositoryProtocol {
     private let session = Session(interceptor: Interceptor())
     private let decoder = JSONDecoder()
     
     init() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY-MM-DD'T'HH:mm:ss.SSS'Z'"
         decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .formatted(formatter)
     }
     
-    func getTodos() async throws -> GoalsResponseDto{
+//    func get(at indexPath: IndexPath) -> Todo? {
+//        <#code#>
+//    }
+
+    func getAllTodos() async throws -> GoalsResponseDto{
         do {
             let response = try await session
                 .request(GoalsRouter.getAllTodos(userId: 1))

@@ -24,7 +24,7 @@ class TodoCellViewModel {
         todo.goal
     }
 
-    var isComplete: Bool {
+    var isCompleted: Bool {
         get { todo.isCompleted }
         set {
             todo.isCompleted = newValue

@@ -9,42 +9,22 @@
 import Foundation
 
 class TodoUseCase {
-    private let todoRepository: TodoItemRepositoryProtocol
+    private let todoRepository: TodoRepositoryProtocol
     lazy var goals: [Goal] = []
     
-    var dummy: [Goal] = [
-        Goal(id: 1,
-             title: "goal 1",
-             visibility: .PB,
-             color: "blue",
-             createdAt: "2024-01-01",
-             todos: [
-                Todo(id: 1, title: "todo 1-1", createdAt: "2024-01-01", isCompleted: true, goal: 1, likes: []),
-                Todo(id: 2, title: "todo 1-2", createdAt: "2024-01-01", isCompleted: false, goal: 1, likes: [])
-             ]
-            ),
-        Goal(id: 2,
-             title: "goal 2",
-             visibility: .FL,
-             color: "yellow",
-             createdAt: "2024-01-02",
-             todos: [
-                Todo(id: 3, title: "todo 2-1", createdAt: "2024-01-02", isCompleted: true, goal: 2, likes: []),
-                Todo(id: 4, title: "todo 2-2", createdAt: "2024-01-03", isCompleted: false, goal: 2, likes: [])
-             ]
-            )
-    ]
-    
-    init(todoRepository: TodoItemRepositoryProtocol) {
+    init(todoRepository: TodoRepositoryProtocol) {
         self.todoRepository = todoRepository
     }
     
-    func getTodos(with userId: Int) async throws -> [Goal] {
-        let goalDto = try await todoRepository.getTodos()//id 넣도록 수정하기
+    func getAllTodos(userId: Int) async throws -> [Goal] {
+        let goalDto = try await todoRepository.getAllTodos()//id 넣도록 수정하기
         let goals = convert(goalsDto: goalDto)
-//        let goals = dummy
         self.goals = goals
         return goals
+    }
+    
+    func addTodo(userId: Int, goalId: Int) {
+        
     }
     
     private func convert(goalsDto: GoalsResponseDto) -> [Goal] {
@@ -60,7 +40,7 @@ class TodoUseCase {
         let todos = goalDto.todos.map { dto in
             convert(todoDto: dto, with: goalId)
         }
-        let goal = Goal(id: goalDto.id, title: goalDto.title, visibility: visibility, color: goalDto.color, createdAt: goalDto.created_at, todos: todos)
+        let goal = Goal(id: goalDto.id, title: goalDto.title, visibility: visibility, color: goalDto.color, createdAt: goalDto.created_at_iso, todos: todos)
         return goal
     }
     
@@ -81,7 +61,10 @@ class TodoUseCase {
         let todo = Todo(
             id: todoDto.id,
             title: todoDto.title,
-            createdAt: todoDto.created_at,
+            description: todoDto.description,
+            reminder: todoDto.reminder_iso,
+            createdAt: todoDto.created_at_iso,
+//            date: todoDto.date,
             isCompleted: todoDto.is_completed,
             goal: goalId,
             likes: todoDto.likes.map{ dto in

@@ -27,6 +27,9 @@ class TodoCell: UITableViewCell {
         stackView.axis = .horizontal
         stackView.spacing = 3
         stackView.distribution = .fill
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(showBottomSheetView))
+        stackView.addGestureRecognizer(tapGesture)
+        stackView.isUserInteractionEnabled = true
         return stackView
     }()
     
@@ -133,7 +136,7 @@ class TodoCell: UITableViewCell {
         self.viewModel = viewModel
         titleLabel.text = viewModel.title
         memoStackView.isHidden = viewModel.isMemoHidden
-        configureCheckbox(isComplete: viewModel.isComplete)
+        configureCheckbox(isComplete: viewModel.isCompleted)
     }
 
     private func toggleMemoTextFieldVisibility(_ isHidden: Bool) {
@@ -154,10 +157,16 @@ class TodoCell: UITableViewCell {
         }
     }
 
+    @objc private func showBottomSheetView() {
+        // navigate to bottom sheet view with viewModel
+        print("show bottom sheet view")
+    }
+    
     @objc private func toggleCheckbox() {
-        viewModel?.isComplete.toggle()
-        let isComplete = viewModel?.isComplete == true
+        viewModel?.isCompleted.toggle()
+        let isComplete = viewModel?.isCompleted == true
         configureCheckbox(isComplete: isComplete)
+        // notify todo isCompleted is changed
     }
 
     private func configureCheckbox(isComplete: Bool) {
@@ -172,39 +181,5 @@ class TodoCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
-    }
-}
-
-extension TodoCell: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        guard let viewModel else { return }
-
-        if textField == memoStackView, titleLabel.text?.isEmpty == true {
-            let newTodoTitle = "새로운 미리 알림"
-            titleLabel.text = newTodoTitle
-            viewModel.title = newTodoTitle
-        }
-        setMemoLabelIsHidden(false)
-    }
-
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        Task {
-            if textField == titleLabel {
-                viewModel?.endEditingTitle(with: textField.text)
-            }
-        }
-        toggleMemoTextFieldVisibility(true)
-    }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        guard textField == titleLabel else { return true }
-
-        if textField.text?.isEmpty == false {
-            viewModel?.addNewTodoItem()
-            return false
-        } else {
-            textField.resignFirstResponder()
-            return false
-        }
     }
 }

@@ -8,17 +8,17 @@
 
 import Foundation
 
-protocol TodoItemRepositoryProtocol {
+protocol TodoRepositoryProtocol {
 //    var numberOfItems: Int { get }
 //    func get(with id: UUID) -> TodoItem?
-//    func get(at indexPath: IndexPath) -> TodoItem?
+//    func get(at indexPath: IndexPath) -> Todo?
 //    func indexPath(with id: UUID) -> IndexPath?
 //    func append(_ todoItem: TodoItem)
 //    func insert(_ todoItem: TodoItem, at indexPath: IndexPath)
 //    func remove(_ todoItem: TodoItem)
 //    func update(_ todoItem: TodoItem)
     
-    func getTodos() async throws -> GoalsResponseDto
+    func getAllTodos() async throws -> GoalsResponseDto
 //    func deleteTodo(with id: Int)
 //    func changeTitle(with id: Int, title: String)
 //    func changeMemo(with id: Int, memo: String)

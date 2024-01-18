@@ -37,7 +37,7 @@ struct Todo: Codable, Identifiable, Hashable {
     var description: String?
     var reminder: String?
     let createdAt: String
-    var date: Date?
+//    var date: Date?
     var isCompleted: Bool
     var goal: Int
     var likes: [Like]

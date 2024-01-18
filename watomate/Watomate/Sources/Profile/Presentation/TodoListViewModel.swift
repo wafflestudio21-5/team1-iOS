@@ -8,38 +8,22 @@
 
 import Foundation
 
-class ProfileViewControllerViewModel {
-    weak var delegate: (any ProfileViewControllerViewModelDelegate)?
+class TodoListViewModel {
+    weak var delegate: (any TodoListViewModelDelegate)?
     private let todoUseCase: TodoUseCase
 
     var sectionsForGoalId = [Int: Int]() // GoalId: Section index
     var viewModels = [Int: TodoCellViewModel]() //Int : todoId에 해당
     
-    func getAllTodos() async {//-> [TodoCellViewModel]{
-        guard let goals = try? await todoUseCase.getTodos(with: 1) else { return }
-        var viewModels = [TodoCellViewModel]()
-        var indexPaths = [IndexPath]()
-        let todos = goals.flatMap { goal in
-            goal.todos
-        }
+    func getAllTodos() async -> [Goal]? {
+        guard let goals = try? await todoUseCase.getAllTodos(userId: 1) else { return nil }
         for goal in goals {
-            for todo in goal.todos {
-                let viewModel = TodoCellViewModel(todo: todo)
-                let section = (sectionsForGoalId[todo.goal] ?? sectionsForGoalId.count) + 1
-                self.viewModels[todo.id] = viewModel
-                viewModels.append(viewModel)
-                
-                let indexPath = IndexPath.init(row: viewModels.filter({ model in
-                    model.goal == goal.id
-                }).count - 1, section: section)
-                indexPaths.append(indexPath)
-            }
             sectionsForGoalId[goal.id] = sectionsForGoalId.count
         }
-//        self.viewModels = viewModels
+        return goals
     }
     
-    init(repository: some TodoItemRepositoryProtocol) {
+    init(repository: some TodoRepositoryProtocol) {
         self.todoUseCase = TodoUseCase(todoRepository: repository)
     }
 
@@ -117,16 +101,16 @@ class ProfileViewControllerViewModel {
     }
 }
 
-extension ProfileViewControllerViewModel {
+extension TodoListViewModel {
 //    func appendPlaceholderIfNeeded(at section: Int) -> Bool {
 //        if numberOfRowsInSection(section: section) == 0 {
-//            append(.placeholderItem())
+//            append(.placeholderItem(at: <#Int#>))
 //            return true
 //        }
 //
-//        guard let lastItem = todoRepository.get(at: .init(row: numberOfItems - 1, section: 0)) else { return false }
+//        guard let lastItem = todoUseCase.get(at: .init(row: numberOfRowsInSection(section: section) - 1, section: section)) else { return false }
 //        if !lastItem.title.isEmpty {
-//            append(.placeholderItem())
+//            append(.placeholderItem(at: <#Int#>))
 //            return true
 //        }
 //
@@ -134,7 +118,7 @@ extension ProfileViewControllerViewModel {
 //    }
 }
 
-extension ProfileViewControllerViewModel: TodoCellViewModelDelegate {
+extension TodoListViewModel: TodoCellViewModelDelegate {
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingWith title: String?) {
 //        if title == nil || title?.isEmpty == true {
 //            guard let indexPath = todoRepository.indexPath(with: viewModel.id) else { return }
@@ -164,19 +148,19 @@ struct ReloadOptions: OptionSet {
     static let animated = ReloadOptions(rawValue: 1 << 2)
 }
 
-protocol ProfileViewControllerViewModelDelegate: AnyObject {
+protocol TodoListViewModelDelegate: AnyObject {
     func profileViewControllerViewModel(
-        _ viewModel: ProfileViewControllerViewModel,
+        _ viewModel: TodoListViewModel,
         didInsertTodoViewModel todoViewModel: TodoCellViewModel,
         at indexPath: IndexPath
     )
 
     func profileViewControllerViewModel(
-        _ viewModel: ProfileViewControllerViewModel,
+        _ viewModel: TodoListViewModel,
         didRemoveTodoViewModel todoViewModel: TodoCellViewModel,
         at indexPath: IndexPath,
         options: ReloadOptions
     )
     
-    func profileViewControllerViewModel(_ viewModel: ProfileViewControllerViewModel, didInsertTodoViewModels newViewModels: [TodoCellViewModel], at indexPaths: [IndexPath])
+    func profileViewControllerViewModel(_ viewModel: TodoListViewModel, didInsertTodoViewModels newViewModels: [TodoCellViewModel], at indexPaths: [IndexPath])
 }

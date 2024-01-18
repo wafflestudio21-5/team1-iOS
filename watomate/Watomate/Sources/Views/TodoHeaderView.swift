@@ -40,6 +40,16 @@ class TodoHeaderView: UITableViewHeaderFooterView {
     func setTitle(with title: String) {
         self.goalView.setTitle(with: title)
     }
+    
+    func addGestureRecognizer() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addEmptyTodo))
+        goalView.addGestureRecognizer(tapGesture)
+        goalView.isUserInteractionEnabled = true
+    }
+    
+    @objc private func addEmptyTodo() {
+        // add new row
+    }
 }
 
 class ProfileHeaderView: UITableViewHeaderFooterView {
