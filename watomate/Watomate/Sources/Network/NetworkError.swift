@@ -8,15 +8,59 @@
 
 import Foundation
 
-enum NetworkError: Int, Error {
-    case badRequest = 400
-    case unauthorized = 401
-    case notFound = 404
-    case serverError = 500
+enum NetworkError: Error {
+    case badRequest
+    case unauthorized
+    case notFound
+    case methodError
+    case unprocessableEntity
+    case serverError
     case internetOffline
     case timeout
     case decodingError
     case otherError
+    case kakaoLoginError
+    case errorWithMessage(message: String)
+    
+    var statusCode: Int {
+        switch self {
+        case .badRequest:
+            return 400
+        case .unauthorized:
+            return 401
+        case .notFound:
+            return 404
+        case .methodError:
+            return 405
+        case .unprocessableEntity:
+            return 422
+        case .serverError:
+            return 500
+        default:
+            return -1
+        }
+    }
+}
+
+extension NetworkError {
+    static func error(from statusCode: Int) -> NetworkError? {
+        switch statusCode {
+        case 400:
+            return .badRequest
+        case 401:
+            return .unauthorized
+        case 404:
+            return .notFound
+        case 405:
+            return .methodError
+        case 422:
+            return .unprocessableEntity
+        case 500:
+            return .serverError
+        default:
+            return nil
+        }
+    }
 }
 
 extension NetworkError: LocalizedError {
@@ -28,6 +72,10 @@ extension NetworkError: LocalizedError {
                     return NSLocalizedString("Unauthorized", comment: "Unauthorized")
         case .notFound:
             return NSLocalizedString("Not Found", comment: "Not Found")
+        case .methodError:
+            return NSLocalizedString("Method Not Allowed", comment: "Method Not Allowed")
+        case .unprocessableEntity:
+            return NSLocalizedString("Unprocessable Entity", comment: "Unprocessable Entity")
         case .serverError:
             return NSLocalizedString("Server Error", comment: "Server Error")
         case .internetOffline:
@@ -38,6 +86,10 @@ extension NetworkError: LocalizedError {
             return NSLocalizedString("Data Decoding Error", comment: "Decoding Error")
         case .otherError:
             return NSLocalizedString("Unknown Error Occurred", comment: "Other Error")
+        case .kakaoLoginError:
+            return NSLocalizedString("Kakao Login Error", comment: "Kakao Login Error")
+        case .errorWithMessage(let message):
+            return NSLocalizedString(message, comment: message)
         }
     }
 }

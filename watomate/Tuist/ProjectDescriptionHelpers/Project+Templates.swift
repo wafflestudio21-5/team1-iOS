@@ -21,6 +21,7 @@ extension Project {
             destinations: destinations,
             product: .app,
             bundleId: "io.waffle.\(name)",
+            deploymentTargets: .iOS("16.0"),
             infoPlist: .extendingDefault(with: infoPlist),
             sources: ["\(name)/Sources/**"],
             resources: ["\(name)/Resources/**"],
