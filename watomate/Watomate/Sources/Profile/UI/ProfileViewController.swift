@@ -20,6 +20,9 @@ class ProfileViewController: UIViewController {
     
     private let todoListViewModel : TodoListViewModel
     
+    private let input = PassthroughSubject<TodoListViewModel.Input, Never>()
+    private var cancellables = Set<AnyCancellable>()
+    
     init(todoListViewModel: TodoListViewModel) {
         self.todoListViewModel = todoListViewModel
         super.init(nibName: nil, bundle: nil)
@@ -50,6 +53,11 @@ class ProfileViewController: UIViewController {
         return tableView
     }()
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        input.send(.viewDidAppear)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTopBarItems()
@@ -59,9 +67,6 @@ class ProfileViewController: UIViewController {
         setupLayout()
         configureDataSource()
         bindViewModel()
-        Task {
-            await fetchAndApplySnapshot()
-        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,19 +99,30 @@ class ProfileViewController: UIViewController {
     }
     
     private func bindViewModel() {
+        let output = todoListViewModel.transform(input: input.eraseToAnyPublisher())
         
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case.loadSucceed(let goals):
+                    self?.applySnapshot(with: goals)
+                case .loadFailed(let errorMsg):
+                    print("error: \(errorMsg)")
+                }
+            }.store(in: &cancellables)
     }
     
-    private func fetchAndApplySnapshot() async {
-        guard let goals = await todoListViewModel.getAllTodos() else { return }
-        
-        self.snapshot = Snapshot()
-        let sections = Array(0...todoListViewModel.sectionsForGoalId.count)
-        snapshot.appendSections(sections)
-        for i in 0...goals.count - 1 {
-            snapshot.appendItems(goals[i].todos, toSection: i + 1)
+    private func applySnapshot(with goals: [Goal]) {
+        Task { [weak self] in
+            guard let self else { return }
+            self.snapshot = Snapshot()
+            let sections = Array(0...todoListViewModel.sectionsForGoalId.count)
+            snapshot.appendSections(sections)
+            for i in 0...goals.count - 1 {
+                snapshot.appendItems(goals[i].todos, toSection: i + 1)
+            }
+            self.dataSource.apply(snapshot, animatingDifferences: false)
         }
-        await self.dataSource.apply(snapshot, animatingDifferences: false)
     }
     
     @objc private func handleTableViewTap(_ gesture: UITapGestureRecognizer) {
@@ -133,7 +149,7 @@ extension ProfileViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            todoListViewModel.remove(at: indexPath)
+//            todoListViewModel.remove(at: indexPath)
         }
     }
     

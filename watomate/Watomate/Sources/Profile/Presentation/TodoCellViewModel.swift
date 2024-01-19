@@ -7,13 +7,28 @@
 //
 
 import Foundation
+import Combine
 
-class TodoCellViewModel {
+class TodoCellViewModel: ViewModelType {
+    
+    enum Input {
+    }
+    
+    enum Output {
+    }
+    
+    private var cancellables = Set<AnyCancellable>()
+    private let output = PassthroughSubject<Output, Never>()
+    
     private var todo: Todo
     weak var delegate: (any TodoCellViewModelDelegate)?
 
     init(todo: Todo) {
         self.todo = todo
+    }
+    
+    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
+        return output.eraseToAnyPublisher()
     }
 
     var id: Int? {
