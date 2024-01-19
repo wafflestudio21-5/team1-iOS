@@ -24,7 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             User.shared.id = userDefaultsRepository.get(Int.self, key: .userId)
             User.shared.token = userDefaultsRepository.get(String.self, key: .accessToken)
             User.shared.loginMethod = LoginMethod(rawValue: userDefaultsRepository.get(String.self, key: .loginMethod) ?? "")
-            window.rootViewController = UINavigationController(rootViewController: TabBarController())
+            window.rootViewController = TabBarController()
         } else {
             let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), kakaoRepository: KakaoRepository())
             window.rootViewController = UINavigationController(rootViewController: FirstViewController(viewModel: FirstViewModel(authUseCase: authUseCase)))
