@@ -16,7 +16,7 @@ class TodoCellViewModel {
         self.todo = todo
     }
 
-    var id: Int {
+    var id: Int? {
         todo.id
     }
     
@@ -49,7 +49,8 @@ class TodoCellViewModel {
     }
 
     var isMemoHidden: Bool {
-        todo.description == nil
+        guard let description = todo.description else { return true }
+        return description.isEmpty
     }
 
     func addNewTodoItem() {

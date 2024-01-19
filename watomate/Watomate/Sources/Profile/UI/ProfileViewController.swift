@@ -8,18 +8,26 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 class ProfileViewController: UIViewController {
     
     typealias DataSource = UITableViewDiffableDataSource<Int, Todo>
-    var dataSource: DataSource!
-    var snapshot: NSDiffableDataSourceSnapshot<Int, Todo>!
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Int, Todo>
     
-    private lazy var todoListViewModel = {
-        let viewModel = TodoListViewModel(repository: TodoRepository())
-//        viewModel.delegate = self
-        return viewModel
-    }()
+    var dataSource: DataSource!
+    var snapshot: Snapshot!
+    
+    private let todoListViewModel : TodoListViewModel
+    
+    init(todoListViewModel: TodoListViewModel) {
+        self.todoListViewModel = todoListViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private var usernameLabel = {
         let label = UILabel()
@@ -50,6 +58,7 @@ class ProfileViewController: UIViewController {
         registerCells()
         setupLayout()
         configureDataSource()
+        bindViewModel()
         Task {
             await fetchAndApplySnapshot()
         }
@@ -84,10 +93,14 @@ class ProfileViewController: UIViewController {
         })
     }
     
+    private func bindViewModel() {
+        
+    }
+    
     private func fetchAndApplySnapshot() async {
         guard let goals = await todoListViewModel.getAllTodos() else { return }
         
-        self.snapshot = NSDiffableDataSourceSnapshot<Int, Todo>()
+        self.snapshot = Snapshot()
         let sections = Array(0...todoListViewModel.sectionsForGoalId.count)
         snapshot.appendSections(sections)
         for i in 0...goals.count - 1 {
@@ -132,10 +145,24 @@ extension ProfileViewController: UITableViewDelegate {
         }
         
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TodoHeaderView.reuseIdentifier) as? TodoHeaderView else { return nil }
+        header.goalView.tag = section
         header.setTitle(with: todoListViewModel.getTitle(of: section))
-        header.addGestureRecognizer()
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addEmptyTodo))
+        header.goalView.addGestureRecognizer(tapGesture)
+        header.goalView.isUserInteractionEnabled = true
         header.contentView.backgroundColor = .systemBackground
         return header
+    }
+    
+    @objc private func addEmptyTodo(_ sender: UITapGestureRecognizer) {
+        guard let headerView = sender.view as? GoalStackView else { return }
+            
+        let section = headerView.tag
+        guard let goalId = todoListViewModel.goalIdsForSections[section] else { return }
+        let newTodo = Todo(uuid: UUID(), id: nil, title: "added", isCompleted: false, goal: goalId, likes: [])
+        snapshot.appendItems([newTodo], toSection: section)
+        dataSource.applySnapshotUsingReloadData(snapshot)
+//        await todoListViewModel.addTodo(todo: newTodo)
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {

@@ -12,7 +12,7 @@ class TodoHeaderView: UITableViewHeaderFooterView {
 
     static let reuseIdentifier = "TodoHeaderView"
 
-    private lazy var goalView = {
+    lazy var goalView = {
         let goalView = GoalStackView()
         goalView.setTitleFont(font: .boldSystemFont(ofSize: 18))
         return goalView
@@ -39,16 +39,6 @@ class TodoHeaderView: UITableViewHeaderFooterView {
     
     func setTitle(with title: String) {
         self.goalView.setTitle(with: title)
-    }
-    
-    func addGestureRecognizer() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addEmptyTodo))
-        goalView.addGestureRecognizer(tapGesture)
-        goalView.isUserInteractionEnabled = true
-    }
-    
-    @objc private func addEmptyTodo() {
-        // add new row
     }
 }
 

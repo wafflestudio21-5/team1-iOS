@@ -11,11 +11,10 @@ import Foundation
 
 enum GoalsRouter: Router {
     case getAllTodos(userId: Int)
-    //
+    case addTodo(userId: Int, goalId: Int, todo: Todo)
 //    case getGoalData(userId: Int, goalId: Int)
 //    case addGoal(userId: Int, goalId: Int, goal: GoalDto)
 //    case updateGoal(userId: Int, goalId: Int, goal: GoalDto)
-//    case addTodo(userId: Int, todo: TodoDto)
 //    case deleteGoal(userId: Int, goalId: Int)
 //    case get
 //    case deleteTodo(userId: Int, )
@@ -24,6 +23,8 @@ enum GoalsRouter: Router {
         switch self {
         case .getAllTodos:
             return .get
+        case .addTodo:
+            return .post
         }
     }
     
@@ -31,6 +32,8 @@ enum GoalsRouter: Router {
         switch self {
         case let .getAllTodos(userId):
             return "/\(userId)/goals"
+        case let .addTodo(userId, goalId, _):
+            return "/\(userId)/goals/\(goalId)"
         }
     }
     
@@ -38,6 +41,8 @@ enum GoalsRouter: Router {
         switch self {
         case .getAllTodos:
             return nil
+        case let .addTodo(_, _, todo):
+            return ["title": todo.title, "date": "", "is_completed": false]
         }
     }
 }

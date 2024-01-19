@@ -32,18 +32,19 @@ enum Visibility {
 }
 
 struct Todo: Codable, Identifiable, Hashable {
-    let id: Int
+    let uuid: UUID
+    let id: Int?
     var title: String
     var description: String?
     var reminder: String?
-    let createdAt: String
+//    let createdAt: String
 //    var date: Date?
     var isCompleted: Bool
     var goal: Int
     var likes: [Like]
     
     static func == (lhs: Todo, rhs: Todo) -> Bool {
-        lhs.id == rhs.id
+        lhs.uuid == rhs.uuid
     }
 
     public func hash(into hasher: inout Hasher) {

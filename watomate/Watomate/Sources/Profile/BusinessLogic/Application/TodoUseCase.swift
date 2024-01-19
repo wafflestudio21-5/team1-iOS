@@ -12,7 +12,7 @@ class TodoUseCase {
     private let todoRepository: TodoRepositoryProtocol
     lazy var goals: [Goal] = []
     
-    init(todoRepository: TodoRepositoryProtocol) {
+    init(todoRepository: some TodoRepositoryProtocol) {
         self.todoRepository = todoRepository
     }
     
@@ -23,8 +23,8 @@ class TodoUseCase {
         return goals
     }
     
-    func addTodo(userId: Int, goalId: Int) {
-        
+    func addTodo(userId: Int, goalId: Int, todo: Todo) async {
+        await todoRepository.addTodo(userId: userId, goalId: goalId, todo: todo)
     }
     
     private func convert(goalsDto: GoalsResponseDto) -> [Goal] {
@@ -59,11 +59,12 @@ class TodoUseCase {
     
     private func convert(todoDto: TodoDto, with goalId: Int) -> Todo {
         let todo = Todo(
+            uuid: UUID(),
             id: todoDto.id,
             title: todoDto.title,
             description: todoDto.description,
             reminder: todoDto.reminder_iso,
-            createdAt: todoDto.created_at_iso,
+//            createdAt: todoDto.created_at_iso,
 //            date: todoDto.date,
             isCompleted: todoDto.is_completed,
             goal: goalId,

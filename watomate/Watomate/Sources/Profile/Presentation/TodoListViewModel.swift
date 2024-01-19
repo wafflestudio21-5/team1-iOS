@@ -13,18 +13,24 @@ class TodoListViewModel {
     private let todoUseCase: TodoUseCase
 
     var sectionsForGoalId = [Int: Int]() // GoalId: Section index
+    var goalIdsForSections = [Int: Int]() // Section index: GoalId
     var viewModels = [Int: TodoCellViewModel]() //Int : todoId에 해당
+    
+    init(todoUseCase: TodoUseCase) {
+        self.todoUseCase = todoUseCase
+    }
     
     func getAllTodos() async -> [Goal]? {
         guard let goals = try? await todoUseCase.getAllTodos(userId: 1) else { return nil }
         for goal in goals {
             sectionsForGoalId[goal.id] = sectionsForGoalId.count
+            goalIdsForSections[sectionsForGoalId.count] = goal.id
         }
         return goals
     }
     
-    init(repository: some TodoRepositoryProtocol) {
-        self.todoUseCase = TodoUseCase(todoRepository: repository)
+    func addTodo(todo: Todo) async {
+        await todoUseCase.addTodo(userId: 1, goalId: 1, todo: todo)
     }
 
     private func todo(at indexPath: IndexPath) -> Todo? {
@@ -39,7 +45,8 @@ class TodoListViewModel {
     }
 
     func viewModel(with todo: Todo) -> TodoCellViewModel? {
-        if let viewModel = viewModels[todo.id] {
+        guard let todoId = todo.id else { return nil }
+        if let viewModel = viewModels[todoId] {
             return viewModel
         }
         return nil
@@ -53,12 +60,13 @@ class TodoListViewModel {
 
     func insert(_ todo: Todo, at indexPath: IndexPath) {
 //        todoRepository.insert(todo, at: indexPath)
+        guard let todoId = todo.id else { return }
         let newViewModel = {
             if let viewModel = viewModel(with: todo) {
                 return viewModel
             }
             let newViewModel = TodoCellViewModel(todo: todo)
-            viewModels[newViewModel.id] = newViewModel
+            viewModels[todoId] = newViewModel
             return newViewModel
         }()
 
@@ -88,7 +96,8 @@ class TodoListViewModel {
     func remove(at indexPath: IndexPath) {
         guard let todoItem = todo(at: indexPath), let viewModel = viewModel(with: todoItem) else { return }
 //        todoRepository.remove(todoItem)
-        viewModels.removeValue(forKey: todoItem.id)
+        guard let todoId = todoItem.id else { return }
+        viewModels.removeValue(forKey: todoId)
         delegate?.profileViewControllerViewModel(self, didRemoveTodoViewModel: viewModel, at: indexPath, options: [.reload])
     }
     

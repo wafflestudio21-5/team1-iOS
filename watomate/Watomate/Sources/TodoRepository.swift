@@ -35,6 +35,9 @@ class TodoRepository: TodoRepositoryProtocol {
             print("Error fetching todos: \(error)")
             throw error
         }
+    }
+    
+    func addTodo(userId: Int, goalId: Int, todo: Todo) async {
         
     }
     

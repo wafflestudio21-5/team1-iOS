@@ -19,6 +19,7 @@ protocol TodoRepositoryProtocol {
 //    func update(_ todoItem: TodoItem)
     
     func getAllTodos() async throws -> GoalsResponseDto
+    func addTodo(userId: Int, goalId: Int, todo: Todo) async
 //    func deleteTodo(with id: Int)
 //    func changeTitle(with id: Int, title: String)
 //    func changeMemo(with id: Int, memo: String)

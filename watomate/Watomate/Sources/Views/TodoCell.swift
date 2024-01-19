@@ -41,7 +41,9 @@ class TodoCell: UITableViewCell {
     }()
 
     private lazy var titleLabel = {
-        let titleLabel = UILabel()
+        let titleLabel = UITextField()
+        titleLabel.allowsEditingTextAttributes = false
+        titleLabel.isUserInteractionEnabled = false
         titleLabel.textColor = .label
         titleLabel.font = .systemFont(ofSize: 16)
         titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -135,6 +137,7 @@ class TodoCell: UITableViewCell {
     func configure(with viewModel: TodoCellViewModel) {
         self.viewModel = viewModel
         titleLabel.text = viewModel.title
+        titleLabel.allowsEditingTextAttributes = false
         memoStackView.isHidden = viewModel.isMemoHidden
         configureCheckbox(isComplete: viewModel.isCompleted)
     }
