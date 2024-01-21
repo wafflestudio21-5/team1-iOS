@@ -16,9 +16,30 @@ class SearchViewController: UIViewController {
         return searchBar
     }()
     
+    private lazy var containerView = UIView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.titleView = searchBar
+        
+        setupLayout()
     }
+    
+    private func setupLayout() {
+        view.addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        let childViewController = InitialTabBarController()
+        addChild(childViewController)
+        view.addSubview(childViewController.view)
+        childViewController.view.snp.makeConstraints { make in
+            make.edges.equalTo(containerView)
+        }
+        childViewController.didMove(toParent: self)
+    }
+    
+    
 
 }

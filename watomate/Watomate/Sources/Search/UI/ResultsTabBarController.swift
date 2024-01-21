@@ -12,19 +12,29 @@ class ResultsTabBarController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        view.backgroundColor = .systemBackground
+        tabBar.layer.backgroundColor = UIColor.systemBackground.cgColor
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        tabBar.frame = CGRect(x: 0, y: 0, width: tabBar.frame.width, height: tabBar.frame.height)
     }
-    */
+    
+    private func setupTabBar() {
+        viewControllers = [
+            setupVC(viewController: InitialUserViewController(), title: "", image: "유저".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
+            setupVC(viewController: InitialUserViewController(), title: "", image: "할 일".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
+            setupVC(viewController: InitialUserViewController(), title: "", image: "일기".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)]))
+        ]
+    }
+    
+    private func setupVC(viewController: UIViewController, title: String, image: UIImage?) -> UIViewController {
+        let vc = UINavigationController(rootViewController: viewController)
+        vc.tabBarItem.title = title
+        vc.tabBarItem.image = image
+        return vc
+    }
 
 }
