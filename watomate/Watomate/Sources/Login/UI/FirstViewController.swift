@@ -206,7 +206,7 @@ class FirstViewController: UIViewController {
     }
     
     private func transitionToMainScreen() {
-        navigationController?.setViewControllers([TabBarController()], animated: true)
+        navigationController?.pushViewController(TabBarController(), animated: true)
     }
     
     private func showAlert(message: String) {
