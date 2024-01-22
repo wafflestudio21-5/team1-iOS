@@ -29,7 +29,7 @@ class InitialTabBarController: UITabBarController {
         viewControllers = [
             setupVC(viewController: InitialUserViewController(viewModel: InitialUserViewModel(searchUserCase: SearchUseCase(searchRepository: SearchRepository()))), title: "", image: "유저".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
             setupVC(viewController: InitialTodoViewController(), title: "", image: "할 일".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
-            setupVC(viewController: InitialDiaryViewController(), title: "", image: "일기".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)]))
+            setupVC(viewController: InitialDiaryViewController(viewModel: InitialDiaryViewModel(searchUserCase: SearchUseCase(searchRepository: SearchRepository()))), title: "", image: "일기".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)]))
         ]
     }
     

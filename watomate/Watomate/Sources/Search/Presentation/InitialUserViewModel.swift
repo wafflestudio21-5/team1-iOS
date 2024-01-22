@@ -57,7 +57,7 @@ final class InitialUserViewModel: ViewModelType {
         if isFetching || !canFetchMoreUsers { return }
         isFetching = true
         Task {
-            guard let usersPage = try? await searchUseCase.getAllUsers() else {
+            guard let usersPage = try? await searchUseCase.getInitialUsers() else {
                 isFetching = false
                 return
             }
@@ -70,15 +70,11 @@ final class InitialUserViewModel: ViewModelType {
         }
     }
     
-    var count = 0
-    
     private func fetchMoreUsers() {
-        print(count)
-        count += 1
         if isFetching || !canFetchMoreUsers { return }
         isFetching = true
         Task {
-            guard let usersPage = try? await searchUseCase.getMoreUsers(nextURL: nextUrl!) else {
+            guard let usersPage = try? await searchUseCase.getMoreUsers(nextUrl: nextUrl!) else {
                 isFetching = false
                 return
             }

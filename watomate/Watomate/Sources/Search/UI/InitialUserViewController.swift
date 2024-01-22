@@ -34,7 +34,6 @@ class InitialUserViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .brown
         
         setupLayout()
         configureDataSource()

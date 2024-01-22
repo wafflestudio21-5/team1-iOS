@@ -32,6 +32,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         self.window = window
         
+//        let repo = SearchRepository()
+//        Task {
+//            do {
+//                let result = try await repo.getDiaries(id: 51)
+//                print(result)
+//            } catch {
+//                print(error)
+//            }
+//        }
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

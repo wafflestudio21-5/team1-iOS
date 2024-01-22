@@ -11,10 +11,13 @@ import Foundation
 
 enum SearchRouter: Router {
     case getAllUsers
+    case getDiaryFeed(id: Int)
     
     var method: HTTPMethod {
         switch self {
         case .getAllUsers:
+            return .get
+        case .getDiaryFeed:
             return .get
         }
     }
@@ -23,12 +26,16 @@ enum SearchRouter: Router {
         switch self {
         case .getAllUsers:
             return "/user-all"
+        case let .getDiaryFeed(id):
+            return "\(id)/diaryfeed"
         }
     }
     
     var parameters: [String: Any]? {
         switch self {
         case .getAllUsers:
+            return [:]
+        case let .getDiaryFeed(id):
             return [:]
         }
     }

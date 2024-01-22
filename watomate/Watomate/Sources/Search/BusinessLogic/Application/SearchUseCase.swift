@@ -15,13 +15,23 @@ class SearchUseCase {
         self.searchRepository = searchRepository
     }
     
-    func getAllUsers() async throws -> UsersPage {
-        let usersPage = try await searchRepository.getAllUsers()
+    func getInitialUsers() async throws -> UsersPage {
+        let usersPage = try await searchRepository.getInitialUsers()
         return usersPage
     }
     
-    func getMoreUsers(nextURL: String) async throws -> UsersPage {
-        let usersPage = try await searchRepository.getMoreUsers(url: nextURL)
+    func getMoreUsers(nextUrl: String) async throws -> UsersPage {
+        let usersPage = try await searchRepository.getMoreUsers(url: nextUrl)
         return usersPage
+    }
+    
+    func getInitialDiaries(id: Int) async throws -> DiariesPage {
+        let diariesPage = try await searchRepository.getInitialDiaries(id: id)
+        return diariesPage
+    }
+    
+    func getMoreDiaries(nextUrl: String) async throws -> DiariesPage {
+        let diariesPage = try await searchRepository.getMoreDiaries(url: nextUrl)
+        return diariesPage
     }
 }

@@ -10,8 +10,10 @@ import Alamofire
 import Foundation
 
 protocol SearchRepositoryProtocol {
-    func getAllUsers() async throws -> UsersPage
+    func getInitialUsers() async throws -> UsersPage
     func getMoreUsers(url: String) async throws -> UsersPage
+    func getInitialDiaries(id: Int) async throws -> DiariesPage
+    func getMoreDiaries(url: String) async throws -> DiariesPage
 }
 
 class SearchRepository: SearchRepositoryProtocol {
@@ -22,7 +24,7 @@ class SearchRepository: SearchRepositoryProtocol {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
     
-    func getAllUsers() async throws -> UsersPage {
+    func getInitialUsers() async throws -> UsersPage {
         let dto = try await session.request(SearchRouter.getAllUsers)
             .serializingDecodable(AllUsersResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
@@ -31,6 +33,18 @@ class SearchRepository: SearchRepositoryProtocol {
     func getMoreUsers(url: String) async throws -> UsersPage {
         let dto = try await session.request(URL(string: url)!)
             .serializingDecodable(AllUsersResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func getInitialDiaries(id: Int) async throws -> DiariesPage {
+        let dto = try await session.request(SearchRouter.getDiaryFeed(id: id))
+            .serializingDecodable(DiaryFeedResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func getMoreDiaries(url: String) async throws -> DiariesPage {
+        let dto = try await session.request(URL(string: url)!)
+            .serializingDecodable(DiaryFeedResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }
 }
