@@ -15,7 +15,7 @@ class UserCellViewModel: Identifiable {
         self.userInfo = userInfo
     }
     
-    var id = UUID()
+    let id = UUID()
     
     var username: String {
         userInfo.username

@@ -1,5 +1,5 @@
 //
-//  InitialDiaryViewController.swift
+//  InitialUserViewController.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/21/24.
@@ -7,16 +7,16 @@
 //
 
 import Combine
-import UIKit
 import SnapKit
+import UIKit
 
-class InitialDiaryViewController: UIViewController {
-    private let viewModel: InitialDiaryViewModel
-    private var diaryListDataSource: UITableViewDiffableDataSource<InitialDiarySection, DiaryCellViewModel.ID>!
-    
+class InitialUserViewController: UIViewController {
+    private let viewModel: InitialUserViewModel
+    private var userListDataSource: UITableViewDiffableDataSource<InitialUserSection, UserCellViewModel.ID>!
+
     private var cancellables = Set<AnyCancellable>()
     
-    init(viewModel: InitialDiaryViewModel) {
+    init(viewModel: InitialUserViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -27,11 +27,12 @@ class InitialDiaryViewController: UIViewController {
     
     private lazy var tableView = {
         let tableView = UITableView()
-        tableView.register(DiaryCell.self, forCellReuseIdentifier: DiaryCell.reuseIdentifier)
+        tableView.register(UserCell.self, forCellReuseIdentifier: UserCell.reuseIdentifier)
         tableView.delegate = self
+        tableView.keyboardDismissMode = .onDrag
         return tableView
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -39,7 +40,6 @@ class InitialDiaryViewController: UIViewController {
         configureDataSource()
         bindViewModel()
         viewModel.input.send(.viewDidLoad)
-        print(User.shared.id)
     }
     
     private func setupLayout() {
@@ -50,9 +50,9 @@ class InitialDiaryViewController: UIViewController {
     }
     
     private func configureDataSource() {
-        diaryListDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, itemIdentifier in
+        userListDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, itemIdentifier in
             guard let self else { fatalError() }
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: DiaryCell.reuseIdentifier, for: indexPath) as? DiaryCell else { fatalError() }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: UserCell.reuseIdentifier, for: indexPath) as? UserCell else { fatalError() }
             cell.configure(with: self.viewModel.viewModel(at: indexPath))
             return cell
         }
@@ -64,22 +64,22 @@ class InitialDiaryViewController: UIViewController {
         output.receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event {
-                case .updateDiaryList(let diaryList):
-                    var snapshot = NSDiffableDataSourceSnapshot<InitialDiarySection, DiaryCellViewModel.ID>()
-                    snapshot.appendSections(InitialDiarySection.allCases)
-                    snapshot.appendItems(diaryList.map{ $0.id }, toSection: .main)
-                    self?.diaryListDataSource.apply(snapshot, animatingDifferences: true)
+                case .updateUserList(let userList):
+                    var snapshot = NSDiffableDataSourceSnapshot<InitialUserSection, UserCellViewModel.ID>()
+                    snapshot.appendSections(InitialUserSection.allCases)
+                    snapshot.appendItems(userList.map{ $0.id }, toSection: .main)
+                    self?.userListDataSource.apply(snapshot, animatingDifferences: false)
                 }
             }.store(in: &cancellables)
     }
 
 }
 
-extension InitialDiaryViewController: UITableViewDelegate {
+extension InitialUserViewController: UITableViewDelegate {
     
 }
 
-extension InitialDiaryViewController: UIScrollViewDelegate {
+extension InitialUserViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height

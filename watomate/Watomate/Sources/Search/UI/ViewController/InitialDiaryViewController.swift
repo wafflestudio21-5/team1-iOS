@@ -1,5 +1,5 @@
 //
-//  InitialUserViewController.swift
+//  InitialDiaryViewController.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/21/24.
@@ -7,16 +7,16 @@
 //
 
 import Combine
-import SnapKit
 import UIKit
+import SnapKit
 
-class InitialUserViewController: UIViewController {
-    private let viewModel: InitialUserViewModel
-    private var userListDataSource: UITableViewDiffableDataSource<InitialUserSection, UserCellViewModel.ID>!
-
+class InitialDiaryViewController: UIViewController {
+    private let viewModel: InitialDiaryViewModel
+    private var diaryListDataSource: UITableViewDiffableDataSource<InitialDiarySection, DiaryCellViewModel.ID>!
+    
     private var cancellables = Set<AnyCancellable>()
     
-    init(viewModel: InitialUserViewModel) {
+    init(viewModel: InitialDiaryViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -27,11 +27,11 @@ class InitialUserViewController: UIViewController {
     
     private lazy var tableView = {
         let tableView = UITableView()
-        tableView.register(UserCell.self, forCellReuseIdentifier: UserCell.reuseIdentifier)
+        tableView.register(DiaryCell.self, forCellReuseIdentifier: DiaryCell.reuseIdentifier)
         tableView.delegate = self
         return tableView
     }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -49,9 +49,9 @@ class InitialUserViewController: UIViewController {
     }
     
     private func configureDataSource() {
-        userListDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, itemIdentifier in
+        diaryListDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, itemIdentifier in
             guard let self else { fatalError() }
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: UserCell.reuseIdentifier, for: indexPath) as? UserCell else { fatalError() }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: DiaryCell.reuseIdentifier, for: indexPath) as? DiaryCell else { fatalError() }
             cell.configure(with: self.viewModel.viewModel(at: indexPath))
             return cell
         }
@@ -63,22 +63,22 @@ class InitialUserViewController: UIViewController {
         output.receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event {
-                case .updateUserList(let userList):
-                    var snapshot = NSDiffableDataSourceSnapshot<InitialUserSection, UserCellViewModel.ID>()
-                    snapshot.appendSections(InitialUserSection.allCases)
-                    snapshot.appendItems(userList.map{ $0.id }, toSection: .main)
-                    self?.userListDataSource.apply(snapshot, animatingDifferences: true)
+                case .updateDiaryList(let diaryList):
+                    var snapshot = NSDiffableDataSourceSnapshot<InitialDiarySection, DiaryCellViewModel.ID>()
+                    snapshot.appendSections(InitialDiarySection.allCases)
+                    snapshot.appendItems(diaryList.map{ $0.id }, toSection: .main)
+                    self?.diaryListDataSource.apply(snapshot, animatingDifferences: false)
                 }
             }.store(in: &cancellables)
     }
 
 }
 
-extension InitialUserViewController: UITableViewDelegate {
+extension InitialDiaryViewController: UITableViewDelegate {
     
 }
 
-extension InitialUserViewController: UIScrollViewDelegate {
+extension InitialDiaryViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height

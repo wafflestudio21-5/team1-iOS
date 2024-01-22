@@ -15,7 +15,7 @@ class DiaryCellViewModel: Identifiable {
         self.diary = diary
     }
     
-    var id = UUID()
+    let id = UUID()
     
     var description: String {
         diary.description

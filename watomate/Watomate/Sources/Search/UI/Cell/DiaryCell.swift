@@ -27,6 +27,7 @@ class DiaryCell: UITableViewCell {
         let label = UILabel()
         label.textColor = .label
         label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        label.numberOfLines = 0
         return label
     }()
     
