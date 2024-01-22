@@ -13,9 +13,10 @@ class InitialTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        tabBar.layer.backgroundColor = UIColor.systemBackground.cgColor
+        tabBar.backgroundColor = .systemBackground
         
         setupTabBar()
+        setUpTabbarAppearance()
     }
     
     override func viewDidLayoutSubviews() {
@@ -30,6 +31,15 @@ class InitialTabBarController: UITabBarController {
             setupVC(viewController: InitialTodoViewController(), title: "", image: "할 일".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
             setupVC(viewController: InitialDiaryViewController(), title: "", image: "일기".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)]))
         ]
+    }
+    
+    private func setUpTabbarAppearance() {
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithOpaqueBackground()
+        tabBarAppearance.backgroundColor = .systemBackground
+        tabBar.standardAppearance = tabBarAppearance
+        tabBar.scrollEdgeAppearance = tabBar.standardAppearance
+        tabBar.tintColor = .label
     }
     
     private func setupVC(viewController: UIViewController, title: String, image: UIImage?) -> UIViewController {
