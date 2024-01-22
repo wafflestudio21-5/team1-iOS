@@ -14,6 +14,7 @@ protocol SearchRepositoryProtocol {
     func getMoreUsers(url: String) async throws -> UsersPage
     func getInitialDiaries(id: Int) async throws -> DiariesPage
     func getMoreDiaries(url: String) async throws -> DiariesPage
+    func searchInitialUsers(username: String) async throws -> UsersPage
 }
 
 class SearchRepository: SearchRepositoryProtocol {
@@ -26,13 +27,13 @@ class SearchRepository: SearchRepositoryProtocol {
     
     func getInitialUsers() async throws -> UsersPage {
         let dto = try await session.request(SearchRouter.getAllUsers)
-            .serializingDecodable(AllUsersResponseDto.self, decoder: decoder).handlingError()
+            .serializingDecodable(UsersResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }
     
     func getMoreUsers(url: String) async throws -> UsersPage {
         let dto = try await session.request(URL(string: url)!)
-            .serializingDecodable(AllUsersResponseDto.self, decoder: decoder).handlingError()
+            .serializingDecodable(UsersResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }
     
@@ -45,6 +46,12 @@ class SearchRepository: SearchRepositoryProtocol {
     func getMoreDiaries(url: String) async throws -> DiariesPage {
         let dto = try await session.request(URL(string: url)!)
             .serializingDecodable(DiaryFeedResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func searchInitialUsers(username: String) async throws -> UsersPage {
+        let dto = try await session.request(SearchRouter.searchUser(username: username))
+            .serializingDecodable(UsersResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }
 }

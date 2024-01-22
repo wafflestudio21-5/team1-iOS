@@ -34,4 +34,9 @@ class SearchUseCase {
         let diariesPage = try await searchRepository.getMoreDiaries(url: nextUrl)
         return diariesPage
     }
+    
+    func searchInitialUsers(username: String) async throws -> UsersPage {
+        let usersPage = try await searchRepository.searchInitialUsers(username: username)
+        return usersPage
+    }
 }

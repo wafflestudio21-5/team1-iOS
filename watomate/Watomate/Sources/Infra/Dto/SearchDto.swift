@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct AllUsersResponseDto: Decodable {
+struct UsersResponseDto: Decodable {
     let next, previous: String?
     let results: [UserDto]
     

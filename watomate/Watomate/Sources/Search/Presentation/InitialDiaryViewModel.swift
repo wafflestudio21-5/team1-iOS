@@ -25,9 +25,9 @@ final class InitialDiaryViewModel: ViewModelType {
     
     private var searchUseCase: SearchUseCase
     private var diaryList = [DiaryCellViewModel]()
-    var isFetching: Bool = false
-    var canFetchMoreDiaries: Bool = true
-    var nextUrl: String? = nil
+    private var isFetching: Bool = false
+    private var canFetchMoreDiaries: Bool = true
+    private var nextUrl: String? = nil
     
     let input = PassthroughSubject<Input, Never>()
     private let output = PassthroughSubject<Output, Never>()

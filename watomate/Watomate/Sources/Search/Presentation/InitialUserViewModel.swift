@@ -25,9 +25,9 @@ final class InitialUserViewModel: ViewModelType {
     
     private var searchUseCase: SearchUseCase
     private var userList = [UserCellViewModel]()
-    var isFetching: Bool = false
-    var canFetchMoreUsers: Bool = true
-    var nextUrl: String? = nil
+    private var isFetching: Bool = false
+    private var canFetchMoreUsers: Bool = true
+    private var nextUrl: String? = nil
     
     let input = PassthroughSubject<Input, Never>()
     private let output = PassthroughSubject<Output, Never>()

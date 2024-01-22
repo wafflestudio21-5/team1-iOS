@@ -10,25 +10,83 @@ import Combine
 import UIKit
 
 class ResultUserViewController: UIViewController {
-    private let searchText: String
     private let viewModel: ResultUserViewModel
     private var userListDataSource: UITableViewDiffableDataSource<ResultUserSection, UserCellViewModel.ID>!
 
     private var cancellables = Set<AnyCancellable>()
     
     init(searchText: String, viewModel: ResultUserViewModel) {
-        self.searchText = searchText
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        viewModel.searchText = searchText
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private lazy var tableView = {
+        let tableView = UITableView()
+        tableView.register(UserCell.self, forCellReuseIdentifier: UserCell.reuseIdentifier)
+        tableView.delegate = self
+        tableView.keyboardDismissMode = .onDrag
+        return tableView
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupLayout()
+        configureDataSource()
+        bindViewModel()
+        viewModel.input.send(.viewDidLoad)
+    }
+    
+    private func setupLayout() {
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+    
+    private func configureDataSource() {
+        userListDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, itemIdentifier in
+            guard let self else { fatalError() }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: UserCell.reuseIdentifier, for: indexPath) as? UserCell else { fatalError() }
+            cell.configure(with: self.viewModel.viewModel(at: indexPath))
+            return cell
+        }
+    }
+    
+    private func bindViewModel() {
+        let output = viewModel.transform(input: viewModel.input.eraseToAnyPublisher())
+        
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .updateUserList(let userList):
+                    var snapshot = NSDiffableDataSourceSnapshot<ResultUserSection, UserCellViewModel.ID>()
+                    snapshot.appendSections(ResultUserSection.allCases)
+                    snapshot.appendItems(userList.map{ $0.id }, toSection: .main)
+                    self?.userListDataSource.apply(snapshot, animatingDifferences: false)
+                }
+            }.store(in: &cancellables)
     }
 
 }
+
+extension ResultUserViewController: UITableViewDelegate {
+    
+}
+
+extension ResultUserViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let contentOffsetY = scrollView.contentOffset.y
+        let tableViewContentSize = tableView.contentSize.height
+        
+        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 100) {
+            viewModel.input.send(.reachedEndOfScrollView)
+        }
+    }
+}
+
