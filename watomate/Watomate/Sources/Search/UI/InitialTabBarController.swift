@@ -27,7 +27,7 @@ class InitialTabBarController: UITabBarController {
     
     private func setupTabBar() {
         viewControllers = [
-            setupVC(viewController: InitialUserViewController(), title: "", image: "유저".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
+            setupVC(viewController: InitialUserViewController(viewModel: InitialUserViewModel(searchUserCase: SearchUseCase(searchRepository: SearchRepository()))), title: "", image: "유저".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
             setupVC(viewController: InitialTodoViewController(), title: "", image: "할 일".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
             setupVC(viewController: InitialDiaryViewController(), title: "", image: "일기".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)]))
         ]
