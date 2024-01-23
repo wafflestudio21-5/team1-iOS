@@ -17,7 +17,39 @@ class DiaryCellViewModel: Identifiable {
     
     let id = UUID()
     
+    var user: UserInfo {
+        diary.user
+    }
+    
     var description: String {
         diary.description
+    }
+    
+    var mood: Int {
+        diary.mood
+    }
+    
+    var color: String {
+        diary.color
+    }
+    
+    var emoji: Int {
+        diary.emoji
+    }
+    
+    var image: String? {
+        diary.image
+    }
+    
+    var date: String? {
+        diary.date
+    }
+    
+    var likes: [Like] {
+        diary.likes
+    }
+    
+    var comments: [Comment] {
+        diary.comments
     }
 }

@@ -17,33 +17,28 @@ struct UsersResponseDto: Decodable {
                      results: results.map{ $0.toDomain() })
     }
     
-    struct UserDto: Decodable {
-        let user: Int
-        let intro: String?
-        let username: String
-        let profilePic: String?
-        
-        func toDomain() -> UserInfo {
-            return .init(id: user,
-                         intro: intro,
-                         username: username,
-                         profilePic: profilePic)
-        }
-    }
+}
+
+struct UserDto: Decodable {
+    let user: Int
+    let intro: String?
+    let username: String
+    let profilePic: String?
     
+    func toDomain() -> UserInfo {
+        return .init(id: user,
+                     intro: intro,
+                     username: username,
+                     profilePic: profilePic)
+    }
 }
 
 struct DiaryFeedResponseDto: Decodable {
     let next, previous: String?
     let results: [DiaryDto]
     
-    func toDomain() -> DiariesPage {
-        return .init(nextUrl: next,
-                     results: results.map{ $0.toDomain() })
-    }
-    
     struct DiaryDto: Decodable {
-        let id: Int
+        let createdBy: Int
         let description: String
         let visibility: String
         let mood: Int
@@ -53,20 +48,6 @@ struct DiaryFeedResponseDto: Decodable {
         let date: String
         let likes: [LikeDto]
         let comments: [CommentDto]
-        
-        func toDomain() -> Diary {
-            return .init(id: id,
-                         description: description,
-                         visibility: visibility,
-                         mood: mood,
-                         color: color,
-                         emoji: emoji,
-                         image: image,
-                         date: date,
-                         likes: likes.map{ $0.toDomain() },
-                         comments: comments.map{ $0.toDomain() })
-        }
-        
     }
 }
 

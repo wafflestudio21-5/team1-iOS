@@ -69,7 +69,6 @@ final class ResultUserViewModel: ViewModelType {
             userList.append(contentsOf: usersPage.results.map{ UserCellViewModel(userInfo: $0) })
             output.send(.updateUserList(userList: userList))
             isFetching = false
-//            fetchMoreUsers()
         }
     }
     

@@ -27,6 +27,8 @@ class InitialDiaryViewController: UIViewController {
     
     private lazy var tableView = {
         let tableView = UITableView()
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
         tableView.register(DiaryCell.self, forCellReuseIdentifier: DiaryCell.reuseIdentifier)
         tableView.delegate = self
         return tableView
@@ -44,7 +46,8 @@ class InitialDiaryViewController: UIViewController {
     private func setupLayout() {
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15.adjusted)
+            make.leading.trailing.bottom.equalToSuperview()
         }
     }
     

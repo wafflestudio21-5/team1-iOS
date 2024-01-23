@@ -10,12 +10,15 @@ import Alamofire
 import Foundation
 
 enum SearchRouter: Router {
+    case getUserInfo(id: Int)
     case getAllUsers
     case getDiaryFeed(id: Int)
     case searchUser(username: String)
     
     var method: HTTPMethod {
         switch self {
+        case .getUserInfo:
+            return .get
         case .getAllUsers:
             return .get
         case .getDiaryFeed:
@@ -27,6 +30,8 @@ enum SearchRouter: Router {
     
     var path: String {
         switch self {
+        case let .getUserInfo(id):
+            return "/\(id)"
         case .getAllUsers:
             return "/user-all"
         case let .getDiaryFeed(id):
@@ -38,6 +43,8 @@ enum SearchRouter: Router {
     
     var parameters: [String: Any]? {
         switch self {
+        case .getUserInfo:
+            return [:]
         case .getAllUsers:
             return [:]
         case .getDiaryFeed:

@@ -9,7 +9,7 @@
 import Foundation
 
 struct Diary {
-    let id: Int
+    let user: UserInfo
     let description: String
     let visibility: String
     let mood: Int

@@ -27,4 +27,12 @@ enum Constants {
         static let buttonFontSize = 16.0.adjusted
         static let infoFontSize = 14.0.adjusted
     }
+    enum SearchDiary {
+        static let containerHorizontalInset = 20.0.adjusted
+        static let containerVerticalInset = 10.0.adjusted
+        static let contentsInset = 15.0.adjusted
+        static let offset = 10.0.adjusted
+        static let headerViewHeight = 40.0.adjusted
+        static let footerViewHeight = 25.0.adjusted
+    }
 }

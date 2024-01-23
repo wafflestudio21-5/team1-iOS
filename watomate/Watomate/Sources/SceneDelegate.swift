@@ -35,7 +35,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        let repo = SearchRepository()
 //        Task {
 //            do {
-//                let result = try await repo.searchInitialUsers(username: "guest")
+//                let result = try await repo.getInitialDiaries(id: 51)
 //                print(result)
 //            } catch {
 //                print(error)

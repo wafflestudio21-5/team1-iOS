@@ -37,9 +37,8 @@ class ResultTabBarController: UITabBarController {
     
     private func setupTabBar() {
         viewControllers = [
-            setupVC(viewController: ResultUserViewController(searchText: searchText, viewModel: ResultUserViewModel(searchUserCase: SearchUseCase(searchRepository: SearchRepository()))), title: "", image: "유저".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
-            setupVC(viewController: InitialTodoViewController(), title: "", image: "할 일".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
-            setupVC(viewController: InitialTodoViewController(), title: "", image: "일기".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)]))
+            setupVC(viewController: ResultUserViewController(searchText: searchText, viewModel: ResultUserViewModel(searchUserCase: SearchUseCase(searchRepository: SearchRepository()))), title: "", image: "계정".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
+            setupVC(viewController: InitialTodoViewController(), title: "", image: "할 일".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)]))
         ]
     }
     

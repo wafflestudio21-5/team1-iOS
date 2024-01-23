@@ -44,7 +44,7 @@ class SymbolCircleView: UIView {
     private func setupLayout() {
         addSubview(symbolImageView)
         symbolImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(frame.width / 5)
+            make.edges.equalToSuperview().inset(frame.width / 6)
         }
     }
     
