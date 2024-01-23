@@ -76,21 +76,29 @@ struct CommentDto: Decodable {
 
 struct TodoFeedResponseDto: Decodable {
     let next, previous: String?
-    let results: [TodoDFeedResultDto]
+    let results: [TodoUserDto]
     
-    struct TodoDFeedResultDto: Decodable {
-        let username, intro: String
+    func toDomain() -> TodoPage {
+        return .init(nextUrl: next, results: results.map{ $0.toDomain() })
+    }
+    
+    struct TodoUserDto: Decodable {
+        let username: String
         let profilePic: String?
         let todos: [TodoDto]
+        
+        func toDomain() -> TodoUser {
+            return .init(username: username, profilePic: profilePic, todos: todos.map{ $0.toDomain() })
+        }
     }
     
     struct TodoDto: Decodable {
-        let id: Int
-        let title, color, description: String
-        let reminderISO: String?
-        let createdAtISO, date: String
+        let title, color: String
         let isCompleted: Bool
-        let likes: [LikeDto]
+        
+        func toDomain() -> Todo {
+            return .init(title: title, color: color, isCompleted: isCompleted)
+        }
     }
 }
 

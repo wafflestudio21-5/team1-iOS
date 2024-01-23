@@ -16,7 +16,8 @@ protocol SearchRepositoryProtocol {
     func getInitialDiaries(id: Int) async throws -> DiariesPage
     func getMoreDiaries(url: String) async throws -> DiariesPage
     func searchInitialUsers(username: String) async throws -> UsersPage
-//    func getTodofeed() async throws -> 
+    func getTodoFeed() async throws -> TodoPage
+    func getMoreTodo(url: String) async throws -> TodoPage
 }
 
 class SearchRepository: SearchRepositoryProtocol {
@@ -88,6 +89,17 @@ class SearchRepository: SearchRepositoryProtocol {
     func searchInitialUsers(username: String) async throws -> UsersPage {
         let dto = try await session.request(SearchRouter.searchUser(username: username))
             .serializingDecodable(UsersResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func getTodoFeed() async throws -> TodoPage {
+        let dto = try await session.request(SearchRouter.getTodoFeed).serializingDecodable(TodoFeedResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func getMoreTodo(url: String) async throws -> TodoPage {
+        let dto = try await session.request(URL(string: url)!)
+            .serializingDecodable(TodoFeedResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }
 }

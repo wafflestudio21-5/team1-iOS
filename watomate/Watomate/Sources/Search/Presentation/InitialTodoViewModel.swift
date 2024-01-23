@@ -1,0 +1,87 @@
+//
+//  InitialTodoViewModel.swift
+//  Watomate
+//
+//  Created by 이지현 on 1/23/24.
+//  Copyright © 2024 tuist.io. All rights reserved.
+//
+
+import Combine
+import Foundation
+
+enum InitialTodoSection: CaseIterable {
+    case main
+}
+
+final class InitialTodoViewModel: ViewModelType {
+    enum Input {
+        case viewDidLoad
+        case reachedEndOfScrollView
+    }
+    
+    enum Output {
+        case updateTodoList(todoList: [TodoUserCellViewModel])
+    }
+    
+    private var searchUseCase: SearchUseCase
+    private var todoList = [TodoUserCellViewModel]()
+    private var isFetching: Bool = false
+    private var canFetchMoreTodo: Bool = true
+    private var nextUrl: String? = nil
+    
+    let input = PassthroughSubject<Input, Never>()
+    private let output = PassthroughSubject<Output, Never>()
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(searchUserCase: SearchUseCase) {
+        self.searchUseCase = searchUserCase
+    }
+    
+    func viewModel(at indexPath: IndexPath) -> TodoUserCellViewModel {
+        return todoList[indexPath.row]
+    }
+    
+    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
+        input.sink { [weak self] event in
+            switch event {
+            case .viewDidLoad:
+                self?.fetchInitialTodo()
+            case .reachedEndOfScrollView:
+                self?.fetchMoreTodo()
+            }
+        }.store(in: &cancellables)
+        return output.eraseToAnyPublisher()
+    }
+    
+    private func fetchInitialTodo() {
+        if isFetching || !canFetchMoreTodo { return }
+        isFetching = true
+        Task {
+            guard let todoPage = try? await searchUseCase.getTodoFeed() else {
+                isFetching = false
+                return
+            }
+            nextUrl = todoPage.nextUrl
+            if nextUrl == nil { canFetchMoreTodo = false }
+            todoList.append(contentsOf: todoPage.results.map{ TodoUserCellViewModel(todoUser: $0) })
+            output.send(.updateTodoList(todoList: todoList))
+            isFetching = false
+        }
+    }
+    
+    private func fetchMoreTodo() {
+        if isFetching || !canFetchMoreTodo { return }
+        isFetching = true
+        Task {
+            guard let todoPage = try? await searchUseCase.getMoreTodo(nextUrl: nextUrl!) else {
+                isFetching = false
+                return
+            }
+            nextUrl = todoPage.nextUrl
+            if nextUrl == nil { canFetchMoreTodo = false }
+            todoList.append(contentsOf: todoPage.results.map{ TodoUserCellViewModel(todoUser: $0) })
+            output.send(.updateTodoList(todoList: todoList))
+            isFetching = false
+        }
+    }
+}

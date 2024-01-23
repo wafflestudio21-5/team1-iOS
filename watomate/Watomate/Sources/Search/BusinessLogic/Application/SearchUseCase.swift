@@ -39,4 +39,14 @@ class SearchUseCase {
         let usersPage = try await searchRepository.searchInitialUsers(username: username)
         return usersPage
     }
+    
+    func getTodoFeed() async throws -> TodoPage {
+        let todoPage = try await searchRepository.getTodoFeed()
+        return todoPage
+    }
+    
+    func getMoreTodo(nextUrl: String) async throws -> TodoPage {
+        let todoPage = try await searchRepository.getMoreTodo(url: nextUrl)
+        return todoPage
+    }
 }

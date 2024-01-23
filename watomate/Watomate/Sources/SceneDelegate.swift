@@ -35,7 +35,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        let repo = SearchRepository()
 //        Task {
 //            do {
-//                let result = try await repo.getInitialDiaries(id: 51)
+//                let result = try await repo.getTodoFeed()
 //                print(result)
 //            } catch {
 //                print(error)
