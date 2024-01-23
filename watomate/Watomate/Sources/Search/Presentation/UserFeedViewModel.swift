@@ -1,19 +1,19 @@
 //
-//  InitialUserViewModel.swift
+//  UserFeedViewModel.swift
 //  Watomate
 //
-//  Created by 이지현 on 1/22/24.
+//  Created by 이지현 on 1/23/24.
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
 import Combine
 import Foundation
 
-enum InitialUserSection: CaseIterable {
+enum UserFeedSection: CaseIterable {
     case main
 }
 
-final class InitialUserViewModel: ViewModelType {
+final class UserFeedViewModel: ViewModelType {
     enum Input {
         case viewDidLoad
         case reachedEndOfScrollView
@@ -22,6 +22,8 @@ final class InitialUserViewModel: ViewModelType {
     enum Output {
         case updateUserList(userList: [UserCellViewModel])
     }
+    
+    var searchText: String?
     
     private var searchUseCase: SearchUseCase
     private var userList = [UserCellViewModel]()
@@ -45,9 +47,17 @@ final class InitialUserViewModel: ViewModelType {
         input.sink { [weak self] event in
             switch event {
             case .viewDidLoad:
-                self?.fetchInitialUsers()
+                if let _ = self?.searchText {
+                    self?.searchInitialUsers()
+                } else {
+                    self?.fetchInitialUsers()
+                }
             case .reachedEndOfScrollView:
-                self?.fetchMoreUsers()
+                if let _ = self?.searchText {
+                    self?.searchMoreUsers()
+                } else {
+                    self?.fetchMoreUsers()
+                }
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -70,6 +80,39 @@ final class InitialUserViewModel: ViewModelType {
     }
     
     private func fetchMoreUsers() {
+        if isFetching || !canFetchMoreUsers { return }
+        isFetching = true
+        Task {
+            guard let usersPage = try? await searchUseCase.getMoreUsers(nextUrl: nextUrl!) else {
+                isFetching = false
+                return
+            }
+            nextUrl = usersPage.nextUrl
+            if nextUrl == nil { canFetchMoreUsers = false }
+            userList.append(contentsOf: usersPage.results.map{ UserCellViewModel(userInfo: $0) })
+            output.send(.updateUserList(userList: userList))
+            isFetching = false
+        }
+    }
+    
+    private func searchInitialUsers() {
+        if isFetching || !canFetchMoreUsers { return }
+        isFetching = true
+        Task {
+            guard let searchText,
+                  let usersPage = try? await searchUseCase.searchInitialUsers(username: searchText) else {
+                isFetching = false
+                return
+            }
+            nextUrl = usersPage.nextUrl
+            if nextUrl == nil { canFetchMoreUsers = false }
+            userList.append(contentsOf: usersPage.results.map{ UserCellViewModel(userInfo: $0) })
+            output.send(.updateUserList(userList: userList))
+            isFetching = false
+        }
+    }
+    
+    private func searchMoreUsers() {
         if isFetching || !canFetchMoreUsers { return }
         isFetching = true
         Task {

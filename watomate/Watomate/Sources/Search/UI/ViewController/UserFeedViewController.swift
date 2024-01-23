@@ -1,5 +1,5 @@
 //
-//  ResultUserViewController.swift
+//  UserFeedViewController.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/23/24.
@@ -9,13 +9,13 @@
 import Combine
 import UIKit
 
-class ResultUserViewController: UIViewController {
-    private let viewModel: ResultUserViewModel
-    private var userListDataSource: UITableViewDiffableDataSource<ResultUserSection, UserCellViewModel.ID>!
+class UserFeedViewController: UIViewController {
+    private let viewModel: UserFeedViewModel
+    private var userListDataSource: UITableViewDiffableDataSource<UserFeedSection, UserCellViewModel.ID>!
 
     private var cancellables = Set<AnyCancellable>()
     
-    init(searchText: String, viewModel: ResultUserViewModel) {
+    init(searchText: String?, viewModel: UserFeedViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         viewModel.searchText = searchText
@@ -65,8 +65,8 @@ class ResultUserViewController: UIViewController {
             .sink { [weak self] event in
                 switch event {
                 case .updateUserList(let userList):
-                    var snapshot = NSDiffableDataSourceSnapshot<ResultUserSection, UserCellViewModel.ID>()
-                    snapshot.appendSections(ResultUserSection.allCases)
+                    var snapshot = NSDiffableDataSourceSnapshot<UserFeedSection, UserCellViewModel.ID>()
+                    snapshot.appendSections(UserFeedSection.allCases)
                     snapshot.appendItems(userList.map{ $0.id }, toSection: .main)
                     self?.userListDataSource.apply(snapshot, animatingDifferences: false)
                 }
@@ -75,11 +75,11 @@ class ResultUserViewController: UIViewController {
 
 }
 
-extension ResultUserViewController: UITableViewDelegate {
+extension UserFeedViewController: UITableViewDelegate {
     
 }
 
-extension ResultUserViewController: UIScrollViewDelegate {
+extension UserFeedViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height

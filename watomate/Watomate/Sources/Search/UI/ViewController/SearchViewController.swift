@@ -14,7 +14,6 @@ class SearchViewController: UIViewController {
         let searchBar = UISearchBar()
         searchBar.placeholder = "계정 또는 할 일 키워드 검색"
         searchBar.delegate = self
-//        searchBar.searchTextField.clearButtonMode = .never
         return searchBar
     }()
     
@@ -47,13 +46,7 @@ class SearchViewController: UIViewController {
             make.edges.equalTo(view.safeAreaLayoutGuide)
         }
         
-        let childViewController = InitialTabBarController()
-        addChild(childViewController)
-        view.addSubview(childViewController.view)
-        childViewController.view.snp.makeConstraints { make in
-            make.edges.equalTo(containerView)
-        }
-        childViewController.didMove(toParent: self)
+        updateChildViewController(for: nil)
     }
     
     private func updateChildViewController(for searchText: String?) {
@@ -66,9 +59,9 @@ class SearchViewController: UIViewController {
         let childViewController: UIViewController
         
         if let searchText, !searchText.isEmpty {
-            childViewController = ResultTabBarController(searchText: searchText)
+            childViewController = SearchTabBarController(searchText: searchText)
         } else {
-            childViewController = InitialTabBarController()
+            childViewController = SearchTabBarController(searchText: nil)
         }
 
         addChild(childViewController)
@@ -82,15 +75,6 @@ class SearchViewController: UIViewController {
 }
 
 extension SearchViewController: UISearchBarDelegate {
-//    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-//        searchBar.setShowsCancelButton(true, animated: true)
-//    }
-//    
-//    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-//        searchBar.text = nil
-//        searchBar.setShowsCancelButton(false, animated: true)
-//        searchBar.endEditing(true)
-//    }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         updateChildViewController(for: searchBar.text)
