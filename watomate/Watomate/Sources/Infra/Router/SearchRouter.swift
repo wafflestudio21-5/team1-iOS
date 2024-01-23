@@ -14,6 +14,7 @@ enum SearchRouter: Router {
     case getAllUsers
     case getDiaryFeed(id: Int)
     case searchUser(username: String)
+    case getTodoFeed
     
     var method: HTTPMethod {
         switch self {
@@ -24,6 +25,8 @@ enum SearchRouter: Router {
         case .getDiaryFeed:
             return .get
         case .searchUser:
+            return .get
+        case .getTodoFeed:
             return .get
         }
     }
@@ -38,6 +41,8 @@ enum SearchRouter: Router {
             return "\(id)/diaryfeed"
         case .searchUser:
             return "/user-search"
+        case .getTodoFeed:
+            return "/todofeed"
         }
     }
     
@@ -51,6 +56,8 @@ enum SearchRouter: Router {
             return [:]
         case let .searchUser(user):
             return ["username": user]
+        case .getTodoFeed:
+            return [:]
         }
     }
 }

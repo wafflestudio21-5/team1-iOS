@@ -73,3 +73,25 @@ struct CommentDto: Decodable {
                      likes: likes.map{ $0.toDomain() })
     }
 }
+
+struct TodoFeedResponseDto: Decodable {
+    let next, previous: String?
+    let results: [TodoDFeedResultDto]
+    
+    struct TodoDFeedResultDto: Decodable {
+        let username, intro: String
+        let profilePic: String?
+        let todos: [TodoDto]
+    }
+    
+    struct TodoDto: Decodable {
+        let id: Int
+        let title, color, description: String
+        let reminderISO: String?
+        let createdAtISO, date: String
+        let isCompleted: Bool
+        let likes: [LikeDto]
+    }
+}
+
+

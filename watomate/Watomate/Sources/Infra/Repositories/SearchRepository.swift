@@ -16,6 +16,7 @@ protocol SearchRepositoryProtocol {
     func getInitialDiaries(id: Int) async throws -> DiariesPage
     func getMoreDiaries(url: String) async throws -> DiariesPage
     func searchInitialUsers(username: String) async throws -> UsersPage
+//    func getTodofeed() async throws -> 
 }
 
 class SearchRepository: SearchRepositoryProtocol {
