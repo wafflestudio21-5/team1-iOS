@@ -19,21 +19,20 @@ enum Color: String {
     case red
     case pink
     case purple
-    case grey
+    case green
     case yellow
+    case gray
     case system
     
     var uiColor: UIColor {
         switch self {
         case .system:
             return .systemBackground
+        case .gray:
+            return .systemGray5
         default:
             return UIColor(named: self.rawValue) ?? .systemBackground
         }
-    }
-    
-    func getColor(name: String) -> Color {
-        return Color(rawValue: name) ?? .grey
     }
 }
 
