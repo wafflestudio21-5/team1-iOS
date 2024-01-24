@@ -121,6 +121,7 @@ class FirstViewController: UIViewController {
     
 
     private func setupLayout() {
+        
         setupButtons()
         setupTitleView()
     }
