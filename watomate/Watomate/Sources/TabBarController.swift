@@ -30,4 +30,9 @@ class TabBarController: UITabBarController {
         
         viewControllers = [todoVC, searchVC, groupVC, profileVC]
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
+    }
 }

@@ -2,7 +2,7 @@
 //  Router.swift
 //  Watomate
 //
-//  Created by 권현구 on 1/10/24.
+//  Created by 이지현 on 1/15/24.
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 

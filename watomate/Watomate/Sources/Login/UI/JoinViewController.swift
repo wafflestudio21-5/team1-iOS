@@ -6,38 +6,61 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
+import Alamofire
+import Combine
 import UIKit
 
 class JoinViewController: PlainCustomBarViewController {
-
+    private let viewModel: JoinViewModel
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(viewModel: JoinViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private lazy var stackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 15.adjusted
+        return stackView
+    }()
+    
     private lazy var emailTextField = {
         let textField = UnderlinedTextField()
         textField.placeholder = "이메일"
-        textField.font = UIFont(name: "Pretendard-Medium", size: 20)
+        textField.font = UIFont(name: "Pretendard-Medium", size: Constants.Login.textFieldFontSize)
         textField.setPlaceholderColor(.secondaryLabel)
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
+        textField.addTarget(self, action: #selector(emailDidChange), for: .editingChanged)
         return textField
     }()
     
     private lazy var passwordTextField = {
         let textField = UnderlinedTextField()
         textField.placeholder = "비밀번호"
-        textField.font = UIFont(name: "Pretendard-Medium", size: 20)
+        textField.font = UIFont(name: "Pretendard-Medium", size: Constants.Login.textFieldFontSize)
         textField.setPlaceholderColor(.secondaryLabel)
+        textField.textContentType = .oneTimeCode
+        textField.isSecureTextEntry = true
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
+        textField.addTarget(self, action: #selector(passwordDidChange), for: .editingChanged)
         return textField
     }()
     
     private lazy var okButton = {
-        var titleContainer = AttributeContainer()
-        titleContainer.font = UIFont(name: "Pretendard-Medium", size: 18)
-        
-        let button = UIButton()
-        button.configuration = .filled()
-        button.configuration?.baseForegroundColor = .systemGray3
-        button.configuration?.baseBackgroundColor = .systemGray6
-        button.configuration?.attributedTitle = AttributedString("확인", attributes: titleContainer)
-        button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.systemGray5.cgColor
-        button.layer.cornerRadius = 5
+        let button = CustomButton(title: "확인", titleSize: Constants.Login.buttonFontSize)
+        button.setColor(titleColor: .systemGray3)
+        button.setBorder(width: 1.adjusted, color: .systemGray5, cornerRadius: 5.adjusted)
+        button.addTarget(self, action: #selector(okButtonTapped), for: .touchUpInside)
+        button.isEnabled = false
         return button
     }()
     
@@ -52,74 +75,144 @@ class JoinViewController: PlainCustomBarViewController {
         """
         label.numberOfLines = 0
         label.textColor = .label
-        label.font = UIFont(name: "Pretendard-Light", size: 15)
-        label.setLineSpacing(spacing: 5)
+        label.font = UIFont(name: "Pretendard-Light", size: Constants.Login.infoFontSize)
+        label.setLineSpacing(spacing: 5.adjusted)
         return label
+    }()
+    
+    private lazy var checkContainerView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 6.adjusted
+    
+        stackView.addArrangedSubview(checkImageView)
+        stackView.addArrangedSubview(checkLabel)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(checkTapped))
+        stackView.isUserInteractionEnabled = true
+        stackView.addGestureRecognizer(tapGesture)
+        
+        return stackView
     }()
     
     private lazy var checkImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "circle", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
         imageView.tintColor = .systemGray5
+        imageView.contentMode = .scaleAspectFit
+        
+        imageView.snp.makeConstraints { make in
+            make.height.width.equalTo(23.adjusted)
+        }
+        
         return imageView
     }()
     
     private lazy var checkLabel = {
         let label = UILabel()
         label.text = "저는 14세 이상입니다"
-        label.font = UIFont(name: "Pretendard-Light", size: 15)
+        label.font = UIFont(name: "Pretendard-Light", size: Constants.Login.infoFontSize)
         return label
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        
+        setupNavigationBar()
+        setupLayout()
+        bindViewModel()
+        hideKeyboardWhenTappedAround()
+    }
+    
+    private func setupNavigationBar() {
         setTitle("가입하기")
         setLeftBackButton()
-        
-        setupLayout()
     }
     
     private func setupLayout() {
-        contentView.addSubview(emailTextField)
-        emailTextField.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(20)
-            make.height.equalTo(50)
-            make.leading.trailing.equalToSuperview().inset(35)
+        contentView.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(Constants.Login.topInset)
+            make.trailing.leading.equalToSuperview().inset(Constants.Login.horizontalInset)
         }
         
-        contentView.addSubview(passwordTextField)
-        passwordTextField.snp.makeConstraints { make in
-            make.top.equalTo(emailTextField.snp.bottom).offset(10)
-            make.height.equalTo(50)
-            make.leading.trailing.equalToSuperview().inset(35)
+        for textField in [emailTextField, passwordTextField] {
+            textField.snp.makeConstraints { make in
+                make.height.equalTo(Constants.Login.textFieldHeight)
+            }
         }
         
-        contentView.addSubview(okButton)
         okButton.snp.makeConstraints { make in
-            make.top.equalTo(passwordTextField.snp.bottom).offset(20)
-            make.height.equalTo(45)
-            make.leading.trailing.equalToSuperview().inset(35)
+            make.height.equalTo(Constants.Login.buttonHeight)
         }
         
-        contentView.addSubview(infoLabel)
-        infoLabel.snp.makeConstraints { make in
-            make.top.equalTo(okButton.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(35)
-        }
+        stackView.addArrangedSubview(emailTextField)
+        stackView.addArrangedSubview(passwordTextField)
+        stackView.addArrangedSubview(okButton)
+        stackView.addArrangedSubview(infoLabel)
+        stackView.addArrangedSubview(checkContainerView)
+    }
+    
+    private func bindViewModel() {
+        let output = viewModel.transform(input: viewModel.input.eraseToAnyPublisher())
         
-        contentView.addSubview(checkImageView)
-        checkImageView.snp.makeConstraints { make in
-            make.top.equalTo(infoLabel.snp.bottom).offset(20)
-            make.leading.equalToSuperview().inset(35)
-            make.height.width.equalTo(23)
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .signupSucceed:
+                    self?.transitionToMainScreen()
+                case .signupFailed(let errorMessage):
+                    self?.showAlert(message: errorMessage)
+                case .toggleCheckButton(let isChecked):
+                    self?.updateCheckmarkStatus(isChecked: isChecked)
+                case .toggleOkButton(let isEnabled):
+                    self?.updateOkButtonState(isEnabled: isEnabled)
+                }
+            }.store(in: &cancellables)
+    }
+    
+    @objc private func emailDidChange() {
+        viewModel.input.send(.emailEdited(email: emailTextField.text ?? ""))
+    }
+    
+    @objc private func passwordDidChange() {
+        viewModel.input.send(.passwordEdited(password: passwordTextField.text ?? ""))
+    }
+    
+    @objc private func checkTapped() {
+        viewModel.input.send(.checkButtonTapped)
+
+    }
+    
+    @objc private func okButtonTapped() {
+        viewModel.input.send(.okButtonTapped)
+    }
+    
+    private func transitionToMainScreen() {
+        navigationController?.setViewControllers([TabBarController(), ProfileEditViewController()], animated: true)
+    }
+    
+    private func updateOkButtonState(isEnabled: Bool) {
+        okButton.isEnabled = isEnabled
+        okButton.setColor(titleColor: isEnabled ? .label : .systemGray5)
+    }
+    
+    private func updateCheckmarkStatus(isChecked: Bool) {
+        if isChecked {
+            checkImageView.image = UIImage(systemName: "checkmark.circle.fill", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
+            checkImageView.tintColor = .label
+        } else {
+            checkImageView.image = UIImage(systemName: "circle", withConfiguration: UIImage.SymbolConfiguration(weight: .semibold))
+            checkImageView.tintColor = .systemGray5
         }
-        
-        contentView.addSubview(checkLabel)
-        checkLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(checkImageView.snp.centerY)
-            make.leading.equalTo(checkImageView.snp.trailing).offset(6)
-        }
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default ))
+        present(alert, animated: true)
     }
 
 }
+

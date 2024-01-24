@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 
 let infoPlist: [String: Plist.Value] = [
     "NSAppTransportSecurity": [
-	"NSAllowsArbitraryLoads": true,
+        "NSAllowsArbitraryLoads": true,
     ],
     "CFBundleShortVersionString": "1.0",
     "CFBundleVersion": "1",
@@ -30,13 +30,30 @@ let infoPlist: [String: Plist.Value] = [
         "Pretendard-SemiBold.otf",
         "Pretendard-Thin.otf",
     ],
+    "LSApplicationQueriesSchemes": [
+        "kakaolink",
+        "kakaokompassauth",
+    ],
+    "CFBundleURLTypes": [
+        [
+            "CFBundleTypeRole": "Editor",
+            "CFBundleURLSchemes": ["kakao"]
+        ],
+    ],
+    "UISupportedInterfaceOrientations":
+    [
+        "UIInterfaceOrientationPortrait",
+    ],
 ]
+
+let destination: Set<ProjectDescription.Destination> = [.iPhone]
 
 // Creates our project using a helper function defined in ProjectDescriptionHelpers
 let project = Project.app(name: "Watomate",
-                          destinations: .iOS,
+                          destinations: destination,
                           infoPlist: infoPlist,
                           dependencies: [
                             .external(name: "SnapKit"),
-                            .external(name: "Alamofire")
+                            .external(name: "Alamofire"),
+                            .external(name: "KakaoSDK")
                          ])
