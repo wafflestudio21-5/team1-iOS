@@ -13,8 +13,9 @@ enum SearchRouter: Router {
     case getUserInfo(id: Int)
     case getAllUsers
     case getDiaryFeed(id: Int)
-    case searchUser(username: String)
     case getTodoFeed
+    case searchUser(username: String)
+    case searchTodo(title: String)
     
     var method: HTTPMethod {
         switch self {
@@ -27,6 +28,8 @@ enum SearchRouter: Router {
         case .searchUser:
             return .get
         case .getTodoFeed:
+            return .get
+        case .searchTodo:
             return .get
         }
     }
@@ -43,6 +46,8 @@ enum SearchRouter: Router {
             return "/user-search"
         case .getTodoFeed:
             return "/todofeed"
+        case .searchTodo:
+            return "todo-search"
         }
     }
     
@@ -58,6 +63,8 @@ enum SearchRouter: Router {
             return ["username": user]
         case .getTodoFeed:
             return [:]
+        case let .searchTodo(title):
+            return ["title": title]
         }
     }
 }

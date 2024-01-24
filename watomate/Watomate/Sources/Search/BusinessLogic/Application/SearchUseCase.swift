@@ -49,4 +49,9 @@ class SearchUseCase {
         let todoPage = try await searchRepository.getMoreTodo(url: nextUrl)
         return todoPage
     }
+    
+    func searchInitialTodo(title: String) async throws -> TodoPage {
+        let todoPage = try await searchRepository.searchInitialTodo(title: title)
+        return todoPage
+    }
 }

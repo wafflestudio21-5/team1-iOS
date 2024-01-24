@@ -15,9 +15,10 @@ protocol SearchRepositoryProtocol {
     func getMoreUsers(url: String) async throws -> UsersPage
     func getInitialDiaries(id: Int) async throws -> DiariesPage
     func getMoreDiaries(url: String) async throws -> DiariesPage
-    func searchInitialUsers(username: String) async throws -> UsersPage
     func getTodoFeed() async throws -> TodoPage
     func getMoreTodo(url: String) async throws -> TodoPage
+    func searchInitialUsers(username: String) async throws -> UsersPage
+    func searchInitialTodo(title: String) async throws -> TodoPage
 }
 
 class SearchRepository: SearchRepositoryProtocol {
@@ -99,6 +100,12 @@ class SearchRepository: SearchRepositoryProtocol {
     
     func getMoreTodo(url: String) async throws -> TodoPage {
         let dto = try await session.request(URL(string: url)!)
+            .serializingDecodable(TodoFeedResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func searchInitialTodo(title: String) async throws -> TodoPage {
+        let dto = try await session.request(SearchRouter.searchTodo(title: title))
             .serializingDecodable(TodoFeedResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }

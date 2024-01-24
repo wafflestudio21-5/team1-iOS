@@ -1,5 +1,5 @@
 //
-//  InitialTodoViewController.swift
+//  TodoFeedViewController.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/21/24.
@@ -10,15 +10,16 @@ import Combine
 import SnapKit
 import UIKit
 
-class InitialTodoViewController: UIViewController {
-    private let viewModel: InitialTodoViewModel
-    private var todoListDataSource: UITableViewDiffableDataSource<InitialTodoSection, TodoUserCellViewModel.ID>!
+class TodoFeedViewController: UIViewController {
+    private let viewModel: TodoFeedViewModel
+    private var todoListDataSource: UITableViewDiffableDataSource<TodoFeedSection, TodoUserCellViewModel.ID>!
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(viewModel: InitialTodoViewModel) {
+    init(searchText: String?, viewModel: TodoFeedViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        viewModel.searchText = searchText
     }
     
     required init?(coder: NSCoder) {
@@ -65,8 +66,8 @@ class InitialTodoViewController: UIViewController {
             .sink { [weak self] event in
                 switch event {
                 case .updateTodoList(let todoList):
-                    var snapshot = NSDiffableDataSourceSnapshot<InitialTodoSection, TodoUserCellViewModel.ID>()
-                    snapshot.appendSections(InitialTodoSection.allCases)
+                    var snapshot = NSDiffableDataSourceSnapshot<TodoFeedSection, TodoUserCellViewModel.ID>()
+                    snapshot.appendSections(TodoFeedSection.allCases)
                     snapshot.appendItems(todoList.map{ $0.id }, toSection: .main)
                     self?.todoListDataSource.apply(snapshot, animatingDifferences: false)
                 }
@@ -76,11 +77,11 @@ class InitialTodoViewController: UIViewController {
 
 }
 
-extension InitialTodoViewController: UITableViewDelegate {
+extension TodoFeedViewController: UITableViewDelegate {
     
 }
 
-extension InitialTodoViewController: UIScrollViewDelegate {
+extension TodoFeedViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height

@@ -46,7 +46,7 @@ class SearchTabBarController: UITabBarController {
                         title: "",
                         image: "계정".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
                 setupVC(
-                    viewController: ResultTodoViewController(),
+                    viewController: TodoFeedViewController(searchText: searchText, viewModel: TodoFeedViewModel(searchUserCase: searchUseCase)),
                         title: "",
                         image: "할 일".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)]))
             ]
@@ -57,11 +57,11 @@ class SearchTabBarController: UITabBarController {
                     title: "",
                     image: "계정".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
                 setupVC(
-                    viewController: InitialTodoViewController(viewModel: InitialTodoViewModel(searchUserCase: searchUseCase)),
+                    viewController: TodoFeedViewController(searchText: nil, viewModel: TodoFeedViewModel(searchUserCase: searchUseCase)),
                     title: "",
                     image: "할 일".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)])),
                 setupVC(
-                    viewController: InitialDiaryViewController(viewModel: InitialDiaryViewModel(searchUserCase: searchUseCase)),
+                    viewController: DiaryFeedViewController(viewModel: DiaryFeedViewModel(searchUserCase: searchUseCase)),
                     title: "",
                     image: "일기".image(withAttributes: [.font: UIFont.systemFont(ofSize: 17.0)]))
             ]

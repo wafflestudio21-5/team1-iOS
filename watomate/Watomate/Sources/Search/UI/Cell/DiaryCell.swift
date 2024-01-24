@@ -33,7 +33,26 @@ class DiaryCell: UITableViewCell {
         return view
     }()
     
-    private lazy var headerView = UIView()
+    private lazy var headerView = {
+       let view = UIView()
+        
+        profileCircleView.snp.makeConstraints { make in
+            make.width.height.equalTo(Constants.SearchDiary.headerViewHeight)
+        }
+        
+        view.addSubview(profileCircleView)
+        profileCircleView.snp.makeConstraints { make in
+            make.leading.top.bottom.equalToSuperview()
+        }
+        
+        view.addSubview(infoStackView)
+        infoStackView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalTo(profileCircleView.snp.trailing).offset(Constants.SearchDiary.offset)
+        }
+        
+        return view
+    }()
     
     private lazy var profileCircleView = {
         let view = SymbolCircleView(symbolImage: UIImage(systemName: "person.fill"))
@@ -72,10 +91,24 @@ class DiaryCell: UITableViewCell {
         label.textColor = .label
         label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
         label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
         return label
     }()
     
-    private lazy var footerView = UIView()
+    private lazy var footerView = {
+        let view = UIView()
+        likeCircleView.snp.makeConstraints { make in
+            make.width.height.equalTo(Constants.SearchDiary.footerViewHeight)
+        }
+        
+        view.addSubview(likeCircleView)
+        likeCircleView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.equalToSuperview()
+        }
+        
+        return view
+    }()
     
     private lazy var likeCircleView = {
         let view = SymbolCircleView(symbolImage: UIImage(systemName: "heart.fill"))
@@ -97,21 +130,6 @@ class DiaryCell: UITableViewCell {
             make.height.equalTo(Constants.SearchDiary.headerViewHeight)
         }
         
-        profileCircleView.snp.makeConstraints { make in
-            make.width.height.equalTo(Constants.SearchDiary.headerViewHeight)
-        }
-        
-        headerView.addSubview(profileCircleView)
-        profileCircleView.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
-        }
-        
-        headerView.addSubview(infoStackView)
-        infoStackView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalTo(profileCircleView.snp.trailing).offset(Constants.SearchDiary.offset)
-        }
-        
         containerView.addSubview(descriptionLabel)
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom).offset(Constants.SearchDiary.offset)
@@ -121,18 +139,8 @@ class DiaryCell: UITableViewCell {
         containerView.addSubview(footerView)
         footerView.snp.makeConstraints { make in
             make.top.equalTo(descriptionLabel.snp.bottom).offset(Constants.SearchDiary.offset)
-            make.leading.trailing.bottom.equalToSuperview().inset(Constants.SearchDiary.contentsInset)
             make.height.equalTo(Constants.SearchDiary.footerViewHeight)
-        }
-        
-        likeCircleView.snp.makeConstraints { make in
-            make.width.height.equalTo(Constants.SearchDiary.footerViewHeight)
-        }
-        
-        footerView.addSubview(likeCircleView)
-        likeCircleView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.trailing.equalToSuperview()
+            make.leading.trailing.bottom.equalToSuperview().inset(Constants.SearchDiary.contentsInset)
         }
         
     }

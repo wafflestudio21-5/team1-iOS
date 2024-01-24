@@ -53,11 +53,7 @@ final class UserFeedViewModel: ViewModelType {
                     self?.fetchInitialUsers()
                 }
             case .reachedEndOfScrollView:
-                if let _ = self?.searchText {
-                    self?.searchMoreUsers()
-                } else {
-                    self?.fetchMoreUsers()
-                }
+                self?.fetchMoreUsers()
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -101,22 +97,6 @@ final class UserFeedViewModel: ViewModelType {
         Task {
             guard let searchText,
                   let usersPage = try? await searchUseCase.searchInitialUsers(username: searchText) else {
-                isFetching = false
-                return
-            }
-            nextUrl = usersPage.nextUrl
-            if nextUrl == nil { canFetchMoreUsers = false }
-            userList.append(contentsOf: usersPage.results.map{ UserCellViewModel(userInfo: $0) })
-            output.send(.updateUserList(userList: userList))
-            isFetching = false
-        }
-    }
-    
-    private func searchMoreUsers() {
-        if isFetching || !canFetchMoreUsers { return }
-        isFetching = true
-        Task {
-            guard let usersPage = try? await searchUseCase.getMoreUsers(nextUrl: nextUrl!) else {
                 isFetching = false
                 return
             }

@@ -1,5 +1,5 @@
 //
-//  InitialDiaryViewController.swift
+//  DiaryFeedViewController.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/21/24.
@@ -10,13 +10,13 @@ import Combine
 import UIKit
 import SnapKit
 
-class InitialDiaryViewController: UIViewController {
-    private let viewModel: InitialDiaryViewModel
-    private var diaryListDataSource: UITableViewDiffableDataSource<InitialDiarySection, DiaryCellViewModel.ID>!
+class DiaryFeedViewController: UIViewController {
+    private let viewModel: DiaryFeedViewModel
+    private var diaryListDataSource: UITableViewDiffableDataSource<DiaryFeedSection, DiaryCellViewModel.ID>!
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(viewModel: InitialDiaryViewModel) {
+    init(viewModel: DiaryFeedViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -30,6 +30,8 @@ class InitialDiaryViewController: UIViewController {
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
         tableView.register(DiaryCell.self, forCellReuseIdentifier: DiaryCell.reuseIdentifier)
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 200
         tableView.delegate = self
         return tableView
     }()
@@ -67,8 +69,8 @@ class InitialDiaryViewController: UIViewController {
             .sink { [weak self] event in
                 switch event {
                 case .updateDiaryList(let diaryList):
-                    var snapshot = NSDiffableDataSourceSnapshot<InitialDiarySection, DiaryCellViewModel.ID>()
-                    snapshot.appendSections(InitialDiarySection.allCases)
+                    var snapshot = NSDiffableDataSourceSnapshot<DiaryFeedSection, DiaryCellViewModel.ID>()
+                    snapshot.appendSections(DiaryFeedSection.allCases)
                     snapshot.appendItems(diaryList.map{ $0.id }, toSection: .main)
                     self?.diaryListDataSource.apply(snapshot, animatingDifferences: false)
                 }
@@ -77,11 +79,11 @@ class InitialDiaryViewController: UIViewController {
 
 }
 
-extension InitialDiaryViewController: UITableViewDelegate {
+extension DiaryFeedViewController: UITableViewDelegate {
     
 }
 
-extension InitialDiaryViewController: UIScrollViewDelegate {
+extension DiaryFeedViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height

@@ -1,5 +1,5 @@
 //
-//  InitialTodoViewModel.swift
+//  TodoFeedViewModel.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/23/24.
@@ -9,11 +9,11 @@
 import Combine
 import Foundation
 
-enum InitialTodoSection: CaseIterable {
+enum TodoFeedSection: CaseIterable {
     case main
 }
 
-final class InitialTodoViewModel: ViewModelType {
+final class TodoFeedViewModel: ViewModelType {
     enum Input {
         case viewDidLoad
         case reachedEndOfScrollView
@@ -22,6 +22,8 @@ final class InitialTodoViewModel: ViewModelType {
     enum Output {
         case updateTodoList(todoList: [TodoUserCellViewModel])
     }
+    
+    var searchText: String?
     
     private var searchUseCase: SearchUseCase
     private var todoList = [TodoUserCellViewModel]()
@@ -45,6 +47,11 @@ final class InitialTodoViewModel: ViewModelType {
         input.sink { [weak self] event in
             switch event {
             case .viewDidLoad:
+                if let _ = self?.searchText {
+                    self?.searchInitialTodo()
+                } else {
+                    self?.fetchInitialTodo()
+                }
                 self?.fetchInitialTodo()
             case .reachedEndOfScrollView:
                 self?.fetchMoreTodo()
@@ -74,6 +81,23 @@ final class InitialTodoViewModel: ViewModelType {
         isFetching = true
         Task {
             guard let todoPage = try? await searchUseCase.getMoreTodo(nextUrl: nextUrl!) else {
+                isFetching = false
+                return
+            }
+            nextUrl = todoPage.nextUrl
+            if nextUrl == nil { canFetchMoreTodo = false }
+            todoList.append(contentsOf: todoPage.results.map{ TodoUserCellViewModel(todoUser: $0) })
+            output.send(.updateTodoList(todoList: todoList))
+            isFetching = false
+        }
+    }
+    
+    private func searchInitialTodo() {
+        if isFetching || !canFetchMoreTodo { return }
+        isFetching = true
+        Task {
+            guard let searchText,
+                  let todoPage = try? await searchUseCase.searchInitialTodo(title: searchText) else {
                 isFetching = false
                 return
             }

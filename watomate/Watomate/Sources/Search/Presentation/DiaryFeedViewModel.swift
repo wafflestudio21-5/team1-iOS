@@ -1,5 +1,5 @@
 //
-//  InitialDiaryViewModel.swift
+//  DiaryFeedViewModel.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/22/24.
@@ -9,11 +9,11 @@
 import Combine
 import Foundation
 
-enum InitialDiarySection: CaseIterable {
+enum DiaryFeedSection: CaseIterable {
     case main
 }
 
-final class InitialDiaryViewModel: ViewModelType {
+final class DiaryFeedViewModel: ViewModelType {
     enum Input {
         case viewDidLoad
         case reachedEndOfScrollView
