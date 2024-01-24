@@ -8,21 +8,13 @@
 
 import Foundation
 
-struct Goal: Hashable {
+struct Goal {
     let id: Int
     var title: String
     var visibility: Visibility
     var color: String
     let createdAt: String
     var todos: [Todo]
-    
-    static func ==(lhs: Goal, rhs: Goal) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    public func hash(into hasher: inout Hasher) {
-        return hasher.combine(id)
-    }
 }
 
 enum Visibility {
@@ -31,7 +23,7 @@ enum Visibility {
     case FL
 }
 
-struct Todo: Codable, Identifiable, Hashable {
+struct Todo: Codable {
     let uuid: UUID
     let id: Int?
     var title: String
@@ -42,21 +34,13 @@ struct Todo: Codable, Identifiable, Hashable {
     var isCompleted: Bool
     var goal: Int
     var likes: [Like]
-    
-    static func == (lhs: Todo, rhs: Todo) -> Bool {
-        lhs.uuid == rhs.uuid
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        return hasher.combine(id)
-    }
 }
 
-//extension Todo {
-//    static func placeholderItem(at section: Int) -> Self {
-//        .init(id: <#T##Int#>, title: <#T##String#>, createdAt: <#T##String#>, isCompleted: <#T##Bool#>, goal: <#T##Int#>, likes: <#T##[Like]#>)
-//    }
-//}
+extension Todo {
+    static func placeholderItem(with goalId: Int) -> Self {
+        .init(uuid: UUID(), id: nil, title: "", isCompleted: false, goal: goalId, likes: [])
+    }
+}
 
 struct Like: Codable {
     let userId: Int

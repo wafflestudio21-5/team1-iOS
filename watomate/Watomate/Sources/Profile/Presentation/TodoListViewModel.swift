@@ -12,33 +12,27 @@ import Combine
 class TodoListViewModel: ViewModelType {
     enum Input {
         case viewDidAppear
-//        case todoInserted(viewModel: TodoCellViewModel)
-//        case todoDeleted
-//        case todoEdited
     }
     
     enum Output {
         case loadFailed(errorMessage: String)
-//        case insertFailed(errorMessage: String)
-//        case deleteFailed(errorMessage: String)
-//        case editFailed(errorMessage: String)
-        case loadSucceed(goals: [Goal])
-//        case inserSucceed
-//        case deleteSucceed
-//        case editSucceed
     }
     
     private var isCalling: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     private let output = PassthroughSubject<Output, Never>()
+    
+    private var viewModelsSubject = CurrentValueSubject<[Int: [TodoCellViewModel]], Never>([:]) //Int : section index에 해당
+    var vms: AnyPublisher<[Int: [TodoCellViewModel]], Never> {
+        return viewModelsSubject.eraseToAnyPublisher()
+    }
 
     weak var delegate: (any TodoListViewModelDelegate)?
     private let todoUseCase: TodoUseCase
 
     var sectionsForGoalId = [Int: Int]() // GoalId: Section index
     var goalIdsForSections = [Int: Int]() // Section index: GoalId
-    var viewModels = [Int: [TodoCellViewModel]]() //Int : section index에 해당
 
     init(todoUseCase: TodoUseCase) {
         self.todoUseCase = todoUseCase
@@ -59,6 +53,7 @@ class TodoListViewModel: ViewModelType {
         Task { [weak self] in
             guard let self else { return }
             do {
+                var curVMs = viewModelsSubject.value
                 let goals = try await todoUseCase.getAllTodos(userId: 1)
                 var cellVM: TodoCellViewModel
                 var cellVMs: [TodoCellViewModel]
@@ -72,11 +67,12 @@ class TodoListViewModel: ViewModelType {
                     cellVMs = []
                     for todo in goal.todos {
                         cellVM = TodoCellViewModel(todo: todo)
+                        cellVM.delegate = self
                         cellVMs.append(cellVM)
                     }
-                    self.viewModels[section] = cellVMs
+                    curVMs[section] = cellVMs
                 }
-                self.output.send(.loadSucceed(goals: goals))
+                viewModelsSubject.send(curVMs)
             } catch {
                 self.output.send(.loadFailed(errorMessage: error.localizedDescription))
             }
@@ -94,39 +90,39 @@ class TodoListViewModel: ViewModelType {
 //    }
 
     func viewModel(at indexPath: IndexPath) -> TodoCellViewModel? {
-        guard let cellVMs = self.viewModels[indexPath.section] else { return nil }
+        guard let cellVMs = self.viewModelsSubject.value[indexPath.section] else { return nil }
         let viewModel = cellVMs[indexPath.row]
         return viewModel
     }
 
-//    func viewModel(with todo: Todo) -> TodoCellViewModel? {
-//        guard let todoId = todo.id else { return nil }
-//        if let viewModel = viewModels[todoId] {
-//            return viewModel
-//        }
-//        return nil
-//    }
+    func viewModel(with todo: Todo) -> TodoCellViewModel? {
+        let goalId = todo.goal
+        guard let section = sectionsForGoalId[goalId] else { return nil }
+        guard let cellVMs = self.viewModelsSubject.value[section] else { return nil }
+        for vm in cellVMs {
+            if vm.uuid == todo.uuid {
+                return vm
+            }
+        }
+        return nil
+    }
 
-//    func numberOfRowsInSection(section: Int) -> Int {
-//        let goal = todoUseCase.goals[safe: section]
-//        guard let numRows = goal?.todos.count else { return 0 }
-//        return numRows
-//    }
-
-//    func insert(_ todo: Todo, at indexPath: IndexPath) {
-////        todoRepository.insert(todo, at: indexPath)
-//        guard let todoId = todo.id else { return }
-//        let newViewModel = {
-//            if let viewModel = viewModel(with: todo) {
-//                return viewModel
-//            }
-//            let newViewModel = TodoCellViewModel(todo: todo)
-//            viewModels[todoId] = newViewModel
-//            return newViewModel
-//        }()
-//
-//        delegate?.profileViewControllerViewModel(self, didInsertTodoViewModel: newViewModel, at: indexPath)
-//    }
+    func insert(_ todo: Todo, at indexPath: IndexPath) {
+//        todoUseCase.insert(todo, at: indexPath)
+        let newViewModel = {
+            if let viewModel = viewModel(with: todo) {
+                return viewModel
+            }
+            let newViewModel = TodoCellViewModel(todo: todo)
+            newViewModel.delegate = self
+            var curVMs = viewModelsSubject.value
+            curVMs[indexPath.section]?.append(newViewModel)
+            viewModelsSubject.send(curVMs)
+            return newViewModel
+        }()
+        
+        delegate?.todoListViewModel(self, didInsertCellViewModel: newViewModel, at: indexPath)
+    }
     
     func section(with todo: Todo) -> Int? {
         if todoUseCase.goals.count == 0 {
@@ -134,19 +130,20 @@ class TodoListViewModel: ViewModelType {
         }
         for i in 0...todoUseCase.goals.count - 1 {
             if todoUseCase.goals[i].id == todo.goal {
-                return i
+                return i + 1
             }
         }
         return nil
     }
 
-//    func append(_ todo: Todo) {
-//        let section = section(with: todo)
-//        if section == nil {
-//            return
-//        }
-//        insert(todo, at: .init(row: todoUseCase.goals[section!].todos.count, section: section!))
-//    }
+    func append(_ todo: Todo) {
+        let section = section(with: todo)
+        if section == nil {
+            return
+        }
+        guard let row = viewModelsSubject.value[section!]?.count else { return }
+        insert(todo, at: .init(row: row, section: section!))
+    }
 
 //    func remove(at indexPath: IndexPath) {
 //        guard let todoItem = todo(at: indexPath), let viewModel = viewModel(with: todoItem) else { return }
@@ -166,32 +163,33 @@ class TodoListViewModel: ViewModelType {
 }
 
 extension TodoListViewModel {
-//    func appendPlaceholderIfNeeded(at section: Int) -> Bool {
-//        if numberOfRowsInSection(section: section) == 0 {
-//            append(.placeholderItem(at: <#Int#>))
-//            return true
-//        }
-//
-//        guard let lastItem = todoUseCase.get(at: .init(row: numberOfRowsInSection(section: section) - 1, section: section)) else { return false }
-//        if !lastItem.title.isEmpty {
-//            append(.placeholderItem(at: <#Int#>))
-//            return true
-//        }
-//
-//        return false
-//    }
+    func appendPlaceholderIfNeeded(at section: Int) -> Bool {
+        guard let goalId = goalIdsForSections[section] else { return false }
+        if viewModelsSubject.value[section]?.count == 0 {
+            append(.placeholderItem(with: goalId))
+            return true
+        }
+        guard let lastItem = viewModelsSubject.value[section]?.last else { return false }
+        if !lastItem.title.isEmpty {
+            append(.placeholderItem(with: goalId))
+            return true
+        }
+
+        return false
+    }
 }
 
 extension TodoListViewModel: TodoCellViewModelDelegate {
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingWith title: String?) {
-//        if title == nil || title?.isEmpty == true {
+        if title == nil || title?.isEmpty == true {
 //            guard let indexPath = todoRepository.indexPath(with: viewModel.id) else { return }
 //            remove(at: indexPath)
-//        }
+        }
     }
     
     func todoCellViewModelDidReturnTitle(_ viewModel: TodoCellViewModel) {
-//        appendPlaceholderIfNeeded()
+        guard let section = sectionsForGoalId[viewModel.goal] else { return }
+        appendPlaceholderIfNeeded(at: section)
     }
     
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didUpdateItem todo: Todo) {
@@ -213,18 +211,18 @@ struct ReloadOptions: OptionSet {
 }
 
 protocol TodoListViewModelDelegate: AnyObject {
-    func profileViewControllerViewModel(
+    func todoListViewModel(
         _ viewModel: TodoListViewModel,
-        didInsertTodoViewModel todoViewModel: TodoCellViewModel,
+        didInsertCellViewModel todoViewModel: TodoCellViewModel,
         at indexPath: IndexPath
     )
 
-    func profileViewControllerViewModel(
+    func todoListViewModel(
         _ viewModel: TodoListViewModel,
-        didRemoveTodoViewModel todoViewModel: TodoCellViewModel,
+        didRemoveCellViewModel todoViewModel: TodoCellViewModel,
         at indexPath: IndexPath,
         options: ReloadOptions
     )
     
-    func profileViewControllerViewModel(_ viewModel: TodoListViewModel, didInsertTodoViewModels newViewModels: [TodoCellViewModel], at indexPaths: [IndexPath])
+    func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateItem: Todo, at indexPath: IndexPath)
 }

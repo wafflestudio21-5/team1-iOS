@@ -12,8 +12,8 @@ import Combine
 
 class ProfileViewController: UIViewController {
     
-    typealias DataSource = UITableViewDiffableDataSource<Int, Todo>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<Int, Todo>
+    typealias DataSource = UITableViewDiffableDataSource<Int, TodoCellViewModel>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Int, TodoCellViewModel>
     
     var dataSource: DataSource!
     var snapshot: Snapshot!
@@ -22,10 +22,12 @@ class ProfileViewController: UIViewController {
     
     private let input = PassthroughSubject<TodoListViewModel.Input, Never>()
     private var cancellables = Set<AnyCancellable>()
+    private var viewModelCancellables: AnyCancellable?
     
     init(todoListViewModel: TodoListViewModel) {
         self.todoListViewModel = todoListViewModel
         super.init(nibName: nil, bundle: nil)
+        self.todoListViewModel.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -48,7 +50,7 @@ class ProfileViewController: UIViewController {
         tableView.keyboardDismissMode = .interactive
         tableView.separatorStyle = .none
         tableView.backgroundColor = .systemBackground
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTableViewTap(_:)))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleEmptyTableViewTap(_:)))
         tableView.addGestureRecognizer(tapGesture)
         return tableView
     }()
@@ -67,6 +69,7 @@ class ProfileViewController: UIViewController {
         setupLayout()
         configureDataSource()
         bindViewModel()
+        registerKeyboardNotification()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -90,42 +93,68 @@ class ProfileViewController: UIViewController {
         todoTableView.register(TodoCell.self, forCellReuseIdentifier: TodoCell.reuseIdentifier)
     }
     
+    private func registerKeyboardNotification() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            todoTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height, right: 0)
+            todoTableView.scrollIndicatorInsets = todoTableView.contentInset
+        }
+    }
+    
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        todoTableView.contentInset = UIEdgeInsets.zero
+        todoTableView.scrollIndicatorInsets = UIEdgeInsets.zero
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
     private func configureDataSource() {
         dataSource = DataSource(tableView: todoTableView, cellProvider: { tableView, indexPath, itemIdentifier in
             let cell = tableView.dequeueReusableCell(withIdentifier: TodoCell.reuseIdentifier, for: indexPath) as! TodoCell
-            cell.configure(with: TodoCellViewModel(todo: itemIdentifier))
+            cell.configure(with: itemIdentifier)
             return cell
         })
     }
     
     private func bindViewModel() {
         let output = todoListViewModel.transform(input: input.eraseToAnyPublisher())
-        
         output.receive(on: DispatchQueue.main)
             .sink { [weak self] event in
                 switch event {
-                case.loadSucceed(let goals):
-                    self?.applySnapshot(with: goals)
                 case .loadFailed(let errorMsg):
                     print("error: \(errorMsg)")
                 }
             }.store(in: &cancellables)
-    }
-    
-    private func applySnapshot(with goals: [Goal]) {
-        Task { [weak self] in
-            guard let self else { return }
-            self.snapshot = Snapshot()
-            let sections = Array(0...todoListViewModel.sectionsForGoalId.count)
-            snapshot.appendSections(sections)
-            for i in 0...goals.count - 1 {
-                snapshot.appendItems(goals[i].todos, toSection: i + 1)
+
+        viewModelCancellables = todoListViewModel.vms
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewModels in
+                self?.applySnapshot(with: viewModels)
             }
-            self.dataSource.apply(snapshot, animatingDifferences: false)
-        }
     }
     
-    @objc private func handleTableViewTap(_ gesture: UITapGestureRecognizer) {
+    private func applySnapshot(with viewModels: [Int: [TodoCellViewModel]]) {
+        self.snapshot = Snapshot()
+        let sections = Array(0...viewModels.count)
+        snapshot.appendSections(sections)
+        if viewModels.count == 0 {
+            return
+        }
+        for i in 0...viewModels.count - 1 {
+            guard let cellVMs = viewModels[i + 1] else { return }
+            snapshot.appendItems(cellVMs, toSection: i + 1)
+        }
+        self.dataSource.apply(snapshot, animatingDifferences: false)
+    }
+    
+    @objc private func handleEmptyTableViewTap(_ gesture: UITapGestureRecognizer) {
         let location = gesture.location(in: todoTableView)
         if location.y > todoTableView.contentSize.height {
             print("need to generate new cell")
@@ -174,11 +203,10 @@ extension ProfileViewController: UITableViewDelegate {
         guard let headerView = sender.view as? GoalStackView else { return }
             
         let section = headerView.tag
-        guard let goalId = todoListViewModel.goalIdsForSections[section] else { return }
-        let newTodo = Todo(uuid: UUID(), id: nil, title: "added", isCompleted: false, goal: goalId, likes: [])
-        snapshot.appendItems([newTodo], toSection: section)
-        dataSource.applySnapshotUsingReloadData(snapshot)
-//        await todoListViewModel.addTodo(todo: newTodo)
+        let success = todoListViewModel.appendPlaceholderIfNeeded(at: section)
+        if !success {
+            todoTableView.endEditing(false)
+        }
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
@@ -195,31 +223,26 @@ extension ProfileViewController: UITableViewDelegate {
     }
 }
 
-//extension ProfileViewController: ProfileViewControllerViewModelDelegate {
-//    func profileViewControllerViewModel(_ viewModel: ProfileViewControllerViewModel, didInsertTodoViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath) {
-//        Task { @MainActor in
-//            todoTableView.insertRows(at: [indexPath], with: .none)
-//            todoTableView.reloadRows(at: [indexPath], with: .none)
-//            if let cell = todoTableView.cellForRow(at: indexPath) as? TodoCell {
-//                cell.titleBecomeFirstResponder()
-//                todoTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-//            }
-//    //        updateUnavailableView()
-//        }
-//    }
-//
-//    func profileViewControllerViewModel(_ viewModel: ProfileViewControllerViewModel, didRemoveTodoViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath, options: ReloadOptions) {
-//        if options.contains(.reload) {
-//            let animated = options.contains(.animated)
-//            todoTableView.deleteRows(at: [indexPath], with: animated ? .automatic : .none)
-//        }
-////        updateUnavailableView()
-//    }
-//    
-//    func profileViewControllerViewModel(_ viewModel: ProfileViewControllerViewModel, didInsertTodoViewModels newViewModels: [TodoCellViewModel], at indexPaths: [IndexPath]) {
-//        Task { @MainActor in
-//            self.todoTableView.insertRows(at: indexPaths, with: .fade)
-//            todoTableView.reloadRows(at: indexPaths, with: .automatic)
-//        }
-//    }
-//}
+extension ProfileViewController: TodoListViewModelDelegate {
+    func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateItem: Todo, at indexPath: IndexPath) {
+
+    }
+    
+    func todoListViewModel(_ viewModel: TodoListViewModel, didInsertCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath) {
+        Task { @MainActor in
+            if let cell = todoTableView.cellForRow(at: indexPath) as? TodoCell {
+                cell.titleBecomeFirstResponder()
+                todoTableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+            }
+    //        updateUnavailableView()
+        }
+    }
+
+    func todoListViewModel(_ viewModel: TodoListViewModel, didRemoveCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath, options: ReloadOptions) {
+        if options.contains(.reload) {
+            let animated = options.contains(.animated)
+            todoTableView.deleteRows(at: [indexPath], with: animated ? .automatic : .none)
+        }
+//        updateUnavailableView()
+    }
+}

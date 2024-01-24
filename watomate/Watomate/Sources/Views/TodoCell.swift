@@ -40,14 +40,16 @@ class TodoCell: UITableViewCell {
         return stackView
     }()
 
-    private lazy var titleLabel = {
-        let titleLabel = UITextField()
-        titleLabel.allowsEditingTextAttributes = false
-        titleLabel.isUserInteractionEnabled = false
-        titleLabel.textColor = .label
-        titleLabel.font = .systemFont(ofSize: 16)
-        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        return titleLabel
+    private lazy var titleTextField = {
+        let textField = UITextField()
+        textField.allowsEditingTextAttributes = false
+        textField.isUserInteractionEnabled = false
+        textField.textColor = .label
+        textField.placeholder = "할 일 입력"
+        textField.font = .systemFont(ofSize: 16)
+        textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        textField.delegate = self
+        return textField
     }()
     
     private lazy var threeDotImage = {
@@ -109,7 +111,7 @@ class TodoCell: UITableViewCell {
             make.trailing.equalToSuperview().inset(16)
         }
 
-        titleStackView.addArrangedSubview(titleLabel)
+        titleStackView.addArrangedSubview(titleTextField)
         titleStackView.addArrangedSubview(threeDotImage)
         memoStackView.addArrangedSubview(memoImage)
         memoStackView.addArrangedSubview(memoLabel)
@@ -118,26 +120,23 @@ class TodoCell: UITableViewCell {
     }
 
     func titleBecomeFirstResponder() {
-        titleLabel.becomeFirstResponder()
+        titleTextField.allowsEditingTextAttributes = true
+        titleTextField.isUserInteractionEnabled = true
+        titleTextField.becomeFirstResponder()
     }
 
     private func observeTextChanges() {
-//        titleLabel.addTarget(self, action: #selector(titleDidChange(_:)), for: .editingChanged)
-//        memoTextField.addTarget(self, action: #selector(memoDidChange(_:)), for: .editingChanged)
+        titleTextField.addTarget(self, action: #selector(titleDidChange(_:)), for: .editingChanged)
     }
 
     @objc private func titleDidChange(_ textField: UITextField) {
         viewModel?.title = textField.text ?? ""
     }
 
-    @objc private func memoDidChange(_ textField: UITextField) {
-        viewModel?.memo = textField.text
-    }
-
     func configure(with viewModel: TodoCellViewModel) {
         self.viewModel = viewModel
-        titleLabel.text = viewModel.title
-        titleLabel.allowsEditingTextAttributes = false
+        titleTextField.text = viewModel.title
+        titleTextField.allowsEditingTextAttributes = false
         memoStackView.isHidden = viewModel.isMemoHidden
         configureCheckbox(isComplete: viewModel.isCompleted)
     }
@@ -179,10 +178,28 @@ class TodoCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
+}
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+extension TodoCell: UITextFieldDelegate {
+//    func textFieldDidBeginEditing(_ textField: UITextField) {
+//        //add bar under the textField
+//        guard let viewModel else { return }
+//        
+//        print("did begin editing")
+//    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        viewModel?.endEditingTitle(with: textField.text)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        guard textField == titleTextField else { return true }
+        if textField.text?.isEmpty == false {
+            viewModel?.addNewTodoItem()
+            return false
+        } else {
+            textField.resignFirstResponder()
+            return false
+        }
     }
 }

@@ -9,7 +9,15 @@
 import Foundation
 import Combine
 
-class TodoCellViewModel: ViewModelType {
+class TodoCellViewModel: ViewModelType, Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.uuid)
+    }
+    
+    static func == (lhs: TodoCellViewModel, rhs: TodoCellViewModel) -> Bool {
+        lhs.uuid == rhs.uuid
+    }
+    
     
     enum Input {
     }
@@ -29,6 +37,10 @@ class TodoCellViewModel: ViewModelType {
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         return output.eraseToAnyPublisher()
+    }
+    
+    var uuid: UUID {
+        todo.uuid
     }
 
     var id: Int? {
