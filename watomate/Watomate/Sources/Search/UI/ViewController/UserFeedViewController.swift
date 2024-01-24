@@ -74,7 +74,7 @@ class UserFeedViewController: UIViewController {
                     var snapshot = NSDiffableDataSourceSnapshot<UserFeedSection, UserCellViewModel.ID>()
                     snapshot.appendSections(UserFeedSection.allCases)
                     snapshot.appendItems(userList.map{ $0.id }, toSection: .main)
-                    self?.userListDataSource.apply(snapshot, animatingDifferences: false)
+                    self?.userListDataSource.apply(snapshot, animatingDifferences: true)
                 }
             }.store(in: &cancellables)
     }

@@ -39,8 +39,12 @@ final class TodoFeedViewModel: ViewModelType {
         self.searchUseCase = searchUserCase
     }
     
-    func viewModel(at indexPath: IndexPath) -> TodoUserCellViewModel {
-        return todoList[indexPath.row]
+    func viewModel(at indexPath: IndexPath) -> SearchTodoCellViewModel {
+        return SearchTodoCellViewModel(todo: todoList[indexPath.section].todos[indexPath.row])
+    }
+    
+    func sectionTitle(at section: Int) -> String {
+        return todoList[section].username
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {

@@ -17,4 +17,16 @@ class SearchTodoCellViewModel: Identifiable {
     
     let id = UUID()
     
+    var title: String {
+        todo.title
+    }
+    
+    var color: String {
+        todo.color
+    }
+    
+    var isCompleted: Bool {
+        todo.isCompleted
+    }
+    
 }

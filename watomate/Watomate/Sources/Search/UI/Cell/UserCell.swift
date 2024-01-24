@@ -15,6 +15,7 @@ class UserCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
         
         setupLayout()
     }
@@ -23,19 +24,19 @@ class UserCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private lazy var profileView = CustomSymbolView()
+    private lazy var profileView = CustomSymbolView(size: Constants.SearchUser.profileHeight)
     
     private lazy var usernameLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.semiBold, size: 20)
+        label.font = UIFont(name: Constants.Font.medium, size: 18)
         return label
     }()
     
     private lazy var introLabel = {
         let label = UILabel()
         label.textColor = .secondaryLabel
-        label.font = UIFont(name: Constants.Font.medium, size: 16)
+        label.font = UIFont(name: Constants.Font.regular, size: 14)
         return label
     }()
     
@@ -56,7 +57,7 @@ class UserCell: UITableViewCell {
         addSubview(introLabel)
         introLabel.snp.makeConstraints { make in
             make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.offset)
-            make.top.equalTo(usernameLabel.snp.bottom).offset(7.adjusted)
+            make.top.equalTo(usernameLabel.snp.bottom).offset(5.adjusted)
             make.trailing.bottom.equalToSuperview().inset(Constants.SearchUser.contentsInset)
         }
         
@@ -66,5 +67,7 @@ class UserCell: UITableViewCell {
         self.viewModel = viewModel
         usernameLabel.text = viewModel.username
         introLabel.text = viewModel.intro
+        profileView.setColor(color: viewModel.color)
+        profileView.addDefaultImage()
     }
 }

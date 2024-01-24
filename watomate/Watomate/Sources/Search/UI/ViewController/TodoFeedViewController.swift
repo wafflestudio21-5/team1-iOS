@@ -12,7 +12,7 @@ import UIKit
 
 class TodoFeedViewController: UIViewController {
     private let viewModel: TodoFeedViewModel
-    private var todoListDataSource: UITableViewDiffableDataSource<TodoFeedSection, TodoUserCellViewModel.ID>!
+    private var todoListDataSource: UITableViewDiffableDataSource<TodoUserCellViewModel.ID, SearchTodoCellViewModel.ID>!
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -27,10 +27,14 @@ class TodoFeedViewController: UIViewController {
     }
     
     private lazy var tableView = {
-        let tableView = UITableView()
-        tableView.register(TodoUserCell.self, forCellReuseIdentifier: TodoUserCell.reuseIdentifier)
+        let tableView = UITableView(frame: .zero, style: .grouped)
+        tableView.register(SearchTodoCell.self, forCellReuseIdentifier: SearchTodoCell.reuseIdentifier)
         tableView.delegate = self
         tableView.keyboardDismissMode = .onDrag
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 80
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .systemBackground
         return tableView
     }()
 
@@ -48,7 +52,7 @@ class TodoFeedViewController: UIViewController {
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15.adjusted)
-            make.leading.trailing.bottom.equalToSuperview()
+            make.bottom.trailing.leading.equalToSuperview()
 
         }
     }
@@ -56,7 +60,7 @@ class TodoFeedViewController: UIViewController {
     private func configureDataSource() {
         todoListDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, itemIdentifier in
             guard let self else { fatalError() }
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: TodoUserCell.reuseIdentifier, for: indexPath) as? TodoUserCell else { fatalError() }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchTodoCell.reuseIdentifier, for: indexPath) as? SearchTodoCell else { fatalError() }
             cell.configure(with: self.viewModel.viewModel(at: indexPath))
             return cell
         }
@@ -69,10 +73,14 @@ class TodoFeedViewController: UIViewController {
             .sink { [weak self] event in
                 switch event {
                 case .updateTodoList(let todoList):
-                    var snapshot = NSDiffableDataSourceSnapshot<TodoFeedSection, TodoUserCellViewModel.ID>()
-                    snapshot.appendSections(TodoFeedSection.allCases)
-                    snapshot.appendItems(todoList.map{ $0.id }, toSection: .main)
-                    self?.todoListDataSource.apply(snapshot, animatingDifferences: false)
+                    var snapshot = NSDiffableDataSourceSnapshot<TodoUserCellViewModel.ID, SearchTodoCellViewModel.ID>()
+                    snapshot.appendSections(todoList.map{ $0.id })
+                    for user in todoList {
+                        for todo in user.todos {
+                            snapshot.appendItems([SearchTodoCellViewModel(todo: todo).id], toSection: user.id)
+                        }
+                    }
+                    self?.todoListDataSource.apply(snapshot, animatingDifferences: true)
                 }
             }.store(in: &cancellables)
     }
@@ -81,6 +89,11 @@ class TodoFeedViewController: UIViewController {
 }
 
 extension TodoFeedViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UserHeaderView(username: viewModel.sectionTitle(at: section))
+        return view
+    }
     
 }
 

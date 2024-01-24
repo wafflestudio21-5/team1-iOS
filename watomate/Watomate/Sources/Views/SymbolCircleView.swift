@@ -56,6 +56,10 @@ class SymbolCircleView: UIView {
         symbolImageView.tintColor = color 
     }
     
+    func setSymbol(_ image: UIImage?) {
+        symbolImageView.image = image
+    }
+    
     func addBorder(width: CGFloat, color: UIColor) {
         layer.borderWidth = width
         layer.borderColor = color.cgColor

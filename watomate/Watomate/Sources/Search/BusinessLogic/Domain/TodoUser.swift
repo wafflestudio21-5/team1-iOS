@@ -8,7 +8,8 @@
 
 import Foundation
 
-struct TodoUser {
+struct TodoUser: Identifiable {
+    let id = UUID()
     let username: String
     let profilePic: String?
     let todos: [SearchTodo]

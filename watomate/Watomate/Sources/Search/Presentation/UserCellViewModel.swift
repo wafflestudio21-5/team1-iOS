@@ -24,4 +24,8 @@ class UserCellViewModel: Identifiable {
     var intro: String {
         userInfo.intro ?? ""
     }
+    
+    var color: [Color] {
+        userInfo.goalsColor.map{ Color(rawValue: $0) ?? Color.gray }
+    }
 }

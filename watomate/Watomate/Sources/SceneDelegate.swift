@@ -32,6 +32,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         self.window = window
         
+//        print(User.shared.token)
 //        let repo = SearchRepository()
 //        let useCase = SearchUseCase(searchRepository: repo)
 //        Task {

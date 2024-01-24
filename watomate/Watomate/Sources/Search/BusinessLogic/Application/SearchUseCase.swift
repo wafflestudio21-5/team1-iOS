@@ -56,7 +56,17 @@ class SearchUseCase {
     }
     
     func searchInitialUsers(username: String) async throws -> UsersPage {
-        let usersPage = try await searchRepository.searchInitialUsers(username: username)
+        var usersPage = try await searchRepository.searchInitialUsers(username: username)
+        var results = usersPage.results
+        for (index, result) in results.enumerated() {
+            let goalsDto = try await searchRepository.getUserGoals(id: result.id)
+            for goal in goalsDto {
+                if goal.visibility == "PB" && !result.goalsColor.contains(goal.color) {
+                    results[index].goalsColor.append(goal.color)
+                }
+            }
+        }
+        usersPage.results = results
         return usersPage
     }
     

@@ -66,7 +66,6 @@ final class DiaryFeedViewModel: ViewModelType {
             diaryList.append(contentsOf: diariesPage.results.map{ SearchDiaryCellViewModel(diary: $0) })
             output.send(.updateDiaryList(diaryList: diaryList))
             isFetching = false
-//            fetchMoreUsers()
         }
     }
     
@@ -74,7 +73,11 @@ final class DiaryFeedViewModel: ViewModelType {
         if isFetching || !canFetchMoreDiaries { return }
         isFetching = true
         Task {
-            guard let diariesPage = try? await searchUseCase.getMoreDiaries(nextUrl: nextUrl!) else {
+            guard let url = self.nextUrl else {
+                isFetching = false
+                return
+            }
+            guard let diariesPage = try? await searchUseCase.getMoreDiaries(nextUrl: url) else {
                 isFetching = false
                 return
             }

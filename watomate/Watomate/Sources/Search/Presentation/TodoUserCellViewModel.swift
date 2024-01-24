@@ -25,4 +25,16 @@ class TodoUserCellViewModel: Identifiable {
         todoUser.profilePic
     }
     
+    var todos: [SearchTodo] {
+        todoUser.todos
+    }
+    
+    var todoCount: Int {
+        todos.count
+    }
+    
+    func viewModel(at indexPath: IndexPath) -> SearchTodoCellViewModel {
+        return SearchTodoCellViewModel(todo: todos[indexPath.row])
+    }
+    
 }

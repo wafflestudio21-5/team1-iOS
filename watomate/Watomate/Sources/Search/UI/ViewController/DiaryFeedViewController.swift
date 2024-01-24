@@ -72,7 +72,7 @@ class DiaryFeedViewController: UIViewController {
                     var snapshot = NSDiffableDataSourceSnapshot<DiaryFeedSection, SearchDiaryCellViewModel.ID>()
                     snapshot.appendSections(DiaryFeedSection.allCases)
                     snapshot.appendItems(diaryList.map{ $0.id }, toSection: .main)
-                    self?.diaryListDataSource.apply(snapshot, animatingDifferences: false)
+                    self?.diaryListDataSource.apply(snapshot, animatingDifferences: true)
                 }
             }.store(in: &cancellables)
     }
