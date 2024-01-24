@@ -1,5 +1,5 @@
 //
-//  DiaryCellViewModel.swift
+//  SearchDiaryCellViewModel.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/22/24.
@@ -8,10 +8,10 @@
 
 import Foundation
 
-class DiaryCellViewModel: Identifiable {
-    private let diary: Diary
+class SearchDiaryCellViewModel: Identifiable {
+    private let diary: SearchDiary
     
-    init(diary: Diary) {
+    init(diary: SearchDiary) {
         self.diary = diary
     }
     
@@ -45,11 +45,11 @@ class DiaryCellViewModel: Identifiable {
         diary.date
     }
     
-    var likes: [Like] {
+    var likes: [SearchLike] {
         diary.likes
     }
     
-    var comments: [Comment] {
+    var comments: [SearchComment] {
         diary.comments
     }
 }

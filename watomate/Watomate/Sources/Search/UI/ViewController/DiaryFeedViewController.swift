@@ -12,7 +12,7 @@ import SnapKit
 
 class DiaryFeedViewController: UIViewController {
     private let viewModel: DiaryFeedViewModel
-    private var diaryListDataSource: UITableViewDiffableDataSource<DiaryFeedSection, DiaryCellViewModel.ID>!
+    private var diaryListDataSource: UITableViewDiffableDataSource<DiaryFeedSection, SearchDiaryCellViewModel.ID>!
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -29,7 +29,7 @@ class DiaryFeedViewController: UIViewController {
         let tableView = UITableView()
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
-        tableView.register(DiaryCell.self, forCellReuseIdentifier: DiaryCell.reuseIdentifier)
+        tableView.register(SearchDiaryCell.self, forCellReuseIdentifier: SearchDiaryCell.reuseIdentifier)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 200
         tableView.delegate = self
@@ -56,7 +56,7 @@ class DiaryFeedViewController: UIViewController {
     private func configureDataSource() {
         diaryListDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, itemIdentifier in
             guard let self else { fatalError() }
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: DiaryCell.reuseIdentifier, for: indexPath) as? DiaryCell else { fatalError() }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchDiaryCell.reuseIdentifier, for: indexPath) as? SearchDiaryCell else { fatalError() }
             cell.configure(with: self.viewModel.viewModel(at: indexPath))
             return cell
         }
@@ -69,7 +69,7 @@ class DiaryFeedViewController: UIViewController {
             .sink { [weak self] event in
                 switch event {
                 case .updateDiaryList(let diaryList):
-                    var snapshot = NSDiffableDataSourceSnapshot<DiaryFeedSection, DiaryCellViewModel.ID>()
+                    var snapshot = NSDiffableDataSourceSnapshot<DiaryFeedSection, SearchDiaryCellViewModel.ID>()
                     snapshot.appendSections(DiaryFeedSection.allCases)
                     snapshot.appendItems(diaryList.map{ $0.id }, toSection: .main)
                     self?.diaryListDataSource.apply(snapshot, animatingDifferences: false)

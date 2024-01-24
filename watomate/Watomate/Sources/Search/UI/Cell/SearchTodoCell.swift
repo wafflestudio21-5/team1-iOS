@@ -1,5 +1,5 @@
 //
-//  TodoCell.swift
+//  SearchTodoCell.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/23/24.
@@ -7,6 +7,10 @@
 //
 
 import Foundation
+
+class SearchTodoCell: UITableViewCell {
+    
+}
 
 //class TodoCell: UITableViewCell {
 //    static let reuseIdentifier = "TodoCell"

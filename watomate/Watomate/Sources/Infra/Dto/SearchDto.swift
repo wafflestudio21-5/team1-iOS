@@ -46,16 +46,16 @@ struct DiaryFeedResponseDto: Decodable {
         let emoji: Int
         let image: String?
         let date: String
-        let likes: [LikeDto]
+        let likes: [SearchLikeDto]
         let comments: [CommentDto]
     }
 }
 
-struct LikeDto: Decodable {
+struct SearchLikeDto: Decodable {
     let user: Int
     let emoji: Int
     
-    func toDomain() -> Like {
+    func toDomain() -> SearchLike {
         return .init(user: user, emoji: emoji)
     }
 }
@@ -64,9 +64,9 @@ struct CommentDto: Decodable {
     let createdAtIso: String
     let user: Int
     let description: String
-    let likes: [LikeDto]
+    let likes: [SearchLikeDto]
     
-    func toDomain() -> Comment {
+    func toDomain() -> SearchComment {
         return .init(createdAtIso: createdAtIso,
                      user: user,
                      description: description,
@@ -96,7 +96,7 @@ struct TodoFeedResponseDto: Decodable {
         let title, color: String
         let isCompleted: Bool
         
-        func toDomain() -> Todo {
+        func toDomain() -> SearchTodo {
             return .init(title: title, color: color, isCompleted: isCompleted)
         }
     }

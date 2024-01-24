@@ -20,11 +20,11 @@ final class DiaryFeedViewModel: ViewModelType {
     }
     
     enum Output {
-        case updateDiaryList(diaryList: [DiaryCellViewModel])
+        case updateDiaryList(diaryList: [SearchDiaryCellViewModel])
     }
     
     private var searchUseCase: SearchUseCase
-    private var diaryList = [DiaryCellViewModel]()
+    private var diaryList = [SearchDiaryCellViewModel]()
     private var isFetching: Bool = false
     private var canFetchMoreDiaries: Bool = true
     private var nextUrl: String? = nil
@@ -37,7 +37,7 @@ final class DiaryFeedViewModel: ViewModelType {
         self.searchUseCase = searchUserCase
     }
     
-    func viewModel(at indexPath: IndexPath) -> DiaryCellViewModel {
+    func viewModel(at indexPath: IndexPath) -> SearchDiaryCellViewModel {
         return diaryList[indexPath.row]
     }
     
@@ -63,7 +63,7 @@ final class DiaryFeedViewModel: ViewModelType {
             }
             nextUrl = diariesPage.nextUrl
             if nextUrl == nil { canFetchMoreDiaries = false }
-            diaryList.append(contentsOf: diariesPage.results.map{ DiaryCellViewModel(diary: $0) })
+            diaryList.append(contentsOf: diariesPage.results.map{ SearchDiaryCellViewModel(diary: $0) })
             output.send(.updateDiaryList(diaryList: diaryList))
             isFetching = false
 //            fetchMoreUsers()
@@ -80,7 +80,7 @@ final class DiaryFeedViewModel: ViewModelType {
             }
             nextUrl = diariesPage.nextUrl
             if nextUrl == nil { canFetchMoreDiaries = false }
-            diaryList.append(contentsOf: diariesPage.results.map{ DiaryCellViewModel(diary: $0) })
+            diaryList.append(contentsOf: diariesPage.results.map{ SearchDiaryCellViewModel(diary: $0) })
             output.send(.updateDiaryList(diaryList: diaryList))
             isFetching = false
         }

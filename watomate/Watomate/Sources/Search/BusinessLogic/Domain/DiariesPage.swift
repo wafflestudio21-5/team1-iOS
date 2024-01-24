@@ -10,5 +10,5 @@ import Foundation
 
 struct DiariesPage {
     let nextUrl: String?
-    let results: [Diary]
+    let results: [SearchDiary]
 }

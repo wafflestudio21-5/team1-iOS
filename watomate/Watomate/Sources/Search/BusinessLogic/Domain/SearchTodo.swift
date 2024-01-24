@@ -1,5 +1,5 @@
 //
-//  Todo.swift
+//  SearchTodo.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/23/24.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Todo {
+struct SearchTodo {
     let title, color: String
     let isCompleted: Bool 
 }

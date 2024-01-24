@@ -8,10 +8,10 @@
 
 import Foundation
 
-class TodoCellViewModel: Identifiable {
-    private let todo: Todo
+class SearchTodoCellViewModel: Identifiable {
+    private let todo: SearchTodo
     
-    init(todo: Todo) {
+    init(todo: SearchTodo) {
         self.todo = todo
     }
     

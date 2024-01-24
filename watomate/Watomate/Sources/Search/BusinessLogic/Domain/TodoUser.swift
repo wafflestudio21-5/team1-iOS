@@ -11,5 +11,5 @@ import Foundation
 struct TodoUser {
     let username: String
     let profilePic: String?
-    let todos: [Todo]
+    let todos: [SearchTodo]
 }

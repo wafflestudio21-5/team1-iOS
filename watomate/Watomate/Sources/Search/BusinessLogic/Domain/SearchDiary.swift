@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Diary {
+struct SearchDiary {
     let user: UserInfo
     let description: String
     let visibility: String
@@ -17,18 +17,18 @@ struct Diary {
     let emoji: Int
     let image: String?
     let date: String
-    let likes: [Like]
-    let comments: [Comment]
+    let likes: [SearchLike]
+    let comments: [SearchComment]
 }
 
-struct Like {
+struct SearchLike {
     let user: Int
     let emoji: Int
 }
 
-struct Comment {
+struct SearchComment {
     let createdAtIso: String
     let user: Int
     let description: String
-    let likes: [Like]
+    let likes: [SearchLike]
 }

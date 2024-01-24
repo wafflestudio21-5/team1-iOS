@@ -1,5 +1,5 @@
 //
-//  DiaryCell.swift
+//  SearchDiaryCell.swift
 //  Watomate
 //
 //  Created by 이지현 on 1/22/24.
@@ -9,9 +9,9 @@
 import UIKit
 import SnapKit
 
-class DiaryCell: UITableViewCell {
+class SearchDiaryCell: UITableViewCell {
     static let reuseIdentifier = "DiaryCell"
-    private var viewModel: DiaryCellViewModel?
+    private var viewModel: SearchDiaryCellViewModel?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -145,7 +145,7 @@ class DiaryCell: UITableViewCell {
         
     }
     
-    func configure(with viewModel: DiaryCellViewModel) {
+    func configure(with viewModel: SearchDiaryCellViewModel) {
         self.viewModel = viewModel
         usernameLabel.text = viewModel.user.username
         dateLabel.text = viewModel.date
