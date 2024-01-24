@@ -132,8 +132,7 @@ class CustomSymbolView: UIView {
         ])
         containerView.addSubview(centerCircle)
         centerCircle.snp.makeConstraints { make in
-            make.width.height.equalTo(size/1)
-            make.center.equalToSuperview()
+            make.edges.equalToSuperview()
         }
         
         centerCircle.setSymbol(image)
