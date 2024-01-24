@@ -16,12 +16,32 @@ class SearchUseCase {
     }
     
     func getInitialUsers() async throws -> UsersPage {
-        let usersPage = try await searchRepository.getInitialUsers()
+        var usersPage = try await searchRepository.getInitialUsers()
+        var results = usersPage.results
+        for (index, result) in results.enumerated() {
+            let goalsDto = try await searchRepository.getUserGoals(id: result.id)
+            for goal in goalsDto {
+                if goal.visibility == "PB" && !result.goalsColor.contains(goal.color) {
+                    results[index].goalsColor.append(goal.color)
+                }
+            }
+        }
+        usersPage.results = results
         return usersPage
     }
     
     func getMoreUsers(nextUrl: String) async throws -> UsersPage {
-        let usersPage = try await searchRepository.getMoreUsers(url: nextUrl)
+        var usersPage = try await searchRepository.getMoreUsers(url: nextUrl)
+        var results = usersPage.results
+        for (index, result) in results.enumerated() {
+            let goalsDto = try await searchRepository.getUserGoals(id: result.id)
+            for goal in goalsDto {
+                if goal.visibility == "PB" && !result.goalsColor.contains(goal.color) {
+                    results[index].goalsColor.append(goal.color)
+                }
+            }
+        }
+        usersPage.results = results
         return usersPage
     }
     

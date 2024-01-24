@@ -10,5 +10,5 @@ import Foundation
 
 struct UsersPage {
     let nextUrl: String?
-    let results: [UserInfo]
+    var results: [UserInfo]
 }

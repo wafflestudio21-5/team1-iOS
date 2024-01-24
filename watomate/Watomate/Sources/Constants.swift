@@ -9,6 +9,19 @@
 import Foundation
 
 enum Constants {
+    enum Font {
+        static let black = "Pretendard-Black"
+        static let extraBold = "Pretendard-ExtraBold"
+        static let bold = "Pretendard-Bold"
+        static let semiBold = "Pretendard-SemiBold"
+        static let medium = "Pretendard-Medium"
+        static let regular = "Pretendard-Regular"
+        static let light = "Pretendard-Light"
+        static let extraLight = "Pretendard-ExtraLight"
+        static let thin = "Pretendard-Thin"
+        
+    }
+    
     enum First {
         static let horizontalInset = 35.0.adjusted
         static let imageViewSize = 200.0.adjusted
@@ -34,5 +47,11 @@ enum Constants {
         static let offset = 11.0.adjusted
         static let headerViewHeight = 40.0.adjusted
         static let footerViewHeight = 25.0.adjusted
+    }
+    
+    enum SearchUser {
+        static let contentsInset = 15.0.adjusted
+        static let offset = 15.0.adjusted
+        static let profileHeight = 50.adjusted
     }
 }

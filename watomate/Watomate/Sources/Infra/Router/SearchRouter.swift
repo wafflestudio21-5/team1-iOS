@@ -11,6 +11,7 @@ import Foundation
 
 enum SearchRouter: Router {
     case getUserInfo(id: Int)
+    case getUserGoals(id: Int)
     case getAllUsers
     case getDiaryFeed(id: Int)
     case getTodoFeed
@@ -20,6 +21,8 @@ enum SearchRouter: Router {
     var method: HTTPMethod {
         switch self {
         case .getUserInfo:
+            return .get
+        case .getUserGoals:
             return .get
         case .getAllUsers:
             return .get
@@ -38,6 +41,8 @@ enum SearchRouter: Router {
         switch self {
         case let .getUserInfo(id):
             return "/\(id)"
+        case let .getUserGoals(id):
+            return "/\(id)/goals"
         case .getAllUsers:
             return "/user-all"
         case let .getDiaryFeed(id):
@@ -54,6 +59,8 @@ enum SearchRouter: Router {
     var parameters: [String: Any]? {
         switch self {
         case .getUserInfo:
+            return [:]
+        case .getUserGoals:
             return [:]
         case .getAllUsers:
             return [:]

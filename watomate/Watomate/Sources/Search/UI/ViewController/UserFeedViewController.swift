@@ -30,11 +30,15 @@ class UserFeedViewController: UIViewController {
         tableView.register(UserCell.self, forCellReuseIdentifier: UserCell.reuseIdentifier)
         tableView.delegate = self
         tableView.keyboardDismissMode = .onDrag
+        tableView.estimatedRowHeight = 70
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.separatorStyle = .none
         return tableView
     }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
 
         setupLayout()
         configureDataSource()
@@ -45,7 +49,9 @@ class UserFeedViewController: UIViewController {
     private func setupLayout() {
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15.adjusted)
+            make.leading.trailing.bottom.equalToSuperview()
+
         }
     }
     

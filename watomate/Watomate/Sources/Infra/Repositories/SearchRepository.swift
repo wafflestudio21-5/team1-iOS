@@ -11,6 +11,7 @@ import Foundation
 
 protocol SearchRepositoryProtocol {
     func getUserInfo(id: Int) async throws -> UserInfo
+    func getUserGoals(id: Int) async throws -> UserGoalsResponseDto
     func getInitialUsers() async throws -> UsersPage
     func getMoreUsers(url: String) async throws -> UsersPage
     func getInitialDiaries(id: Int) async throws -> DiariesPage
@@ -33,6 +34,12 @@ class SearchRepository: SearchRepositoryProtocol {
         let dto = try await session.request(SearchRouter.getUserInfo(id: id))
             .serializingDecodable(UserDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
+    }
+    
+    func getUserGoals(id: Int) async throws -> UserGoalsResponseDto {
+        let dto = try await session.request(SearchRouter.getUserGoals(id: id))
+            .serializingDecodable(UserGoalsResponseDto.self, decoder: decoder).handlingError()
+        return dto
     }
     
     func getInitialUsers() async throws -> UsersPage {

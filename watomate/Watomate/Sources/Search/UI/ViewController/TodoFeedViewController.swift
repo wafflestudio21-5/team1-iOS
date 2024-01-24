@@ -36,6 +36,7 @@ class TodoFeedViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
     
         setupLayout()
         configureDataSource()
@@ -46,7 +47,9 @@ class TodoFeedViewController: UIViewController {
     private func setupLayout() {
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15.adjusted)
+            make.leading.trailing.bottom.equalToSuperview()
+
         }
     }
     

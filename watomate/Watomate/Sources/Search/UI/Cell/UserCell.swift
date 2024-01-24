@@ -23,30 +23,41 @@ class UserCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private lazy var profileView = CustomSymbolView()
+    
     private lazy var usernameLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+        label.font = UIFont(name: Constants.Font.semiBold, size: 20)
         return label
     }()
     
     private lazy var introLabel = {
         let label = UILabel()
-        label.textColor = .label
-        label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        label.textColor = .secondaryLabel
+        label.font = UIFont(name: Constants.Font.medium, size: 16)
         return label
     }()
     
     private func setupLayout() {
+        addSubview(profileView)
+        profileView.snp.makeConstraints { make in
+            make.width.height.equalTo(Constants.SearchUser.profileHeight)
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview().inset(Constants.SearchUser.contentsInset)
+        }
+        
         addSubview(usernameLabel)
         usernameLabel.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(10)
+            make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.offset)
+            make.top.trailing.equalToSuperview().inset(Constants.SearchUser.contentsInset)
         }
         
         addSubview(introLabel)
         introLabel.snp.makeConstraints { make in
-            make.top.equalTo(usernameLabel.snp.bottom).offset(10)
-            make.leading.trailing.bottom.equalToSuperview().inset(10)
+            make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.offset)
+            make.top.equalTo(usernameLabel.snp.bottom).offset(7.adjusted)
+            make.trailing.bottom.equalToSuperview().inset(Constants.SearchUser.contentsInset)
         }
         
     }

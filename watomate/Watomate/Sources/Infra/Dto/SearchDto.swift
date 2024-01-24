@@ -29,8 +29,17 @@ struct UserDto: Decodable {
         return .init(id: user,
                      intro: intro,
                      username: username,
-                     profilePic: profilePic)
+                     profilePic: profilePic,
+                     goalsColor: [])
     }
+    
+}
+
+typealias UserGoalsResponseDto = [UserGoalResponseDto]
+
+struct UserGoalResponseDto: Decodable {
+    let visibility: String
+    let color: String
 }
 
 struct DiaryFeedResponseDto: Decodable {

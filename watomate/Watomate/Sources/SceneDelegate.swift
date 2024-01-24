@@ -33,9 +33,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = window
         
 //        let repo = SearchRepository()
+//        let useCase = SearchUseCase(searchRepository: repo)
 //        Task {
 //            do {
-//                let result = try await repo.getTodoFeed()
+//                let result = try await useCase.getInitialUsers()
 //                print(result)
 //            } catch {
 //                print(error)

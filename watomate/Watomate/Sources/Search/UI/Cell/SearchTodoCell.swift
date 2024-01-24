@@ -6,7 +6,7 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class SearchTodoCell: UITableViewCell {
     
