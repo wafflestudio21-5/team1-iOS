@@ -75,14 +75,14 @@ class ProfileViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
+        setupTopBarItems()
     }
     
     private func setupTopBarItems() {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(settingButtonTapped))
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: usernameLabel)
         guard let username: String = User.shared.username else { return }
-        guard let endIndex = username.firstIndex(of: "@") else { return }
-        usernameLabel.text = String(username[username.startIndex..<endIndex])
+        usernameLabel.text = username
     }
     
     private func setupLayout() {
