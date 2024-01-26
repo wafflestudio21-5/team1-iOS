@@ -80,6 +80,9 @@ class ProfileViewController: UIViewController {
     private func setupTopBarItems() {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(settingButtonTapped))
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: usernameLabel)
+        guard let username: String = User.shared.username else { return }
+        guard let endIndex = username.firstIndex(of: "@") else { return }
+        usernameLabel.text = String(username[username.startIndex..<endIndex])
     }
     
     private func setupLayout() {
@@ -186,7 +189,10 @@ extension ProfileViewController: UITableViewDelegate {
         if section == 0 {
             guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: ProfileHeaderView.reuseIdentifier) as? ProfileHeaderView else { return nil }
             header.contentView.backgroundColor = .systemBackground
+            header.setProfileImage(with: nil)
             header.addProfileTapEvent(target: self, action: #selector(profileImageTapped))
+            header.setFollowerCount()
+            header.setFollowingCount()
             return header
         }
         
@@ -262,7 +268,7 @@ extension ProfileViewController: TodoListViewModelDelegate {
 extension ProfileViewController: ProfileEditViewDelegate {
     func showProfileImage(_ image: UIImage?) {
         if let headerView = todoTableView.headerView(forSection: 0) as? ProfileHeaderView {
-            headerView.setProfileImage(image)
+            headerView.setProfileImage(with: image)
 //            headerView.setNeedsLayout()
 //            headerView.layoutIfNeeded()
         }
