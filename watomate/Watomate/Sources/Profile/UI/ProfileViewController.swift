@@ -186,6 +186,7 @@ extension ProfileViewController: UITableViewDelegate {
         if section == 0 {
             guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: ProfileHeaderView.reuseIdentifier) as? ProfileHeaderView else { return nil }
             header.contentView.backgroundColor = .systemBackground
+            header.addProfileTapEvent(target: self, action: #selector(profileImageTapped))
             return header
         }
         
@@ -197,6 +198,12 @@ extension ProfileViewController: UITableViewDelegate {
         header.goalView.isUserInteractionEnabled = true
         header.contentView.backgroundColor = .systemBackground
         return header
+    }
+    
+    @objc private func profileImageTapped(_ sender: UITapGestureRecognizer) {
+        let viewController = ProfileEditViewController(viewModel: ProfileEditViewModel(userUseCase: UserUseCase(userRepository: UserRepository(), userDefaultsRepository: UserDefaultsRepository())))
+        viewController.delegate = self 
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     @objc private func addEmptyTodo(_ sender: UITapGestureRecognizer) {
@@ -245,4 +252,16 @@ extension ProfileViewController: TodoListViewModelDelegate {
         }
 //        updateUnavailableView()
     }
+}
+
+extension ProfileViewController: ProfileEditViewDelegate {
+    func showProfileImage(_ image: UIImage?) {
+        if let headerView = todoTableView.headerView(forSection: 0) as? ProfileHeaderView {
+            headerView.setProfileImage(image)
+//            headerView.setNeedsLayout()
+//            headerView.layoutIfNeeded()
+        }
+    }
+
+    
 }

@@ -55,5 +55,6 @@ let project = Project.app(name: "Watomate",
                           dependencies: [
                             .external(name: "SnapKit"),
                             .external(name: "Alamofire"),
-                            .external(name: "KakaoSDK")
+                            .external(name: "KakaoSDK"),
+                            .external(name: "Kingfisher")
                          ])

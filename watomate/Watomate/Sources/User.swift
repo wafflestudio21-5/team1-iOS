@@ -18,7 +18,7 @@ class User {
     var id: Int?
     var username: String?
     var intro: String?
-    var profilePic: String?
+    var profilePic: String? 
     var followerCount: Int?
     var followingCount: Int?
     

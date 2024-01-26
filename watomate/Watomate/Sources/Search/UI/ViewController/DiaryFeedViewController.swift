@@ -80,7 +80,9 @@ class DiaryFeedViewController: UIViewController {
 }
 
 extension DiaryFeedViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        present(MateDiaryViewController(), animated: true)
+    }
 }
 
 extension DiaryFeedViewController: UIScrollViewDelegate {

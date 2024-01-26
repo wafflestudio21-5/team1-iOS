@@ -71,4 +71,8 @@ class LabeledInputView: UIView {
         layer.addSublayer(bottomLine)
     }
     
+    func addTarget(target: Any?, action: Selector, for event: UIControl.Event) {
+        textField.addTarget(target, action: action, for: event)
+    }
+    
 }
