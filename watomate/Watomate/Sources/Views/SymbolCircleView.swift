@@ -6,6 +6,7 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
+import Kingfisher
 import UIKit
 
 class SymbolCircleView: UIImageView {
@@ -70,6 +71,12 @@ class SymbolCircleView: UIImageView {
     func setImage(_ image: UIImage?) {
         self.image = image
         symbolImageView.image = nil
+    }
+    
+    func setProfileImage() {
+        symbolImageView.image = nil
+        guard let imageUrl = User.shared.profilePic else { return }
+        kf.setImage(with: URL(string: imageUrl)!)
     }
     
 }

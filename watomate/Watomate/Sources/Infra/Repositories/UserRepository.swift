@@ -10,7 +10,7 @@ import Alamofire
 import Foundation
 
 protocol UserRepositoryProtocol {
-    func changeProfilePic(id: Int, imageData: Data?) async throws
+    func changeProfilePic(id: Int, imageData: Data?) async throws -> String?
     func changeUserInfo(id: Int, username: String, intro: String) async throws
 }
 
@@ -22,27 +22,39 @@ class UserRepository: UserRepositoryProtocol {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
     
-    func changeProfilePic(id: Int, imageData: Data?) async throws {
-        guard let imageData else { return }
+    func changeProfilePic(id: Int, imageData: Data?) async throws -> String? {
+        guard let imageData else { return nil }
+        guard let token = User.shared.token else { return nil }
         
         let header: HTTPHeaders = [
             "Content-Type" : "multipart/form-data",
-            "Authorization" : "Token f9f1b1dd9de499b445077473d45760fdb7e99447"
+            "Authorization" : "Token \(token)"
+        ]
+        
+        let url = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/\(id)"
+        
+        let dto = try await session.upload(multipartFormData: { multipartFormData in
+            multipartFormData.append(imageData, withName: "profile_pic", fileName: "profile_pic.png", mimeType: "image/png")
+        }, to: url, method: .patch, headers: header)
+        .serializingDecodable(UserDto.self, decoder: decoder).handlingError()
+        return dto.profilePic
+    }
+    
+    func changeUserInfo(id: Int, username: String, intro: String) async throws {
+        
+        guard let token = User.shared.token else { return }
+        
+        let header: HTTPHeaders = [
+            "Content-Type" : "multipart/form-data",
+            "Authorization" : "Token \(token)"
         ]
         
         let url = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/\(id)"
         
         try await session.upload(multipartFormData: { multipartFormData in
-            multipartFormData.append(imageData, withName: "profile_pic", fileName: "profile_pic.png", mimeType: "image/png")
-        }, to: url, method: .patch, headers: header)
-        .serializingDecodable(UserDto.self, decoder: decoder).handlingError()
-    }
-    
-    func changeUserInfo(id: Int, username: String, intro: String) async throws {
-        try await session.upload(multipartFormData: { multipartFormData in
             multipartFormData.append(username.data(using: .utf8)!, withName: "username")
             multipartFormData.append(intro.data(using: .utf8)!, withName: "intro")
-        }, with: UserRouter.changeUserInfo(id: id))
+        }, to: url, method: .patch, headers: header)
         .serializingDecodable(UserDto.self, decoder: decoder).handlingError()
     }
     

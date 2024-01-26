@@ -201,7 +201,7 @@ extension ProfileViewController: UITableViewDelegate {
     }
     
     @objc private func profileImageTapped(_ sender: UITapGestureRecognizer) {
-        let viewController = ProfileEditViewController(viewModel: ProfileEditViewModel(userUseCase: UserUseCase(userRepository: UserRepository())))
+        let viewController = ProfileEditViewController(viewModel: ProfileEditViewModel(userUseCase: UserUseCase(userRepository: UserRepository(), userDefaultsRepository: UserDefaultsRepository())))
         viewController.delegate = self 
         navigationController?.pushViewController(viewController, animated: true)
     }
@@ -257,7 +257,6 @@ extension ProfileViewController: TodoListViewModelDelegate {
 extension ProfileViewController: ProfileEditViewDelegate {
     func showProfileImage(_ image: UIImage?) {
         if let headerView = todoTableView.headerView(forSection: 0) as? ProfileHeaderView {
-            print("set")
             headerView.setProfileImage(image)
 //            headerView.setNeedsLayout()
 //            headerView.layoutIfNeeded()

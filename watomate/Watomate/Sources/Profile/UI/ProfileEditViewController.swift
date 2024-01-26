@@ -61,6 +61,11 @@ class ProfileEditViewController: PlainCustomBarViewController {
         let view = SymbolCircleView(symbolImage: UIImage(systemName: "person.fill"))
         view.setBackgroundColor(.systemGray5)
         view.setSymbolColor(.systemBackground)
+        
+        if let profilePic = User.shared.profilePic {
+            view.setProfileImage()
+        }
+        
         return view
     }()
     
@@ -96,7 +101,27 @@ class ProfileEditViewController: PlainCustomBarViewController {
         
         setupNavigationBar()
         setupLayout()
+        bindViewModel()
+        initViewModel()
+    }
+    
+    private func bindViewModel() {
+        let output = viewModel.transform(input: viewModel.input.eraseToAnyPublisher())
         
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                switch event {
+                case .okProcessSuccess:
+                    self?.navigationController?.popViewController(animated: true)
+                case let .okProcessFailed(errorMessage):
+                    self?.showAlert(message: errorMessage)
+                }
+            }.store(in: &cancellables)
+    }
+    
+    private func initViewModel() {
+        viewModel.input.send(.usernameEdited(username: nameField.text ?? ""))
+        viewModel.input.send(.introEdited(intro: descriptionField.text ?? ""))
     }
     
     private func setupNavigationBar() {
@@ -145,7 +170,12 @@ class ProfileEditViewController: PlainCustomBarViewController {
     
     @objc private func okButtonTapped() {
         viewModel.input.send(.okButtonTapped)
-        navigationController?.popViewController(animated: true)
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "오류", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default ))
+        present(alert, animated: true)
     }
 
 }
@@ -161,7 +191,8 @@ extension ProfileEditViewController: UIImagePickerControllerDelegate, UINavigati
     }
     
     private func handleImage(_ image: UIImage?) {
-
-        viewModel.input.send(.profilePicEdited(imageData: image?.pngData()))
+        guard let image else { return }
+        let resizedImage = image.resizeImage(newWidth: 300)
+        viewModel.input.send(.profilePicEdited(imageData: resizedImage.pngData()))
     }
 }

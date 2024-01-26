@@ -190,7 +190,7 @@ class JoinViewController: PlainCustomBarViewController {
     }
     
     private func transitionToMainScreen() {
-        navigationController?.setViewControllers([TabBarController(), ProfileEditViewController(viewModel: ProfileEditViewModel(userUseCase: UserUseCase(userRepository: UserRepository())))], animated: true)
+        navigationController?.setViewControllers([TabBarController(), ProfileEditViewController(viewModel: ProfileEditViewModel(userUseCase: UserUseCase(userRepository: UserRepository(), userDefaultsRepository: UserDefaultsRepository())))], animated: true)
     }
     
     private func updateOkButtonState(isEnabled: Bool) {

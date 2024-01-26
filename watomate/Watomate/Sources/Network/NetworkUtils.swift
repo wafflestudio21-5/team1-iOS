@@ -32,8 +32,12 @@ extension DataTask {
                 if let errorDto = try? decoder.decode(ErrorDto.self, from: data) {
                     throw NetworkError.errorWithMessage(message: errorDto.errorMsg)
                 }
+                if let errorDto = try? decoder.decode(UsernameErrorDto.self, from: data) {
+                    throw NetworkError.errorWithMessage(message: errorDto.username[0])
+                }
             }
             if let statusCode = response.response?.statusCode {
+                print(statusCode)
                 if let networkError = NetworkError.error(from: statusCode) {
                     throw networkError
                 }
