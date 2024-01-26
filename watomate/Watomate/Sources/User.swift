@@ -6,7 +6,7 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class User {
     static let shared = User()
@@ -18,7 +18,8 @@ class User {
     var id: Int?
     var username: String?
     var intro: String?
-    var profilePic: String?
+    var profilePic: String? // 나중에 지울 것 
+    var profileImage: UIImage? // url에서 받아온 이미지
     var followerCount: Int?
     var followingCount: Int?
     

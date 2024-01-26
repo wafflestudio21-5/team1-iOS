@@ -43,7 +43,6 @@ class ProfileEditViewModel {
             case let .profilePicEdited(imageData):
                 Task {
                     try? await self.userUseCase.changeProfilePic(id: id, imageData: imageData)
-                    print("success")
                 }
             case .okButtonTapped:
                 Task {

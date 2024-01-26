@@ -28,6 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             
             Task {
                 guard let id = User.shared.id else { return }
+                print(id)
                 let userInfo = try? await searchUseCase.getUserInfo(id: id)
                 User.shared.username = userDefaultsRepository.get(String.self, key: .username)
                 User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)

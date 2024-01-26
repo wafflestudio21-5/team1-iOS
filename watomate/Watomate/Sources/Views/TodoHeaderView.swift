@@ -146,4 +146,14 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
             make.trailing.lessThanOrEqualToSuperview().inset(16)
         }
     }
+    
+    func setProfileImage(_ image: UIImage?) {
+        profileImageView.image = image
+    }
+    
+    func addProfileTapEvent(target: Any?, action: Selector?) {
+        let gestureRecognizer = UITapGestureRecognizer(target: target, action: action)
+        profileImageView.addGestureRecognizer(gestureRecognizer)
+        profileImageView.isUserInteractionEnabled = true
+    }
 }

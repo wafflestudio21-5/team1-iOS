@@ -10,7 +10,12 @@ import Combine
 import UIKit
 import SnapKit
 
+protocol ProfileEditViewDelegate: AnyObject {
+    func showProfileImage(_ image: UIImage?)
+}
+
 class ProfileEditViewController: PlainCustomBarViewController {
+    weak var delegate: ProfileEditViewDelegate?
     private let viewModel: ProfileEditViewModel
     private var cancellables = Set<AnyCancellable>()
     
@@ -75,14 +80,13 @@ class ProfileEditViewController: PlainCustomBarViewController {
     
     private lazy var nameField = {
        let field = LabeledInputView(label: "이름", placeholder: "이름 입력")
-//        field.text = User.shared.username
+        field.text = User.shared.username
         field.addTarget(target: self, action: #selector(nameDidChange), for: .editingChanged)
         return field
     }()
     private lazy var descriptionField = {
         let field = LabeledInputView(label: "자기소개", placeholder: "자기소개 입력")
-        // 나중에 인트로 수정
-//        field.text = User.shared.intro
+        field.text = User.shared.intro
         field.addTarget(target: self, action: #selector(introDidChange), for: .editingChanged)
         return field
     }()
@@ -90,12 +94,9 @@ class ProfileEditViewController: PlainCustomBarViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        nameField.text = User.shared.username
-        // 인트로 처리해야함
         setupNavigationBar()
         setupLayout()
         
-        print(User.shared.id)
     }
     
     private func setupNavigationBar() {
@@ -154,6 +155,7 @@ extension ProfileEditViewController: UIImagePickerControllerDelegate, UINavigati
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             self.profileCircleView.setImage(image)
             handleImage(image)
+            delegate?.showProfileImage(image)
         }
         dismiss(animated: true)
     }
