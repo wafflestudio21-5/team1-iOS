@@ -9,10 +9,15 @@
 import Foundation
 
 class SearchUseCase {
-    private let searchRepository: SearchRepository
+    private let searchRepository: SearchRepositoryProtocol
     
     init(searchRepository: SearchRepository) {
         self.searchRepository = searchRepository
+    }
+    
+    func getUserInfo(id: Int) async throws -> UserInfo {
+        let userInfo = try await searchRepository.getUserInfo(id: id)
+        return UserInfo(id: userInfo.id, intro: userInfo.intro, username: userInfo.username, profilePic: userInfo.profilePic, followerCount: userInfo.followerCount, followingCount: userInfo.followingCount, goalsColor: [])
     }
     
     func getInitialUsers() async throws -> UsersPage {

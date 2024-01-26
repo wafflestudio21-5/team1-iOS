@@ -107,7 +107,12 @@ class CustomSymbolView: UIView {
             circle2.backgroundColor = color[0].uiColor
             circle3.backgroundColor = color[0].uiColor
             circle4.backgroundColor = color[0].uiColor
-        } else { return }
+        } else {
+            circle1.backgroundColor = Color.gray.uiColor
+            circle2.backgroundColor = Color.gray.uiColor
+            circle3.backgroundColor = Color.gray.uiColor
+            circle4.backgroundColor = Color.gray.uiColor
+        }
     }
     
     func addCenterCircle(image: UIImage?) {

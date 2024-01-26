@@ -23,10 +23,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if isLoggedIn {
             User.shared.id = userDefaultsRepository.get(Int.self, key: .userId)
             User.shared.token = userDefaultsRepository.get(String.self, key: .accessToken)
+            
+            let searchUseCase = SearchUseCase(searchRepository: SearchRepository())
+            
+            Task {
+                guard let id = User.shared.id else { return }
+                print(id)
+                let userInfo = try? await searchUseCase.getUserInfo(id: id)
+                User.shared.username = userDefaultsRepository.get(String.self, key: .username)
+                User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)
+                User.shared.profilePic = userDefaultsRepository.get(String.self, key: .profilePic)
+                User.shared.followerCount = userDefaultsRepository.get(Int.self, key: .followerCount)
+                User.shared.followingCount = userDefaultsRepository.get(Int.self, key: .followingCount)
+            }
+            
             User.shared.loginMethod = LoginMethod(rawValue: userDefaultsRepository.get(String.self, key: .loginMethod) ?? "")
             window.rootViewController = TabBarController()
         } else {
-            let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), kakaoRepository: KakaoRepository())
+            let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), searchRepository: SearchRepository(), kakaoRepository: KakaoRepository())
             window.rootViewController = UINavigationController(rootViewController: FirstViewController(viewModel: FirstViewModel(authUseCase: authUseCase)))
         }
         window.makeKeyAndVisible()

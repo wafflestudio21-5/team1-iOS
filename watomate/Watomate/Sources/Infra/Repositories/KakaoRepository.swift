@@ -15,6 +15,7 @@ protocol KakaoRepositoryProtocol {
     func loginWithApp() async throws
     func loginWithWeb() async throws
     func getKakaoId() async throws -> Int64
+    func logout()
 }
 
 class KakaoRepository: KakaoRepositoryProtocol {
@@ -61,6 +62,15 @@ class KakaoRepository: KakaoRepositoryProtocol {
                     continuation.resume(returning: kakaoId)
                 }
             }
+        }
+    }
+    
+    func logout() {
+        UserApi.shared.logout { error in
+            if let error {
+                return
+            }
+            return
         }
     }
     

@@ -6,9 +6,10 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
+import Kingfisher
 import UIKit
 
-class SymbolCircleView: UIView {
+class SymbolCircleView: UIImageView {
     private var symbolImage: UIImage?
     private var borderColor: UIColor? = nil
     
@@ -23,6 +24,7 @@ class SymbolCircleView: UIView {
     init(symbolImage: UIImage?) {
         super.init(frame: .zero)
         self.symbolImage = symbolImage
+        contentMode = .scaleAspectFill
     }
     
     required init?(coder: NSCoder) {
@@ -64,6 +66,17 @@ class SymbolCircleView: UIView {
         layer.borderWidth = width
         layer.borderColor = color.cgColor
         borderColor = color
+    }
+    
+    func setImage(_ image: UIImage?) {
+        self.image = image
+        symbolImageView.image = nil
+    }
+    
+    func setProfileImage() {
+        symbolImageView.image = nil
+        guard let imageUrl = User.shared.profilePic else { return }
+        kf.setImage(with: URL(string: imageUrl)!)
     }
     
 }

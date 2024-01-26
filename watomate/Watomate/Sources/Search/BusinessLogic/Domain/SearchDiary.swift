@@ -14,7 +14,7 @@ struct SearchDiary {
     let visibility: String
     let mood: Int
     let color: String
-    let emoji: Int
+    let emoji: String
     let image: String?
     let date: String
     let likes: [SearchLike]

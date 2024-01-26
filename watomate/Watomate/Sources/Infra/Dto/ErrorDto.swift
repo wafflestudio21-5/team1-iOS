@@ -11,3 +11,7 @@ import Foundation
 struct ErrorDto: Decodable {
     let errorMsg: String
 }
+
+struct UsernameErrorDto: Decodable {
+    let username: [String]
+}
