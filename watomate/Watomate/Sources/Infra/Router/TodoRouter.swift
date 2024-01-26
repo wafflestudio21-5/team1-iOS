@@ -9,7 +9,7 @@
 import Alamofire
 import Foundation
 
-enum GoalsRouter: Router {
+enum TodoRouter: Router {
     case getAllTodos(userId: Int)
     case addTodo(userId: Int, goalId: Int, todo: Todo)
 //    case getGoalData(userId: Int, goalId: Int)

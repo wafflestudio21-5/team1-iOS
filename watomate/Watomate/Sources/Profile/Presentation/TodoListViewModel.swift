@@ -54,7 +54,7 @@ class TodoListViewModel: ViewModelType {
             guard let self else { return }
             do {
                 var curVMs = viewModelsSubject.value
-                let goals = try await todoUseCase.getAllTodos(userId: 1)
+                let goals = try await todoUseCase.getAllTodos()
                 var cellVM: TodoCellViewModel
                 var cellVMs: [TodoCellViewModel]
                 var goal: Goal

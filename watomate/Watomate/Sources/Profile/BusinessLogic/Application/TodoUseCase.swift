@@ -16,7 +16,7 @@ class TodoUseCase {
         self.todoRepository = todoRepository
     }
     
-    func getAllTodos(userId: Int) async throws -> [Goal] {
+    func getAllTodos() async throws -> [Goal] {
         let goalDto = try await todoRepository.getAllTodos()//id 넣도록 수정하기
         let goals = convert(goalsDto: goalDto)
         self.goals = goals
