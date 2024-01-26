@@ -136,8 +136,8 @@ class FirstViewController: UIViewController {
                     self?.transitionToMainScreen()
                 case .guestLoginFailed(let errorMessage):
                     self?.showAlert(message: errorMessage)
-                case .kakaoLoginFailed:
-                    self?.showAlert(message: "Kakao login Failed")
+                case .kakaoLoginFailed(let errorMessage):
+                    self?.showAlert(message: errorMessage)
                 }
             }.store(in: &cancellables)
     }
@@ -186,13 +186,13 @@ class FirstViewController: UIViewController {
     }
     
     @objc private func loginButtonTapped() {
-        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), kakaoRepository: KakaoRepository())
+        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), searchRepository: SearchRepository(), kakaoRepository: KakaoRepository())
         let nextViewController = LoginViewController(viewModel: LoginViewModel(authUseCase: authUseCase))
         navigationController?.pushViewController(nextViewController, animated: true)
     }
     
     @objc private func joinButtonTapped() {
-        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), kakaoRepository: KakaoRepository())
+        let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), searchRepository: SearchRepository(), kakaoRepository: KakaoRepository())
         let nextViewController = JoinViewController(viewModel: JoinViewModel(authUseCase: authUseCase))
         navigationController?.pushViewController(nextViewController, animated: true)
     }

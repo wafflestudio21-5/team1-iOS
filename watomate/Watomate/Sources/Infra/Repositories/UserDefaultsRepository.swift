@@ -18,6 +18,11 @@ enum UserDefaultsKey: String {
     case loginMethod
     case accessToken
     case userId
+    case username
+    case intro
+    case profilePic
+    case followerCount
+    case followingCount
 }
 
 class UserDefaultsRepository: UserDefaultsRepositoryProtocol {

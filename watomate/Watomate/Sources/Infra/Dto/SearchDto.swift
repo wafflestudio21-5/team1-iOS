@@ -24,12 +24,16 @@ struct UserDto: Decodable {
     let intro: String?
     let username: String
     let profilePic: String?
+    let followerCount: Int
+    let followingCount: Int
     
     func toDomain() -> UserInfo {
         return .init(id: user,
                      intro: intro,
                      username: username,
                      profilePic: profilePic,
+                     followerCount: followerCount,
+                     followingCount: followingCount,
                      goalsColor: [])
     }
     
@@ -52,7 +56,7 @@ struct DiaryFeedResponseDto: Decodable {
         let visibility: String
         let mood: Int
         let color: String
-        let emoji: Int
+        let emoji: String
         let image: String?
         let date: String
         let likes: [SearchLikeDto]
