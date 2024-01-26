@@ -13,5 +13,7 @@ struct UserInfo {
     let intro: String?
     let username: String
     let profilePic: String?
+    let followerCount: Int?
+    let followingCount: Int? 
     var goalsColor: [String]
 }

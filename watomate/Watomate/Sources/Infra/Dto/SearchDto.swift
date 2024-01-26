@@ -24,12 +24,16 @@ struct UserDto: Decodable {
     let intro: String?
     let username: String
     let profilePic: String?
+    let followerCount: Int
+    let followingCount: Int
     
     func toDomain() -> UserInfo {
         return .init(id: user,
                      intro: intro,
                      username: username,
                      profilePic: profilePic,
+                     followerCount: followerCount,
+                     followingCount: followingCount,
                      goalsColor: [])
     }
     

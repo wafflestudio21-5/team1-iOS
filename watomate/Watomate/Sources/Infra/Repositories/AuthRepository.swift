@@ -55,6 +55,7 @@ class AuthRepository: AuthRepositoryProtocol {
                 .serializingDecodable(LoginResponseDto.self, decoder: decoder).handlingError()
             return dto.toDomain()
         } catch {
+            
             if let error = error as? NetworkError{
                 if error.statusCode == 422 {
                     return try await signupWithKakao(kakaoId: kakaoId)

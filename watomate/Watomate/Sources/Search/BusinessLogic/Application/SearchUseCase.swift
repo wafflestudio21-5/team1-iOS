@@ -15,6 +15,11 @@ class SearchUseCase {
         self.searchRepository = searchRepository
     }
     
+    func getUserInfo(id: Int) async throws -> UserInfo {
+        let userInfo = try await searchRepository.getUserInfo(id: id)
+        return UserInfo(id: userInfo.id, intro: userInfo.intro, username: userInfo.username, profilePic: userInfo.profilePic, followerCount: userInfo.followerCount, followingCount: userInfo.followingCount, goalsColor: [])
+    }
+    
     func getInitialUsers() async throws -> UsersPage {
         var usersPage = try await searchRepository.getInitialUsers()
         var results = usersPage.results
