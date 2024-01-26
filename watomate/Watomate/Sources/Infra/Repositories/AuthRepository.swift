@@ -18,7 +18,7 @@ protocol AuthRepositoryProtocol {
 }
 
 class AuthRepository: AuthRepositoryProtocol {
-    private let session = NetworkManager.shared.session
+    private let session = AF
     private let decoder = JSONDecoder()
     
     init() {

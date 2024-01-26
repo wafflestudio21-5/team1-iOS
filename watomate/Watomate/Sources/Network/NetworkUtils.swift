@@ -13,7 +13,7 @@ import Foundation
 class Interceptor: RequestInterceptor {
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var urlRequest = urlRequest
-        urlRequest.setValue("Bearer \(User.shared.token ?? "")", forHTTPHeaderField: "Authorization")
+        urlRequest.setValue("Token \(User.shared.token ?? "")", forHTTPHeaderField: "Authorization")
         completion(.success(urlRequest))
     }
     

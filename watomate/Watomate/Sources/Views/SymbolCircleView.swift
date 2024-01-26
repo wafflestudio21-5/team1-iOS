@@ -44,7 +44,7 @@ class SymbolCircleView: UIView {
     private func setupLayout() {
         addSubview(symbolImageView)
         symbolImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(frame.width / 5)
+            make.edges.equalToSuperview().inset(frame.width / 6)
         }
     }
     
@@ -54,6 +54,10 @@ class SymbolCircleView: UIView {
     
     func setSymbolColor(_ color: UIColor) {
         symbolImageView.tintColor = color 
+    }
+    
+    func setSymbol(_ image: UIImage?) {
+        symbolImageView.image = image
     }
     
     func addBorder(width: CGFloat, color: UIColor) {

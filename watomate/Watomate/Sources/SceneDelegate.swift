@@ -31,6 +31,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         window.makeKeyAndVisible()
         self.window = window
+        
+//        print(User.shared.token)
+//        let repo = SearchRepository()
+//        let useCase = SearchUseCase(searchRepository: repo)
+//        Task {
+//            do {
+//                let result = try await useCase.getInitialUsers()
+//                print(result)
+//            } catch {
+//                print(error)
+//            }
+//        }
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
