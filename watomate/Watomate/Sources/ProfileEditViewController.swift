@@ -6,10 +6,22 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
+import Combine
 import UIKit
 import SnapKit
 
 class ProfileEditViewController: PlainCustomBarViewController {
+    private let viewModel: ProfileEditViewModel
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(viewModel: ProfileEditViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private lazy var containerView = {
         let view = UIView()
@@ -54,17 +66,36 @@ class ProfileEditViewController: PlainCustomBarViewController {
         view.traitCollection.performAsCurrent {
             view.addBorder(width: 2, color: .systemBackground)
         }
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(cameraTapped))
+        view.addGestureRecognizer(tapGestureRecognizer)
+        view.isUserInteractionEnabled = true
         return view
     }()
     
-    private lazy var nameField = LabeledInputView(label: "이름", placeholder: "이름 입력")
-    private lazy var descriptionField = LabeledInputView(label: "자기소개", placeholder: "자기소개 입력 (최대 50글자)")
+    private lazy var nameField = {
+       let field = LabeledInputView(label: "이름", placeholder: "이름 입력")
+//        field.text = User.shared.username
+        field.addTarget(target: self, action: #selector(nameDidChange), for: .editingChanged)
+        return field
+    }()
+    private lazy var descriptionField = {
+        let field = LabeledInputView(label: "자기소개", placeholder: "자기소개 입력")
+        // 나중에 인트로 수정
+//        field.text = User.shared.intro
+        field.addTarget(target: self, action: #selector(introDidChange), for: .editingChanged)
+        return field
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        nameField.text = User.shared.username
+        // 인트로 처리해야함
         setupNavigationBar()
         setupLayout()
+        
+        print(User.shared.id)
     }
     
     private func setupNavigationBar() {
@@ -96,8 +127,39 @@ class ProfileEditViewController: PlainCustomBarViewController {
         }
     }
     
+    @objc private func cameraTapped() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .photoLibrary
+        present(imagePicker, animated: true)
+    }
+    
+    @objc private func nameDidChange() {
+        viewModel.input.send(.usernameEdited(username: nameField.text ?? ""))
+    }
+    
+    @objc private func introDidChange() {
+        viewModel.input.send(.introEdited(intro: descriptionField.text ?? ""))
+    }
+    
     @objc private func okButtonTapped() {
-        
+        viewModel.input.send(.okButtonTapped)
+        navigationController?.popViewController(animated: true)
     }
 
+}
+
+extension ProfileEditViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            self.profileCircleView.setImage(image)
+            handleImage(image)
+        }
+        dismiss(animated: true)
+    }
+    
+    private func handleImage(_ image: UIImage?) {
+
+        viewModel.input.send(.profilePicEdited(imageData: image?.pngData()))
+    }
 }

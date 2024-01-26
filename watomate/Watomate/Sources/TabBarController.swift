@@ -19,7 +19,7 @@ class TabBarController: UITabBarController {
         let searchVC = UINavigationController(rootViewController: SearchViewController())
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
         
-        let groupVC = UINavigationController(rootViewController: GroupViewController())
+        let groupVC = UINavigationController(rootViewController: ProfileEditViewController(viewModel: ProfileEditViewModel(userUseCase: UserUseCase(userRepository: UserRepository()))))
         groupVC.tabBarItem = UITabBarItem(title: "Group", image: UIImage(systemName: "rectangle.3.group.fill"), tag: 2)
 
         let todoRepository = TodoRepository()

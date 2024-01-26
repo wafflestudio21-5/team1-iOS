@@ -69,6 +69,7 @@ class SymbolCircleView: UIImageView {
     
     func setImage(_ image: UIImage?) {
         self.image = image
+        symbolImageView.image = nil
     }
     
 }

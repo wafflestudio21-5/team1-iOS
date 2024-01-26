@@ -9,7 +9,7 @@
 import Foundation
 
 class SearchUseCase {
-    private let searchRepository: SearchRepository
+    private let searchRepository: SearchRepositoryProtocol
     
     init(searchRepository: SearchRepository) {
         self.searchRepository = searchRepository

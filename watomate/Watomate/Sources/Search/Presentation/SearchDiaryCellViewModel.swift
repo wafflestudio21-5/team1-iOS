@@ -33,7 +33,7 @@ class SearchDiaryCellViewModel: Identifiable {
         diary.color
     }
     
-    var emoji: Int {
+    var emoji: String {
         diary.emoji
     }
     
