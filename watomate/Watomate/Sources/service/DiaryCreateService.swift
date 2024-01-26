@@ -10,10 +10,8 @@
 import Foundation
 import Alamofire
 
-// 현재 작동하지 않음
 struct DiaryCreateService{
     static let shared = DiaryCreateService()
-    let vc = DiaryCreateViewController()
     let api = APIConstants()
     
     private func makeParameter(diaryText: String?, date: String?) -> Parameters //입력값 넣을수도
@@ -24,19 +22,22 @@ struct DiaryCreateService{
                  "color": "string",
                  "emoji": 10,
                 // "image": "string", //이미지 x
-                 "created_by": 1, //유저 아이디 정보 아직 x
+                 "created_by": 3, //유저 아이디 정보 아직 x
                  "date": date ?? "no date"]
     }
     
     func createDiary(diaryText: String?, date: String?, completion: @escaping (NetworkResult<Any>) -> Void){
         let header : HTTPHeaders = ["Content-Type": "application/json", "Accept":"application/json"]
         
-        let dataRequest = AF.request(api.diaryURL,
+        let dataRequest = AF.request(api.diaryCreateURL,
                                      method: .post,
                                      parameters: makeParameter(diaryText: diaryText, date: date),
                                      encoding: JSONEncoding.default,
                                      headers: header)
-        
+        print("URL: \(api.diaryCreateURL)")
+        print("Parameters: \(makeParameter(diaryText: diaryText, date: date))")
+        print("Headers: \(header)")
+
         dataRequest.responseData { dataResponse in
                     
             // dataResponse가 도착했으니, 그 안에는 통신에 대한 결과물이 있다
@@ -53,10 +54,15 @@ struct DiaryCreateService{
                 // judgeStatus라는 함수에 statusCode와 response(결과데이터)를 실어서 보냅니다.
                 let networkResult = self.judgeStatus(by: statusCode, value)
                 completion(networkResult)
+                print(value)
+                
              
             // 통신 실패의 경우, completion에 pathErr값을 담아서 뷰컨으로 날려줍니다.
             // 타임아웃 / 통신 불가능의 상태로 통신 자체에 실패한 경우입니다.
-            case .failure: completion(.pathErr)
+            case .failure(let error):
+                print("Alamofire Error: \(error)")
+                completion(.pathErr)
+                completion(.networkFail)
         }
                     
         }
@@ -65,7 +71,7 @@ struct DiaryCreateService{
     
     private func judgeStatus(by statusCode: Int, _ data: Data) -> NetworkResult<Any> {
        switch statusCode {
-       case 200: return .success((Any).self) // 성공 -> 데이터를 가공해서 전달해줘야 하기 때문에 isValidData라는 함수로 데이터 넘격줌
+       case 201: return .success(data) // 성공 -> 데이터를 가공해서 전달해줘야 하기 때문에 isValidData라는 함수로 데이터 넘격줌
        case 400: return .pathErr // -> 요청이 잘못됨
        case 500: return .serverErr // -> 서버 에러
        default: return .networkFail // -> 네트워크 에러로 분기 처리할 예정

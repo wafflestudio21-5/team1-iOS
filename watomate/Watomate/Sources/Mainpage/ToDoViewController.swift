@@ -22,6 +22,7 @@ class ToDoViewController: UIViewController {
                  self.emoji = receivedValue
                  self.updateDiaryButtonAppearance()
              }
+            diaryViewController.hidesBottomBarWhenPushed = true //tabBar 숨기기
             navigationController?.pushViewController(diaryViewController, animated: false)
         }
         else{
@@ -55,12 +56,12 @@ class ToDoViewController: UIViewController {
         header.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(50)
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(view.snp.height).multipliedBy(0.15)
-            make.bottom.equalTo(body.snp.top)
+            make.height.equalTo(view.snp.height).multipliedBy(0.12)
          }
         body.snp.makeConstraints { make in
             make.bottom.equalToSuperview()
             make.leading.trailing.equalToSuperview()
+            make.top.equalTo(header.snp.bottom).offset(8)
          }
     }
     
@@ -84,7 +85,7 @@ class ToDoViewController: UIViewController {
     
     private lazy var logoImage : UIImageView = {
         var view = UIImageView()
-        view.image = UIImage(named: "waffle.png") // 추후 최종 로고 이미지로 변경
+        view.image = UIImage(named: "waffle-2.png") // 추후 최종 로고 이미지로 변경
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -111,11 +112,12 @@ class ToDoViewController: UIViewController {
         view.addSubview(notificationButton)
         view.addSubview(showmoreButton)
         logoImage.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(8)
-            make.leading.equalToSuperview().inset(8)
+            make.top.bottom.equalToSuperview().inset(4)
+            make.leading.equalToSuperview().inset(16)
          }
         notificationButton.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
+           // make.leading.equalTo(logoImage.snp.trailing).offset(16)
             make.trailing.equalTo(showmoreButton.snp.leading).inset(-16)
          }
         showmoreButton.snp.makeConstraints { make in
@@ -128,7 +130,65 @@ class ToDoViewController: UIViewController {
     
     private lazy var followingView : UIView = {
         var view = UIView()
-        view.backgroundColor = .blue
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(followingProfile)
+        followingProfile.snp.makeConstraints { make in
+            make.leading.top.bottom.equalToSuperview().offset(8)
+            make.width.equalTo(view.snp.height)
+        }
+        view.addSubview(moreFollowingImage)
+        moreFollowingImage.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().offset(8)
+            make.leading.equalTo(followingProfile.snp.trailing)
+            make.height.equalTo(view.snp.height).multipliedBy(0.6)
+            make.width.equalTo(view.snp.height).multipliedBy(0.6)
+        }
+        return view
+    }()
+    
+    
+    private lazy var followingProfile : UIView = {
+        var view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(followingProfileImage)
+        followingProfileImage.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview()
+            make.height.equalTo(view.snp.height).multipliedBy(0.6)
+            make.width.equalTo(view.snp.height).multipliedBy(0.6)
+            make.centerX.equalToSuperview()
+        }
+        view.addSubview(followingProfileName)
+        followingProfileName.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(followingProfileImage.snp.bottom).offset(4)
+            make.height.equalTo(view.snp.height).multipliedBy(0.2)
+            make.width.equalTo(view.snp.height).multipliedBy(0.6)
+            make.centerX.equalToSuperview()
+        }
+        return view
+    }()
+    
+    private lazy var followingProfileImage : UIImageView = {
+        var view = UIImageView()
+        view.image = UIImage(named: "waffle.jpg") // 추후 최종 로고 이미지로 변경
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var followingProfileName : UILabel = {
+        var label = UILabel()
+        label.text = "me"
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+  
+    private lazy var moreFollowingImage : UIImageView = {
+        var view = UIImageView()
+        view.image = UIImage(named: "morefollowing.jpg") // 추후 최종 로고 이미지로 변경
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -144,10 +204,10 @@ class ToDoViewController: UIViewController {
         statusView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview()
-            make.height.equalTo(view.snp.height).multipliedBy(0.1)
+            make.height.equalTo(view.snp.height).multipliedBy(0.08)
          }
         calendarView.snp.makeConstraints { make in
-            make.top.equalTo(statusView.snp.bottom).inset(30)
+            make.top.equalTo(statusView.snp.bottom).inset(20)
             make.leading.trailing.equalToSuperview()
            // make.height.equalTo(450)
             
@@ -164,13 +224,20 @@ class ToDoViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImage)
         view.addSubview(profileName)
+        view.addSubview(profileIntro)
         view.addSubview(diaryButton)
         profileImage.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(22) //추후 프로필 이미지 사이즈에 따라 변형
+            make.top.bottom.equalToSuperview().inset(4) //추후 프로필 이미지 사이즈에 따라 변형
             make.leading.equalToSuperview().inset(8)
+            make.width.equalTo(view.snp.height).multipliedBy(0.9)
          }
         profileName.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
+            make.top.equalToSuperview().inset(8)
+            make.leading.equalTo(profileImage.snp.trailing).inset(-8)
+         }
+        profileIntro.snp.makeConstraints { make in
+            make.top.equalTo(profileName.snp.bottom)
+            make.bottom.equalToSuperview().inset(8)
             make.leading.equalTo(profileImage.snp.trailing).inset(-8)
          }
         diaryButton.snp.makeConstraints { make in
@@ -181,18 +248,25 @@ class ToDoViewController: UIViewController {
     }()
     
     private lazy var profileImage : UIImageView = {
-        var view = UIImageView(image: UIImage(named: "waffle.png")) // 임의의 예시, 추후 프로필 사진으로 변경
+        var view = UIImageView(image: UIImage(named: "waffle.jpg")) // 임의의 예시, 추후 프로필 사진으로 변경
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     private lazy var profileName: UILabel = {
-        var view = UILabel()
-        view.text = "username" // 임의의 예시, 추후 사용자 이름으로 변경
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
+        var label = UILabel()
+        label.text = "User" // 임의의 예시, 추후 사용자 이름으로 변경
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
+    private lazy var profileIntro: UILabel = {
+        var label = UILabel()
+        label.text = "자기소개" // 임의의 예시, 추후 사용자 이름으로 변경
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     
     private lazy var diaryButton : UIButton = {
         let button = UIButton(type: .system)
@@ -238,7 +312,7 @@ class ToDoViewController: UIViewController {
         return dateFormatter.date(from: strDate)!
     } //UICalendar은 date형 데이터 사용 : string -> date 형변환 함수
     
-    let dummy_day = "2024-01-31"
+    let dummy_day = "2024-01-13"
     private lazy var dummy_days = [getStringToDate(strDate: dummy_day) : [1, "green"]] // [남은 일의 수, 목표 색]
     
     private lazy var todoView : UITableView = {

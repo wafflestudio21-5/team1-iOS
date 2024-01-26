@@ -59,16 +59,11 @@ struct DiaryService{
         let decoder = JSONDecoder()
         
         do {
-            // Print the received data for debugging purposes
-            print(String(data: data, encoding: .utf8) ?? "Unable to convert data to string")
-            
-            // Decode the Diary object
+            print(String(data: data, encoding: .utf8) ?? "Unable to convert data to string") //for debugginh
+            // Diary object decode
             let decodedData = try decoder.decode(Diary.self, from: data)
-            
-            // Return the array of Defaults from the Diary object
             return .success(decodedData)
         } catch {
-            // Handle decoding error
             print("Decoding error: \(error)")
             return .pathErr
         }
@@ -84,7 +79,7 @@ struct DiaryService{
                  "emoji": 10,
                 // "image": "string", //이미지 x
                  "created_by": 1, //유저 아이디 정보 아직 x
-                 "date": date ?? "no date"]
+                 "date": "2024-02-03"]  //date ?? "no date"
     }
     
     func patchDiary(diaryText: String?, date: String?, completion: @escaping (NetworkResult<Any>) -> Void){
@@ -105,8 +100,6 @@ struct DiaryService{
                 
                 let networkResult = self.judgeStatus(by: statusCode, value)
                 completion(networkResult)
-             
-
             case .failure: completion(.pathErr)
         }
                     

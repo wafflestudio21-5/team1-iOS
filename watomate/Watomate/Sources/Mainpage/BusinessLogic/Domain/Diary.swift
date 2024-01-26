@@ -7,7 +7,6 @@
 //
 
 import Foundation
-@MainActor
 
 struct Diary: Codable{
     let id: Int
@@ -16,7 +15,7 @@ struct Diary: Codable{
     let mood : Int
     let color: String
     let emoji: Int
-    let image: String
+    let image: [String]?
     let created_by: Int
     let date: String
     let likes: [Like]
@@ -25,11 +24,14 @@ struct Diary: Codable{
 
 struct Like: Codable{
     let user : Int
+    let emoji : Int
 }
 
 struct Comment: Codable{
-    let created_at : String //?
+    let id : Int
+    let created_at_iso : String //?
     let user : Int
     let description : String
     let likes : [Like]
 }
+

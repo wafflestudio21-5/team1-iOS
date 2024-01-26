@@ -1,14 +1,14 @@
 //
-//  EmojiViewController.swift
-//  WaToDoMate
+//  BackgroundColorViewController.swift
+//  Watomate
 //
-//  Created by 이수민 on 2024/01/08.
+//  Created by 이수민 on 2024/01/19.
+//  Copyright © 2024 tuist.io. All rights reserved.
 //
-
+/*
 import UIKit
 
-class EmojiViewController: SheetCustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-
+class BackgroundColorViewController: SheetCustomViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     var onEmojiSelected: ((String) -> Void)?
 
     override func viewDidLoad() {
@@ -17,7 +17,7 @@ class EmojiViewController: SheetCustomViewController, UICollectionViewDelegate, 
         sheetView.addSubview(emojiCollectionView)
         emojiCollectionView.snp.makeConstraints { make in
             make.top.equalToSuperview()
-            make.leading.trailing.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(8)
             make.bottom.equalToSuperview()
         }
         emojiCollectionView.dataSource = self
@@ -74,3 +74,5 @@ extension EmojiViewController: UICollectionViewDataSource {
         onEmojiSelected?(selectedCell?.selectedEmoji ?? "")
     }
 }
+
+*/

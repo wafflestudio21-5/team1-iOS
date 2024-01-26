@@ -1,17 +1,19 @@
 //
-//  PrivacySetViewController.swift
-//  WaToDoMate
+
+//  GroupViewController.swift
+//  Watomate
 //
-//  Created by 이수민 on 2024/01/09.
+//  Created by 이수민 on 2023/12/31.
+//  Copyright © 2023 tuist.io. All rights reserved.
 //
 
 import UIKit
 
-class PrivacySettingViewController: SheetCustomViewController {
+
+class GroupViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setTitle("공개설정")
 
         // Do any additional setup after loading the view.
     }
