@@ -136,7 +136,7 @@ class FirstViewController: UIViewController {
                     self?.transitionToMainScreen()
                 case .guestLoginFailed(let errorMessage):
                     self?.showAlert(message: errorMessage)
-                case .kakaoLoginFailed(let errorMessage):
+                case .kakaoLoginFailed:
                     self?.showAlert(message: "Kakao login Failed")
                 }
             }.store(in: &cancellables)
