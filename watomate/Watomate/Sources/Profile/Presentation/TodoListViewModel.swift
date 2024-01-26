@@ -197,6 +197,9 @@ extension TodoListViewModel: TodoCellViewModelDelegate {
 //        todoRepository.update(todo)
     }
 
+    func todoCellViewModelNavigateToDetail(_ cellViewModel: TodoCellViewModel) {
+        delegate?.todoListViewModel(self, showDetailViewWith: cellViewModel)
+    }
 }
 
 
@@ -225,4 +228,6 @@ protocol TodoListViewModelDelegate: AnyObject {
     )
     
     func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateItem: Todo, at indexPath: IndexPath)
+    
+    func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith: TodoCellViewModel)
 }

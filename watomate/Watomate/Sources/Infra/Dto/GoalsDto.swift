@@ -32,4 +32,5 @@ struct TodoDto: Codable {
 
 struct LikeDto: Codable {
     let user: Int
+//    let emoji: Int
 }

@@ -19,10 +19,6 @@ class TodoRepository: TodoRepositoryProtocol {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .formatted(formatter)
     }
-    
-//    func get(at indexPath: IndexPath) -> Todo? {
-//        <#code#>
-//    }
 
     func getAllTodos() async throws -> GoalsResponseDto{
         do {
@@ -37,8 +33,13 @@ class TodoRepository: TodoRepositoryProtocol {
         }
     }
     
-    func addTodo(userId: Int, goalId: Int, todo: Todo) async {
-        
+    func addTodo(userId: Int, goalId: Int, todo: Todo) async throws {
+//        do {
+//            try await session
+//                .request(TodoRouter.addTodo(userId: User.shared.id!, goalId: goalId, todo: todo))
+//        } catch {
+//            throw error
+//        }
     }
     
 //    func deleteTodo(with id: Int) {

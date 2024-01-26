@@ -162,6 +162,7 @@ class TodoCell: UITableViewCell {
     @objc private func showBottomSheetView() {
         // navigate to bottom sheet view with viewModel
         print("show bottom sheet view")
+        viewModel?.navigateToDetail()
     }
     
     @objc private func toggleCheckbox() {
@@ -195,6 +196,8 @@ extension TodoCell: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         guard textField == titleTextField else { return true }
         if textField.text?.isEmpty == false {
+            textField.allowsEditingTextAttributes = false
+            textField.isUserInteractionEnabled = false
             viewModel?.addNewTodoItem()
             return false
         } else {

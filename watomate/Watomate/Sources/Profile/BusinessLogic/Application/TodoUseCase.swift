@@ -24,7 +24,7 @@ class TodoUseCase {
     }
     
     func addTodo(userId: Int, goalId: Int, todo: Todo) async {
-        await todoRepository.addTodo(userId: userId, goalId: goalId, todo: todo)
+        try? await todoRepository.addTodo(userId: userId, goalId: goalId, todo: todo)
     }
     
     private func convert(goalsDto: GoalsResponseDto) -> [Goal] {

@@ -87,10 +87,15 @@ class TodoCellViewModel: ViewModelType, Hashable {
     func endEditingTitle(with title: String?) {
         delegate?.todoCellViewModel(self, didEndEditingWith: title)
     }
+    
+    func navigateToDetail() {
+        delegate?.todoCellViewModelNavigateToDetail(self)
+    }
 }
 
 protocol TodoCellViewModelDelegate: AnyObject {
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didUpdateItem: Todo)
     func todoCellViewModelDidReturnTitle(_ viewModel: TodoCellViewModel)
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingWith title: String?)
+    func todoCellViewModelNavigateToDetail(_ viewModel: TodoCellViewModel)
 }
