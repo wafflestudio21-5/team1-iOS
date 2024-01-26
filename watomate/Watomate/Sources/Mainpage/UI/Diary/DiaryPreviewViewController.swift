@@ -63,7 +63,6 @@ class DiaryPreviewViewController: SheetCustomViewController {
         return view
     }()
     
-    
     private lazy var emojiView: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("😊", for: .normal)
@@ -77,7 +76,7 @@ class DiaryPreviewViewController: SheetCustomViewController {
         var label = UILabel()
         label.text = "50" // 마음온도, 변경
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.boldSystemFont(ofSize: 24)
         label.contentMode = .top
         return label
     }()

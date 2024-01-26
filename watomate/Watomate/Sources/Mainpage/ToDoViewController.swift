@@ -27,13 +27,7 @@ class ToDoViewController: UIViewController {
         }
         else{
             let vc = DiaryPreviewViewController()
-            print(1)
             setSheetLayout(for: vc)
-            /*
-            vc.onDismiss = { data in
-                self.emoji = data
-                self.updateEmojiButtonAppearance()
-            }*/
             present(vc, animated: true, completion: nil)
         }
        
@@ -323,11 +317,6 @@ class ToDoViewController: UIViewController {
     
     private lazy var todoView : UITableView = {
         var tableView = UITableView()
-      /*  tableView.dataSource = self
-        tableView.delegate = self
-        tableView.estimatedRowHeight = 50
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.keyboardDismissMode = .interactive */
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
@@ -352,21 +341,24 @@ extension ToDoViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
         dateFormatter.dateFormat = "yyyy-MM-dd"
         dateString = dateFormatter.string(from: date)
         
-        if dummy_days.keys.contains(date),
-           let data = dummy_days[date],
-           let numericValue = data.first as? Int,
-           let colorString = data.last as? String {
-            return .customView {
-                let systemName = "\(numericValue).circle"
-                let imageView = UIImageView(image: UIImage(systemName: systemName))
-                imageView.tintColor = UIColor(named: colorString)
-                return imageView
+        if dateComponents == selectedDate {
+            // 서버 연동 후 날짜별로 맞는 emoji 가져오기
+            return nil
+        } else {
+            if dummy_days.keys.contains(date),
+               let data = dummy_days[date],
+               let numericValue = data.first as? Int,
+               let colorString = data.last as? String {
+                return .customView {
+                    let systemName = "\(numericValue).circle"
+                    let imageView = UIImageView(image: UIImage(systemName: systemName))
+                    imageView.tintColor = UIColor(named: colorString)
+                    return imageView
+                }
+            } else {
+                return nil
             }
         }
-        else{
-            return nil
-        }
-        
         
     }
     

@@ -136,11 +136,29 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         return button
     }()
     
+    var moodNumber : Int? = nil
+    @objc private func moodButtonTapped() {
+        let vc = MoodViewController()
+        setSheetLayout(for: vc)
+        vc.onDismiss = { data in
+            self.moodNumber = Int(data)
+            self.updateMoodAppearance()
+        }
+        present(vc, animated: true, completion: nil)
+    }
+    
+    private func updateMoodAppearance() {
+        if moodNumber == nil {
+            moodView.text = "25°"
+        } else {
+            moodView.text = "\(moodNumber ?? 25)°"
+        }
+    }
+    
     private lazy var moodView : UILabel = {
         var label = UILabel()
-        label.text = "50"
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 16)
+        label.font = UIFont.boldSystemFont(ofSize: 24)
         label.contentMode = .top
         return label
     }()
@@ -262,7 +280,11 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         backgroundColorButton.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(8)
             make.leading.equalToSuperview().offset(16)
- 
+         }
+        view.addSubview(moodButton)
+        moodButton.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(8)
+            make.leading.equalTo(backgroundColorButton.snp.trailing).offset(8)
          }
         return view
         
@@ -315,6 +337,29 @@ class DiaryCreateViewController: PlainCustomBarViewController{
 
         backgroundColorButton.layer.cornerRadius = backgroundColorButton.bounds.height / 2
         backgroundColorButton.clipsToBounds = true
+        
+        moodButton.layer.cornerRadius = backgroundColorButton.bounds.height / 2
+        moodButton.clipsToBounds = true
     }
+    
+    private lazy var moodButton: UIButton = {
+        var configuration = UIButton.Configuration.filled()
+        configuration.image = UIImage(systemName: "heart")
+        configuration.imagePadding = 10
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+
+        let button = UIButton(configuration: configuration)
+        button.addTarget(self, action: #selector(moodButtonTapped), for: .touchUpInside)
+        button.backgroundColor = .systemGray
+
+        button.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        button.imageView?.contentMode = .scaleAspectFit
+        
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
 
 }

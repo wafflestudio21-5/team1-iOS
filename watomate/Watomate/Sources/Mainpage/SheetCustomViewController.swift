@@ -112,7 +112,6 @@ extension SheetCustomViewController {
     func setLeftButtonStyle(symbolName: String) {
         leftButton.isHidden = false
         leftButton.setImage(UIImage(systemName: symbolName)?.withTintColor(.black, renderingMode: .alwaysOriginal), for: .normal)
-        
     }
     
     func setRightButtonStyle(symbolName: String) {
