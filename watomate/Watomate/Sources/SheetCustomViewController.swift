@@ -1,10 +1,3 @@
-//
-//  SheetCustomViewController.swift
-//  WaToDoMate
-//
-//  Created by 이수민 on 2024/01/09.
-//
-
 import UIKit
 
 class SheetCustomViewController: UIViewController {
@@ -16,14 +9,14 @@ class SheetCustomViewController: UIViewController {
 
     func setupLayout(){
         view.backgroundColor = .white
-        view.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
-            make.centerX.equalToSuperview()
-         }
+        view.addSubview(navigationBarView)
+        navigationBarView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(24)
+            make.leading.trailing.equalToSuperview()
+        }
         view.addSubview(sheetView)
         sheetView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
+            make.top.equalTo(navigationBarView.snp.bottom).offset(10)
             make.leading.trailing.equalToSuperview()
         }
         view.addSubview(okButton)
@@ -33,8 +26,39 @@ class SheetCustomViewController: UIViewController {
             make.centerX.equalToSuperview()
             make.width.equalToSuperview().offset(-30)
         }
-        
     }
+    
+    private lazy var navigationBarView : UIView = {
+        let view = UIView()
+        view.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.centerX.equalToSuperview()
+         }
+        view.addSubview(leftButton)
+        leftButton.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.equalToSuperview().inset(16)
+         }
+        view.addSubview(rightButton)
+        rightButton.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.trailing.equalToSuperview().inset(16)
+         }
+        return view
+    }()
+    
+    private lazy var leftButton = {
+        let button = UIButton()
+        button.isHidden = true
+        return button
+    }()
+    
+    private lazy var rightButton = {
+       let button = UIButton()
+        button.isHidden = true
+        return button
+    }()
     
     private lazy var titleLabel : UILabel = {
         var label = UILabel()
@@ -45,7 +69,7 @@ class SheetCustomViewController: UIViewController {
     private lazy var okButton : UIButton = {
         let button = UIButton(type: .system)
    //     button.addTarget(self, action: #selector(okButtonTapped), for: .touchUpInside)
-        button.backgroundColor = .lightGray
+        button.backgroundColor = .systemGray4
         button.titleLabel?.font = .systemFont(ofSize: 16)
         button.setTitle("확인", for: .normal)
         button.setTitleColor(.black, for: .normal)
@@ -77,4 +101,29 @@ extension SheetCustomViewController {
     func hideOkButton(){
         okButton.isHidden = true
     }
+    
+    func setLeftButtonStyle(symbolName: String) {
+        leftButton.isHidden = false
+        leftButton.setImage(UIImage(systemName: symbolName)?.withTintColor(.black, renderingMode: .alwaysOriginal), for: .normal)
+        
+    }
+    
+    func setRightButtonStyle(symbolName: String) {
+        rightButton.isHidden = false
+        rightButton.setImage(UIImage(systemName: symbolName)?.withTintColor(.black, renderingMode: .alwaysOriginal), for: .normal)
+        
+    }
+    
+    @objc func leftButtonTapped() {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func setLeftButtonAction(target: Any? = nil, action: Selector) {
+        leftButton.addTarget(target, action: action, for: .touchUpInside)
+    }
+    
+    func setRightButtonAction(target: Any? = nil, action: Selector) {
+        rightButton.addTarget(target, action: action, for: .touchUpInside)
+    }
+    
 }
