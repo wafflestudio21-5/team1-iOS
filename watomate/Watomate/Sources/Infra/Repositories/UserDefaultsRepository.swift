@@ -11,6 +11,7 @@ import Foundation
 protocol UserDefaultsRepositoryProtocol {
     func get<T: Codable>(_ type: T.Type, key: UserDefaultsKey) -> T?
     func set<T: Codable>(_ type: T.Type, key: UserDefaultsKey, value: T?)
+    func removeAll()
 }
 
 enum UserDefaultsKey: String {
@@ -36,6 +37,12 @@ class UserDefaultsRepository: UserDefaultsRepositoryProtocol {
     func set<T: Codable>(_ type: T.Type, key: UserDefaultsKey, value: T?) {
         let data = try? JSONEncoder().encode(value)
         storage.set(data, forKey: key.rawValue)
+    }
+    
+    func removeAll() {
+        for key in storage.dictionaryRepresentation().keys {
+            storage.removeObject(forKey: key.description)
+        }
     }
     
 }
