@@ -14,6 +14,7 @@ class EmojiViewController: SheetCustomViewController, UICollectionViewDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         setTitle("이모지")
+        setupLayout() 
         sheetView.addSubview(emojiCollectionView)
         emojiCollectionView.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -21,7 +22,6 @@ class EmojiViewController: SheetCustomViewController, UICollectionViewDelegate, 
             make.bottom.equalToSuperview()
         }
         emojiCollectionView.dataSource = self
-        
         okButtonAction(target: self, action: #selector(okButtonTapped))
     }
     
@@ -30,7 +30,6 @@ class EmojiViewController: SheetCustomViewController, UICollectionViewDelegate, 
               let selectedCell = emojiCollectionView.cellForItem(at: selectedIndexPath) as? EmojiCollectionViewCell else {
             return
         }
-
         let selectedEmoji = selectedCell.selectedEmoji
         onDismiss?(selectedEmoji)
         dismiss(animated: true, completion: nil)
@@ -47,25 +46,25 @@ class EmojiViewController: SheetCustomViewController, UICollectionViewDelegate, 
         return collectionView
     }()
     
-    let dummyEmojis = ["😊", "😠", "🥺", "😂",  "📚", "📝", "🌟", "🏝️", "🎸", "❤️"]
+    var emojis: [DiaryEmoji] = [.happy, .angry, .pleading, .laughing, .books, .note, .star, .island, .guitar, .heart]
 }
 
 extension EmojiViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dummyEmojis.count
+        return emojis.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EmojiCell", for: indexPath) as! EmojiCollectionViewCell
-        let emoji = dummyEmojis[indexPath.item]
+        let emoji = emojis[indexPath.item].rawValue
         cell.configure(with: emoji)
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let cellWidth = collectionView.bounds.width / CGFloat(dummyEmojis.count)
+        let cellWidth = collectionView.bounds.width / CGFloat(emojis.count)
         return CGSize(width: cellWidth, height: cellWidth)
     }
     

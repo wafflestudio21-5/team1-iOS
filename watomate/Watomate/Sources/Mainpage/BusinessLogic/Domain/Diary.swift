@@ -14,7 +14,7 @@ struct Diary: Codable{
     let visibility : String
     let mood : Int
     let color: String
-    let emoji: Int
+    let emoji: String
     let image: [String]?
     let created_by: Int
     let date: String
@@ -22,14 +22,15 @@ struct Diary: Codable{
     let comments :[Comment]
 }
 
+
 struct Like: Codable{
     let user : Int
-    let emoji : Int
+    let emoji : String
 }
 
 struct Comment: Codable{
     let id : Int
-    let created_at_iso : String //?
+    let created_at_iso : String
     let user : Int
     let description : String
     let likes : [Like]

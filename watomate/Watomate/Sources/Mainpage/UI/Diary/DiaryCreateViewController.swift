@@ -9,58 +9,51 @@ import UIKit
 import SnapKit
 
 class DiaryCreateViewController: PlainCustomBarViewController{
-    
+    var viewModel = DiaryCreateViewModel()
     var completionClosure: ((String) -> Void)?
-    
-    @objc private func finishButtonTapped() {
-        let diaryText = diaryTextField.text ?? "no context"
-        let profileDate = profileDate.text ?? "no date"
-        
-        DiaryCreateService.shared.createDiary(diaryText: diaryText, date: profileDate){ (response) in
-           // NetworkResult형 enum값을 이용해서 분기처리를 합니다.
-           switch(response) {
-           
-           // 성공할 경우에는 <T>형으로 데이터를 받아올 수 있다고 했기 때문에 Generic하게 아무 타입이나 가능하기 때문에
-           // 클로저에서 넘어오는 데이터를 let personData라고 정의합니다.
-           case .success(let diaryData):
-               // personData를 Person형이라고 옵셔널 바인딩 해주고, 정상적으로 값을 data에 담아둡니다.
-               if let data = diaryData as? Diary {
-                   print("\(data.date)")
-               }
-           // 실패할 경우에 분기처리는 아래와 같이 합니다.
-           case .requestErr(let message) :
-               print("requestErr", message)
-           case .pathErr :
-               print("pathErr")
-           case .serverErr :
-               print("serveErr")
-           case .networkFail:
-               print("networkFail")
-               
-           }
-       } //안됨
-         /*
-        
-        DiaryService.shared.patchDiary(diaryText: diaryText, date: profileDate){ (response) in
-           switch(response) {
-           case .success(let diaryData):
-               if let data = diaryData as? Diary {
-                   print("\(data.id)")
-               }
-           case .requestErr(let message) :
-               print("requestErr", message)
-           case .pathErr :
-               print("pathErr")
-           case .serverErr :
-               print("serveErr")
-           case .networkFail:
-               print("networkFail")
-           }
-       }*/
-        completionClosure?(emoji) //emoji todoVC로 보내기
-        navigationController?.popViewController(animated: true)
-    } //수정 필요
 
+    // @objc와 비동기 같이 사용 불가 -> synchronous wrapper
+    @objc private func finishButtonTappedSync() {
+        completionClosure?(emoji ?? "no emoji")
+        navigationController?.popViewController(animated: true)
+        /*
+        do {
+            try Task.detached {
+                try await self.finishButtonTapped()
+            }
+        } catch {
+            // Handle any errors here
+            print("An error occurred: \(error)")
+        }
+         */
+    }
+     
+/*
+    // 비동기 Asynchronous method
+    private func finishButtonTapped() async {
+        let diaryText = diaryTextField.text ?? "error : no context"
+        let profileDate = profileDate.text ?? "error : no date"
+        let caseString = String(describing: diaryVisibility)
+        var visibilityString : String? = caseString.replacingOccurrences(of: "Watomate.DiaryVisibility.", with: "")
+        if visibilityString == "ND"{
+            visibilityString = nil
+        }
+        let createdDiary = DiaryCreateDTO(description: diaryText, visibility: visibilityString, mood: nil, color: backgroundColor, emoji: nil, image: nil, created_by: 3, date: profileDate)
+        print(createdDiary)
+         
+        do {
+            try await viewModel.diaryFinishButtonTapped(diary: createdDiary)
+            completionClosure?(emoji ?? "no emoji")
+            navigationController?.popViewController(animated: true)
+        } catch {
+            // Handle any errors here
+            print("An error occurred: \(error)")
+        }
+         
+    }
+    //서버로 전달됨, 그러나 An error occurred: decodingError
+    //badRequest도 뜸 -> 서버로 전달 안 됨
+*/
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,7 +61,7 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         setLeftButtonStyle(symbolName:"xmark", title:nil)
         setRightButtonStyle(symbolName: nil, title:"완료")
         setLeftButtonAction(target: self, action: #selector(backButtonTapped))
-        setRightButtonAction(target: self, action: #selector(finishButtonTapped))
+        setRightButtonAction(target: self, action: #selector(finishButtonTappedSync))
         // Do any additional setup after loading the view.
         setupLayout()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
@@ -80,36 +73,40 @@ class DiaryCreateViewController: PlainCustomBarViewController{
     private func setupLayout(){
         contentView.addSubview(emojiView)
         emojiView.snp.makeConstraints { make in
-            make.top.equalToSuperview() //추후 프로필 이미지 사이즈에 따라 변형
+            make.top.equalToSuperview()
             make.centerX.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.2)
+            make.height.equalToSuperview().multipliedBy(0.15)
+         }
+        contentView.addSubview(moodView)
+        moodView.snp.makeConstraints { make in
+            make.top.equalTo(emojiView.snp.bottom).inset(36)
+            make.centerX.equalToSuperview()
+            make.height.equalToSuperview().multipliedBy(0.05)
          }
         
         contentView.addSubview(profileView)
         profileView.snp.makeConstraints { make in
-            make.top.equalTo(emojiView.snp.bottom)
+            make.top.equalTo(moodView.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview().inset(8)
             make.height.equalToSuperview().multipliedBy(0.08)
-
          }
-        
         contentView.addSubview(diaryTextField)
         diaryTextField.snp.makeConstraints { make in
-            make.top.equalTo(profileView.snp.bottom).offset(24)//추후 프로필 이미지 사이즈에 따라 변형
+            make.top.equalTo(profileView.snp.bottom).offset(24)
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalToSuperview().multipliedBy(0.6)
          }
         
         contentView.addSubview(diaryMenuView)
         diaryMenuView.snp.makeConstraints { make in
-            make.top.equalTo(diaryTextField.snp.bottom)//추후 프로필 이미지 사이즈에 따라 변형
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(diaryTextField.snp.bottom)
+            make.leading.trailing.equalToSuperview()
             make.height.equalToSuperview().multipliedBy(0.1)
          }
         
     }
     
-    var emoji = "?"
+    var emoji : String? = nil
     @objc private func emojiButtonTapped() {
         let vc = EmojiViewController()
         setSheetLayout(for: vc)
@@ -118,11 +115,10 @@ class DiaryCreateViewController: PlainCustomBarViewController{
             self.updateEmojiButtonAppearance()
         }
         present(vc, animated: true, completion: nil)
-        
     }
     
     private func updateEmojiButtonAppearance() {
-        if emoji == "?" {
+        if emoji == nil {
             emojiView.setImage(UIImage(systemName: "face.dashed"), for: .normal)
         } else {
             emojiView.setImage(nil, for: .normal)
@@ -136,7 +132,17 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         button.addTarget(self, action: #selector(emojiButtonTapped), for: .touchUpInside)
         button.setImage(UIImage(systemName: "face.dashed"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.isUserInteractionEnabled = true //
         return button
+    }()
+    
+    private lazy var moodView : UILabel = {
+        var label = UILabel()
+        label.text = "50"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.contentMode = .top
+        return label
     }()
     
     private lazy var profileView: UIView = {
@@ -193,22 +199,26 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         return label
     }()
     
-    var visibility = "?"
+    var diaryVisibility: DiaryVisibility = .ND
     @objc private func visibilityButtonTapped() {
         let vc = DiaryVisibilityViewController()
         setSheetLayout(for: vc)
         vc.onDismiss = { data in
-            self.visibility = data
-            self.updateVisibilityButtonAppearance()
+            if let selectedVisibility = DiaryVisibility(rawValue: data) {
+                self.diaryVisibility = selectedVisibility
+                self.updateVisibilityButtonAppearance()
+            } else {
+                print("Invalid visibility value: \(data)") //예외처리
+            }
         }
         present(vc, animated: true, completion: nil)
     }
-
+    
     private func updateVisibilityButtonAppearance() {
-        if visibility == "?" {
+        if diaryVisibility == .ND {
             visibilityButton.setTitle("공개 설정", for: .normal)
         } else {
-            visibilityButton.setTitle(visibility, for: .normal)
+            visibilityButton.setTitle(diaryVisibility.rawValue, for: .normal)
         }
     }
     
@@ -224,11 +234,7 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         button.layer.cornerRadius = 10
         return button
     }()
-    
-    @objc func privacyButtonTapped() {
-       let privacysetViewController = DiaryVisibilityViewController()
-       navigationController?.pushViewController(privacysetViewController, animated: false)
-   }
+
     
     lazy var diaryTextField: UITextField = {
         var view = UITextField()
@@ -248,8 +254,6 @@ class DiaryCreateViewController: PlainCustomBarViewController{
             diaryTextField.resignFirstResponder()
         }
     }
-    
-    //
     
     private lazy var diaryMenuView: UIView = {
         var view = UIView()
@@ -283,46 +287,34 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         
         button.translatesAutoresizingMaskIntoConstraints = false
         
-
         return button
     }()
     
-   // var visibility = "?"
+    var backgroundColor : String? = nil
     @objc private func backgroundColorButtonTapped() {
         let vc = BackgroundColorViewController()
         setSheetLayout(for: vc)
-        /*
         vc.onDismiss = { data in
-            self.visibility = data
-            self.updateVisibilityButtonAppearance()
+            self.backgroundColor = data
+            self.updateBackgroundColor()
         }
-         */
         present(vc, animated: true, completion: nil)
     }
-/*
-    private func updateVisibilityButtonAppearance() {
-        if visibility == "?" {
-            visibilityButton.setTitle("공개 설정", for: .normal)
+
+    private func updateBackgroundColor() {
+        if backgroundColor == nil {
+            contentView.backgroundColor = .systemBackground
         } else {
-            visibilityButton.setTitle(visibility, for: .normal)
+            setBackgroundColor(UIColor(named: backgroundColor ?? "system") ?? .systemBackground)
+            diaryMenuView.backgroundColor = .systemBackground
         }
     }
-*/
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        // Update corner radius after layout is complete
+
         backgroundColorButton.layer.cornerRadius = backgroundColorButton.bounds.height / 2
         backgroundColorButton.clipsToBounds = true
     }
-
-
-
-    
-    
-    
-
-   
-  
 
 }

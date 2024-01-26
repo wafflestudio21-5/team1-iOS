@@ -57,7 +57,5 @@ class EmojiCollectionViewCell: UICollectionViewCell {
         }
       }
     }
-    
-    
 }
 

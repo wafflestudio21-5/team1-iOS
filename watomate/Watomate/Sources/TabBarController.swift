@@ -1,6 +1,6 @@
 //
 //  TabBarController.swift
-//  Watomate
+//  WaToMate
 //
 //  Created by 이수민 on 2023/12/31.
 //  Copyright © 2023 tuist.io. All rights reserved.
@@ -27,5 +27,5 @@ class TabBarController: UITabBarController {
         
         viewControllers = [todoVC, searchVC, groupVC, profileVC]
     }
-
 }
+

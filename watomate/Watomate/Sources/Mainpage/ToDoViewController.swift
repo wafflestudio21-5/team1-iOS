@@ -26,9 +26,15 @@ class ToDoViewController: UIViewController {
             navigationController?.pushViewController(diaryViewController, animated: false)
         }
         else{
-            let diaryViewController = DiaryPreviewViewController()
-            
-            navigationController?.pushViewController(diaryViewController, animated: false)
+            let vc = DiaryPreviewViewController()
+            print(1)
+            setSheetLayout(for: vc)
+            /*
+            vc.onDismiss = { data in
+                self.emoji = data
+                self.updateEmojiButtonAppearance()
+            }*/
+            present(vc, animated: true, completion: nil)
         }
        
    }
@@ -346,9 +352,6 @@ extension ToDoViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
         dateFormatter.dateFormat = "yyyy-MM-dd"
         dateString = dateFormatter.string(from: date)
         
-    //    var fontDesign: UIFontDescriptor.SystemDesign { get set }
-    //    enum DecorationSize : 2, @unchecked Sendable
-        
         if dummy_days.keys.contains(date),
            let data = dummy_days[date],
            let numericValue = data.first as? Int,
@@ -368,45 +371,4 @@ extension ToDoViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
     }
     
 }
-/*
-extension ToDoViewController : UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        //Return the desired height for the section header in this section
-        return 40.0
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView()
-        headerView.backgroundColor = UIColor.systemGray.withAlphaComponent(0.2)
-        
-        let titleLabel = UILabel()
-        titleLabel.textColor = .black
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 16)
-        
-        // Customize the header view and title label based on the section
-        
-        titleLabel.text = String(section)
-        
-        headerView.addSubview(titleLabel)
-        
-        titleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(8)
-            make.centerY.equalToSuperview()
-        }
-        
-        return headerView
-    } // section별 헤더
-}
 
-
-extension ToDoViewController : UITableViewDataSource{
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        <#code#>
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        <#code#>
-    }
-    
-  
-}

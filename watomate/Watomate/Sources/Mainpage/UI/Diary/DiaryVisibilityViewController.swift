@@ -34,7 +34,7 @@ class DiaryVisibilityViewController: SheetCustomViewController {
         stackView.axis = .vertical
         stackView.distribution = .fillEqually
         stackView.spacing = 10
-        let buttonTitles = ["전체공개", "팔로워 공개", "일부공개", "나만보기"]
+        let buttonTitles = ["전체공개", "팔로워 공개", "나만보기"] //일부공개 제외
 
         for title in buttonTitles {
             let button = createSelectableButton(title: title)

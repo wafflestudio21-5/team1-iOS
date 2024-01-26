@@ -6,25 +6,35 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
-import UIKit
+import Alamofire
+import Foundation
 
-class Router: UIViewController {
+protocol Router: URLRequestConvertible {
+    var baseURL: URL { get }
+    var method: HTTPMethod { get }
+    var path: String { get }
+    var parameters: Parameters? { get }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    func asURLRequest() throws -> URLRequest
+}
 
-        // Do any additional setup after loading the view.
+extension Router {
+    var baseURL: URL {
+        return URL(string: "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api")!
     }
-    
 
-    /*
-    // MARK: - Navigation
+    func asURLRequest() throws -> URLRequest {
+        let url = baseURL.appendingPathComponent(path)
+        var request = URLRequest(url: url)
+        request.method = method
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        switch method {
+        case .get:
+            request = try URLEncoding.default.encode(request, with: parameters)
+        default:
+            request = try JSONEncoding.default.encode(request, with: parameters)
+        }
+
+        return request
     }
-    */
-
 }
