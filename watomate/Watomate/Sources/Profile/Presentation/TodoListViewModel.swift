@@ -229,5 +229,5 @@ protocol TodoListViewModelDelegate: AnyObject {
     
     func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateItem: Todo, at indexPath: IndexPath)
     
-    func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith: TodoCellViewModel)
+    func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel)
 }

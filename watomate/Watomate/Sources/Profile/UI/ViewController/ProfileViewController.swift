@@ -259,8 +259,9 @@ extension ProfileViewController: TodoListViewModelDelegate {
 //        updateUnavailableView()
     }
     
-    func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith: TodoCellViewModel) {
+    func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel) {
         let vc = TodoDetailViewController()
+        vc.configure(with: cellViewModel)
         present(vc, animated: true)
     }
 }

@@ -12,14 +12,21 @@ class TodoCell: UITableViewCell {
     static let reuseIdentifier = "TodoCell"
     var viewModel: TodoCellViewModel?
 
+//    private lazy var checkbox = {
+//        let image = UIImage(systemName: "circle")
+//        let imageView = UIImageView(image: image)
+//        imageView.contentMode = .scaleAspectFit
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleCheckbox))
+//        imageView.addGestureRecognizer(tapGesture)
+//        imageView.isUserInteractionEnabled = true
+//        return imageView
+//    }()
     private lazy var checkbox = {
-        let image = UIImage(systemName: "circle")
-        let imageView = UIImageView(image: image)
-        imageView.contentMode = .scaleAspectFit
+        let view = CustomSymbolView(size: 25)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleCheckbox))
-        imageView.addGestureRecognizer(tapGesture)
-        imageView.isUserInteractionEnabled = true
-        return imageView
+        view.addGestureRecognizer(tapGesture)
+        view.isUserInteractionEnabled = true
+        return view
     }()
 
     private lazy var titleStackView = {
@@ -173,7 +180,12 @@ class TodoCell: UITableViewCell {
     }
 
     private func configureCheckbox(isComplete: Bool) {
-        checkbox.image = UIImage(systemName: isComplete ? "circle.inset.filled" : "circle")
+        if isComplete {
+            checkbox.addCheckMark()
+        } else {
+            checkbox.removeCheckMark()
+        }
+//        checkbox.image = UIImage(systemName: isComplete ? "circle.inset.filled" : "circle")
     }
     
     override func awakeFromNib() {

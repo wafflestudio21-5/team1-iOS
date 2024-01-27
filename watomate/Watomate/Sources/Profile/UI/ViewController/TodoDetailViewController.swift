@@ -78,6 +78,7 @@ class TodoDetailViewController: SheetCustomViewController {
         textField.rightView = paddingView
         textField.leftViewMode = .always
         textField.rightViewMode = .always
+        textField.isHidden = true
         return textField
     }()
     
@@ -152,6 +153,13 @@ class TodoDetailViewController: SheetCustomViewController {
         
         memoTextField.snp.makeConstraints { make in
             make.height.equalTo(100)
+        }
+    }
+    
+    func configure(with viewModel: TodoCellViewModel) {
+        setTitle(viewModel.title)
+        if viewModel.memo?.isEmpty == false {
+            memoTextField.isHidden = false
         }
     }
 }
