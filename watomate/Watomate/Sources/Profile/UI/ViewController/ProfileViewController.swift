@@ -260,8 +260,8 @@ extension ProfileViewController: TodoListViewModelDelegate {
     }
     
     func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel) {
-        let vc = TodoDetailViewController()
-        vc.configure(with: cellViewModel)
+        let vc = TodoDetailViewController(viewModel: cellViewModel)
+        vc.delegate = self
         present(vc, animated: true)
     }
 }
@@ -274,6 +274,11 @@ extension ProfileViewController: ProfileEditViewDelegate {
 //            headerView.layoutIfNeeded()
         }
     }
+}
 
-    
+extension ProfileViewController: TodoDetailViewDelegate {
+    func deleteTodoCell(with viewModel: TodoCellViewModel) {
+        guard let indexPath = todoListViewModel.indexPath(with: viewModel.uuid) else { return }
+        self.todoListViewModel.remove(at: indexPath)
+    }
 }

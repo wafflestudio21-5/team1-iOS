@@ -17,15 +17,23 @@ class TodoUseCase {
     }
     
     func getAllTodos() async throws -> [Goal] {
-        let goalDto = try await todoRepository.getAllTodos()//id 넣도록 수정하기
+        let goalDto = try await todoRepository.getAllTodos()
         let goals = convert(goalsDto: goalDto)
         self.goals = goals
         return goals
     }
     
-    func addTodo(_ goalId: Int, _ todo: Todo) async throws {
+    func addTodo(_ goalId: Int, _ todo: Todo) async {
         do {
             try await todoRepository.addTodo(goalId: goalId, todo: todo)
+        } catch {
+            print(error)
+        }
+    }
+    
+    func deleteTodo(_ goalId: Int, _ todoId: Int) async {
+        do {
+            try await todoRepository.deleteTodo(goalId: goalId, todoId: todoId)
         } catch {
             print(error)
         }

@@ -141,9 +141,18 @@ class TodoListViewModel: ViewModelType {
     }
     
     func remove(at indexPath: IndexPath) {
+        guard let viewModel = viewModel(at: indexPath) else { return }
         var curVMs = viewModelsSubject.value
         curVMs[indexPath.section]?.remove(at: indexPath.row)
         viewModelsSubject.send(curVMs)
+        
+        if !viewModel.title.isEmpty {
+            guard let goalId = goalIdsForSections[indexPath.section] else { return }
+            guard let todoId = viewModel.id else { return }
+            Task {
+                try await todoUseCase.deleteTodo(goalId, todoId)
+            }
+        }
     }
     
     func section(with todo: Todo) -> Int? {

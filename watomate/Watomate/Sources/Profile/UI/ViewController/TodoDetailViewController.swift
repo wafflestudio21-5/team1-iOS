@@ -9,7 +9,23 @@
 import UIKit
 import SnapKit
 
+protocol TodoDetailViewDelegate: AnyObject {
+    func deleteTodoCell(with viewModel: TodoCellViewModel)
+}
+
 class TodoDetailViewController: SheetCustomViewController {
+    private var viewModel: TodoCellViewModel
+    var delegate: TodoDetailViewDelegate?
+    
+    init(viewModel: TodoCellViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private lazy var detailStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -87,7 +103,6 @@ class TodoDetailViewController: SheetCustomViewController {
         cellView.setTitle("시간 알림")
         cellView.setIcon(UIImage(systemName: "clock.fill")!)
         cellView.setIconBackgroundColor(.systemPink)
-
         return cellView
     }()
     
@@ -125,8 +140,12 @@ class TodoDetailViewController: SheetCustomViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configure(with: viewModel)
         hideOkButton()
-        
+        setupDetailViewLayout()
+    }
+    
+    func setupDetailViewLayout() {
         sheetView.addSubview(detailStackView)
         
         detailStackView.addArrangedSubview(editDeleteStackView)
@@ -161,5 +180,11 @@ class TodoDetailViewController: SheetCustomViewController {
         if viewModel.memo?.isEmpty == false {
             memoTextField.isHidden = false
         }
+        deleteTodoButton.addTarget(self, action: #selector(handleDeleteBtnTap), for: .touchUpInside)
+    }
+    
+    @objc func handleDeleteBtnTap() {
+        delegate?.deleteTodoCell(with: viewModel)
+        dismiss(animated: true)
     }
 }

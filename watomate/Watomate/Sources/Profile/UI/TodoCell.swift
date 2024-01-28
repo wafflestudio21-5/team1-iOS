@@ -12,15 +12,6 @@ class TodoCell: UITableViewCell {
     static let reuseIdentifier = "TodoCell"
     var viewModel: TodoCellViewModel?
 
-//    private lazy var checkbox = {
-//        let image = UIImage(systemName: "circle")
-//        let imageView = UIImageView(image: image)
-//        imageView.contentMode = .scaleAspectFit
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleCheckbox))
-//        imageView.addGestureRecognizer(tapGesture)
-//        imageView.isUserInteractionEnabled = true
-//        return imageView
-//    }()
     private lazy var checkbox = {
         let view = CustomSymbolView(size: 25)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleCheckbox))
@@ -167,8 +158,6 @@ class TodoCell: UITableViewCell {
     }
 
     @objc private func showBottomSheetView() {
-        // navigate to bottom sheet view with viewModel
-        print("show bottom sheet view")
         viewModel?.navigateToDetail()
     }
     
@@ -185,7 +174,6 @@ class TodoCell: UITableViewCell {
         } else {
             checkbox.removeCheckMark()
         }
-//        checkbox.image = UIImage(systemName: isComplete ? "circle.inset.filled" : "circle")
     }
     
     override func awakeFromNib() {
