@@ -199,6 +199,8 @@ extension ProfileViewController: UITableViewDelegate {
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TodoHeaderView.reuseIdentifier) as? TodoHeaderView else { return nil }
         header.goalView.tag = section
         header.setTitle(with: todoListViewModel.getTitle(of: section))
+        header.setColor(with: todoListViewModel.getColor(of: section))
+        header.setVisibility(with: todoListViewModel.getVisibility(of: section))
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addEmptyTodo))
         header.goalView.addGestureRecognizer(tapGesture)
         header.goalView.isUserInteractionEnabled = true

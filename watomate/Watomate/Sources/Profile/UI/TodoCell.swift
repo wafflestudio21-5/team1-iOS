@@ -171,8 +171,10 @@ class TodoCell: UITableViewCell {
     private func configureCheckbox(isComplete: Bool) {
         if isComplete {
             checkbox.addCheckMark()
+            checkbox.setColor(color: [.green])// TODO: change to Goal.color
         } else {
             checkbox.removeCheckMark()
+            checkbox.setColor(color: [])
         }
     }
     

@@ -80,6 +80,9 @@ class TodoDetailViewController: SheetCustomViewController {
         cellView.setTitle("메모")
         cellView.setIcon(UIImage(systemName: "note.text")!)
         cellView.setIconBackgroundColor(.systemYellow)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMemoCellTap))
+        cellView.addGestureRecognizer(tapGesture)
+        cellView.icon.addTarget(self, action: #selector(handleMemoCellTap), for: .touchUpInside)
         return cellView
     }()
     
@@ -98,11 +101,14 @@ class TodoDetailViewController: SheetCustomViewController {
         return textField
     }()
     
-    private lazy var timeCell = {
+    private lazy var reminderCell = {
         let cellView = TodoDetailCellView()
         cellView.setTitle("시간 알림")
         cellView.setIcon(UIImage(systemName: "clock.fill")!)
         cellView.setIconBackgroundColor(.systemPink)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleReminderCellTap))
+        cellView.addGestureRecognizer(tapGesture)
+        cellView.icon.addTarget(self, action: #selector(handleReminderCellTap), for: .touchUpInside)
         return cellView
     }()
     
@@ -111,6 +117,9 @@ class TodoDetailViewController: SheetCustomViewController {
         cellView.setTitle("오늘하기")
         cellView.setIcon(UIImage(systemName: "arrow.down")!)
         cellView.setIconBackgroundColor(.systemPurple)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoTodayCellTap))
+        cellView.addGestureRecognizer(tapGesture)
+        cellView.icon.addTarget(self, action: #selector(handleDoTodayCellTap), for: .touchUpInside)
         return cellView
     }()
     
@@ -119,6 +128,9 @@ class TodoDetailViewController: SheetCustomViewController {
         cellView.setTitle("내일 하기")
         cellView.setIcon(UIImage(systemName: "arrow.right")!)
         cellView.setIconBackgroundColor(.systemPurple)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoTomorrowCellTap))
+        cellView.addGestureRecognizer(tapGesture)
+        cellView.icon.addTarget(self, action: #selector(handleDoTomorrowCellTap), for: .touchUpInside)
         return cellView
     }()
     
@@ -127,6 +139,9 @@ class TodoDetailViewController: SheetCustomViewController {
         cellView.setTitle("날짜 바꾸기")
         cellView.setIcon(UIImage(systemName: "arrow.right")!)
         cellView.setIconBackgroundColor(.systemPurple)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleChangeDateCellTap))
+        cellView.addGestureRecognizer(tapGesture)
+        cellView.icon.addTarget(self, action: #selector(handleChangeDateCellTap), for: .touchUpInside)
         return cellView
     }()
     
@@ -135,6 +150,9 @@ class TodoDetailViewController: SheetCustomViewController {
         cellView.setTitle("보관함으로 이동")
         cellView.setIcon(UIImage(systemName: "checkmark.rectangle.stack.fill")!)
         cellView.setIconBackgroundColor(.systemPurple)
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMoveToArchiveCellTap))
+        cellView.addGestureRecognizer(tapGesture)
+        cellView.icon.addTarget(self, action: #selector(handleMoveToArchiveCellTap), for: .touchUpInside)
         return cellView
     }()
     
@@ -156,7 +174,7 @@ class TodoDetailViewController: SheetCustomViewController {
         
         cellStackView.addArrangedSubview(memoCell)
         cellStackView.addArrangedSubview(memoTextField)
-        cellStackView.addArrangedSubview(timeCell)
+        cellStackView.addArrangedSubview(reminderCell)
         cellStackView.addArrangedSubview(doTodayCell)
         cellStackView.addArrangedSubview(doTomorrowCell)
         cellStackView.addArrangedSubview(changeDateCell)
@@ -179,12 +197,45 @@ class TodoDetailViewController: SheetCustomViewController {
         setTitle(viewModel.title)
         if viewModel.memo?.isEmpty == false {
             memoTextField.isHidden = false
+            memoTextField.text = viewModel.memo
         }
+        editTitleButton.addTarget(self, action: #selector(handleEditBtnTap), for: .touchUpInside)
         deleteTodoButton.addTarget(self, action: #selector(handleDeleteBtnTap), for: .touchUpInside)
+    }
+    
+    @objc func handleEditBtnTap() {
+//        delegate.editTitle(with: viewModel)
+        dismiss(animated: true)
     }
     
     @objc func handleDeleteBtnTap() {
         delegate?.deleteTodoCell(with: viewModel)
         dismiss(animated: true)
+    }
+    
+    @objc func handleMemoCellTap() {
+        memoTextField.isHidden = false
+        memoTextField.becomeFirstResponder()
+        //showokbutton()
+    }
+    
+    @objc func handleReminderCellTap() {
+        print("reminder tapped")
+    }
+    
+    @objc func handleDoTodayCellTap() {
+        print("do today tapped")
+    }
+    
+    @objc func handleDoTomorrowCellTap() {
+        print("do tomorrow tapped")
+    }
+    
+    @objc func handleChangeDateCellTap() {
+        print("change date tapped")
+    }
+    
+    @objc func handleMoveToArchiveCellTap() {
+        print("move to archive tapped")
     }
 }

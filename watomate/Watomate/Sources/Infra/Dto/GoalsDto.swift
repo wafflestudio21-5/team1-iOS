@@ -22,6 +22,7 @@ struct GoalResponseDto: Codable {
 struct TodoDto: Codable {
     let id: Int
     let title: String
+    let color: String
     let description: String
     let reminder_iso: String?
     let created_at_iso: String

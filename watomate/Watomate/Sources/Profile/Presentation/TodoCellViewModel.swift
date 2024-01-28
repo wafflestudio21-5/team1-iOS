@@ -66,6 +66,14 @@ class TodoCellViewModel: ViewModelType, Hashable {
             delegate?.todoCellViewModel(self, didUpdateItem: todo)
         }
     }
+    
+    var color: String {
+        get { todo.color }
+        set {
+            todo.color = newValue
+            delegate?.todoCellViewModel(self, didUpdateItem: todo)
+        }
+    }
 
     var memo: String? {
         get { todo.description }

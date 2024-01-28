@@ -13,7 +13,7 @@ struct Goal {
     var title: String
     var visibility: Visibility
     var color: String
-    let createdAt: String
+//    let createdAt: String
     var todos: [Todo]
 }
 
@@ -27,6 +27,7 @@ struct Todo: Codable {
     let uuid: UUID
     let id: Int?
     var title: String
+    var color: String
     var description: String?
     var reminder: String?
 //    let createdAt: String
@@ -37,8 +38,8 @@ struct Todo: Codable {
 }
 
 extension Todo {
-    static func placeholderItem(with goalId: Int) -> Self {
-        .init(uuid: UUID(), id: nil, title: "", isCompleted: false, goal: goalId, likes: [])
+    static func placeholderItem(with goal: Goal) -> Self {
+        .init(uuid: UUID(), id: nil, title: "", color: goal.color, isCompleted: false, goal: goal.id, likes: [])
     }
 }
 

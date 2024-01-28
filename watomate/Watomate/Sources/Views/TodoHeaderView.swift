@@ -40,6 +40,14 @@ class TodoHeaderView: UITableViewHeaderFooterView {
     func setTitle(with title: String) {
         self.goalView.setTitle(with: title)
     }
+    
+    func setColor(with color: Color) {
+        self.goalView.setColor(color: color)
+    }
+    
+    func setVisibility(with visibility: Visibility) {
+        self.goalView.setVisibility(visibility: visibility)
+    }
 }
 
 class ProfileHeaderView: UITableViewHeaderFooterView {

@@ -15,7 +15,7 @@ class TodoDetailCellView: UIStackView {
         return label
     }()
     
-    private lazy var icon = {
+    lazy var icon = {
         let button = UIButton()
         button.contentMode = .center
         button.tintColor = .white

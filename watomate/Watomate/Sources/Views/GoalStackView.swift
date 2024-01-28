@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 
 class GoalStackView: UIStackView {
-    private lazy var privacyImageView = {
+    private lazy var visibilityImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "photo.fill"))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -44,7 +44,7 @@ class GoalStackView: UIStackView {
     }
     
     private func setupLayout() {
-        self.addArrangedSubview(privacyImageView)
+        self.addArrangedSubview(visibilityImageView)
         self.addArrangedSubview(titleLabel)
         self.addArrangedSubview(addImage)
         
@@ -72,5 +72,23 @@ class GoalStackView: UIStackView {
     
     func setTitleFont(font: UIFont) {
         self.titleLabel.font = font
+    }
+    
+    func setColor(color: Color) {
+        self.titleLabel.textColor = color.uiColor
+    }
+    
+    func setVisibility(visibility: Visibility) {
+        let stringVal = switch visibility {
+        case .FL:
+            "fl"
+        case .PB:
+            "pb"
+        case .PR:
+            "pr"
+        }
+        print("string: \(stringVal)")
+        print("image: \(UIImage(named: stringVal))")
+        visibilityImageView.image = UIImage(named: stringVal)
     }
 }

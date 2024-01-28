@@ -52,7 +52,7 @@ class TodoUseCase {
         let todos = goalDto.todos.map { dto in
             convert(todoDto: dto, with: goalId)
         }
-        let goal = Goal(id: goalDto.id, title: goalDto.title, visibility: visibility, color: goalDto.color, createdAt: goalDto.created_at_iso, todos: todos)
+        let goal = Goal(id: goalDto.id, title: goalDto.title, visibility: visibility, color: goalDto.color, todos: todos)
         return goal
     }
     
@@ -74,6 +74,7 @@ class TodoUseCase {
             uuid: UUID(),
             id: todoDto.id,
             title: todoDto.title,
+            color: todoDto.color,
             description: todoDto.description,
             reminder: todoDto.reminder_iso,
 //            date: todoDto.date,
