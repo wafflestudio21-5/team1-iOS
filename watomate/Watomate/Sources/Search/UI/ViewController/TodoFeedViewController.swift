@@ -102,7 +102,7 @@ extension TodoFeedViewController: UIScrollViewDelegate {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height
         
-        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 100) {
+        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 400) {
             viewModel.input.send(.reachedEndOfScrollView)
         }
     }
