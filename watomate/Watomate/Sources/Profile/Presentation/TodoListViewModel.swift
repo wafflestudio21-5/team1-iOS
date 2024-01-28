@@ -83,11 +83,19 @@ class TodoListViewModel: ViewModelType {
         await todoUseCase.addTodo(userId: 1, goalId: 1, todo: todo)
     }
 
-//    private func todo(at indexPath: IndexPath) -> Todo? {
-//        let goal = todoUseCase.goals[safe: indexPath.section - 1]
-//        let todo = goal?.todos[safe: indexPath.row]
-//        return todo
-//    }
+    func indexPath(with uuid: UUID) -> IndexPath? {
+        var section: Int
+        for set in self.viewModelsSubject.value {
+            section = set.key
+            let viewModels = set.value
+            if let row = viewModels.firstIndex(where: { cellViewModel in
+                cellViewModel.uuid == uuid
+            }) {
+                return .init(row: row, section: section)
+            }
+        }
+        return nil
+    }
 
     func viewModel(at indexPath: IndexPath) -> TodoCellViewModel? {
         guard let cellVMs = self.viewModelsSubject.value[indexPath.section] else { return nil }
@@ -122,6 +130,12 @@ class TodoListViewModel: ViewModelType {
         }()
         
         delegate?.todoListViewModel(self, didInsertCellViewModel: newViewModel, at: indexPath)
+    }
+    
+    func remove(at indexPath: IndexPath) {
+        var curVMs = viewModelsSubject.value
+        curVMs[indexPath.section]?.remove(at: indexPath.row)
+        viewModelsSubject.send(curVMs)
     }
     
     func section(with todo: Todo) -> Int? {
@@ -182,8 +196,8 @@ extension TodoListViewModel {
 extension TodoListViewModel: TodoCellViewModelDelegate {
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingWith title: String?) {
         if title == nil || title?.isEmpty == true {
-//            guard let indexPath = todoRepository.indexPath(with: viewModel.id) else { return }
-//            remove(at: indexPath)
+            guard let indexPath = indexPath(with: viewModel.uuid) else { return }
+            remove(at: indexPath)
         }
     }
     
