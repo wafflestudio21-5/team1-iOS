@@ -31,7 +31,7 @@ class DiaryFeedViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.register(SearchDiaryCell.self, forCellReuseIdentifier: SearchDiaryCell.reuseIdentifier)
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 200
+        tableView.estimatedRowHeight = 162
         tableView.delegate = self
         return tableView
     }()
@@ -90,7 +90,7 @@ extension DiaryFeedViewController: UIScrollViewDelegate {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height
         
-        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 100) {
+        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 400) {
             viewModel.input.send(.reachedEndOfScrollView)
         }
     }
