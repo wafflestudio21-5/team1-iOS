@@ -33,13 +33,17 @@ class TodoRepository: TodoRepositoryProtocol {
         }
     }
     
-    func addTodo(userId: Int, goalId: Int, todo: Todo) async throws {
-//        do {
-//            try await session
-//                .request(TodoRouter.addTodo(userId: User.shared.id!, goalId: goalId, todo: todo))
-//        } catch {
-//            throw error
-//        }
+    func addTodo(goalId: Int, todo: Todo) async throws -> TodoDto {
+        do {
+            let response = try await session
+                .request(TodoRouter.addTodo(userId: User.shared.id!, goalId: goalId, todo: todo))
+                .serializingDecodable(TodoDto.self)
+                .value
+            return response
+        } catch {
+            print("Error adding todo: \(error)")
+            throw error
+        }
     }
     
 //    func deleteTodo(with id: Int) {

@@ -79,8 +79,11 @@ class TodoListViewModel: ViewModelType {
         }
     }
     
-    func addTodo(todo: Todo) async {
-        await todoUseCase.addTodo(userId: 1, goalId: 1, todo: todo)
+    func addTodo(at indexPath: IndexPath, with todo: Todo) {
+        Task {
+            guard let goalId = goalIdsForSections[indexPath.section] else { return }
+            try? await todoUseCase.addTodo(goalId, todo)
+        }
     }
 
     func indexPath(with uuid: UUID) -> IndexPath? {
@@ -95,6 +98,11 @@ class TodoListViewModel: ViewModelType {
             }
         }
         return nil
+    }
+    
+    func todo(at indexPath: IndexPath) -> Todo? {
+        guard let viewModel = viewModel(at: indexPath) else { return nil }
+        return Todo(uuid: viewModel.uuid, id: viewModel.id, title: viewModel.title, isCompleted: viewModel.isCompleted, goal: viewModel.goal, likes: viewModel.likes)
     }
 
     func viewModel(at indexPath: IndexPath) -> TodoCellViewModel? {
@@ -195,9 +203,12 @@ extension TodoListViewModel {
 
 extension TodoListViewModel: TodoCellViewModelDelegate {
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingWith title: String?) {
+        guard let indexPath = indexPath(with: viewModel.uuid) else { return }
         if title == nil || title?.isEmpty == true {
-            guard let indexPath = indexPath(with: viewModel.uuid) else { return }
             remove(at: indexPath)
+        } else {
+            guard let todo = todo(at: indexPath) else { return }
+            addTodo(at: indexPath, with: todo)
         }
     }
     

@@ -25,12 +25,12 @@ struct TodoDto: Codable {
     let description: String
     let reminder_iso: String?
     let created_at_iso: String
-    let date: String
+    let date: String?
     let is_completed: Bool
     let likes: [LikeDto]
 }
 
 struct LikeDto: Codable {
     let user: Int
-//    let emoji: Int
+    let emoji: String
 }

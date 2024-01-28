@@ -23,8 +23,12 @@ class TodoUseCase {
         return goals
     }
     
-    func addTodo(userId: Int, goalId: Int, todo: Todo) async {
-        try? await todoRepository.addTodo(userId: userId, goalId: goalId, todo: todo)
+    func addTodo(_ goalId: Int, _ todo: Todo) async throws {
+        do {
+            try await todoRepository.addTodo(goalId: goalId, todo: todo)
+        } catch {
+            print(error)
+        }
     }
     
     private func convert(goalsDto: GoalsResponseDto) -> [Goal] {
@@ -64,12 +68,11 @@ class TodoUseCase {
             title: todoDto.title,
             description: todoDto.description,
             reminder: todoDto.reminder_iso,
-//            createdAt: todoDto.created_at_iso,
 //            date: todoDto.date,
             isCompleted: todoDto.is_completed,
             goal: goalId,
             likes: todoDto.likes.map{ dto in
-                Like(userId: dto.user)
+                Like(userId: dto.user, emoji: dto.emoji)
             })
         return todo
     }

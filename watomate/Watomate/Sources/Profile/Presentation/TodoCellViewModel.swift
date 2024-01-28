@@ -74,6 +74,14 @@ class TodoCellViewModel: ViewModelType, Hashable {
             delegate?.todoCellViewModel(self, didUpdateItem: todo)
         }
     }
+    
+    var likes: [Like] {
+        get { todo.likes }
+        set {
+            todo.likes = newValue
+            delegate?.todoCellViewModel(self, didUpdateItem: todo)
+        }
+    }
 
     var isMemoHidden: Bool {
         guard let description = todo.description else { return true }

@@ -44,4 +44,5 @@ extension Todo {
 
 struct Like: Codable {
     let userId: Int
+    let emoji: String
 }
