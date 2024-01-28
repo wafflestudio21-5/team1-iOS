@@ -77,6 +77,12 @@ class CustomSymbolView: UIView {
             make.bottom.leading.equalToSuperview()
             make.top.trailing.equalToSuperview().inset(circleInset)
         }
+        
+        containerView.addSubview(centerCircle)
+        centerCircle.snp.makeConstraints { make in
+            make.width.height.equalTo(size/1.3)
+            make.center.equalToSuperview()
+        }
     }
     
     private func setupCirclesColor() {
@@ -84,6 +90,7 @@ class CustomSymbolView: UIView {
             circle.setBackgroundColor(Color.gray.uiColor)
             circle.alpha = 1
         }
+        centerCircle.setBackgroundColor(.clear)
     }
     
     func setColor(color: [Color]) {
@@ -116,11 +123,6 @@ class CustomSymbolView: UIView {
     }
     
     func addCenterCircle(image: UIImage?) {
-        containerView.addSubview(centerCircle)
-        centerCircle.snp.makeConstraints { make in
-            make.width.height.equalTo(size/1.3)
-            make.center.equalToSuperview()
-        }
         
         centerCircle.setSymbol(image)
     }
@@ -128,6 +130,12 @@ class CustomSymbolView: UIView {
     func addDefaultImage() {
         addCenterCircle(image: UIImage(systemName: "person.fill"))
         centerCircle.setBackgroundColor(Color.gray.uiColor)
+        centerCircle.setSymbolColor(.white)
+    }
+    
+    func addCenterCircle(url: String) { 
+        addCenterCircle(image: nil)
+        centerCircle.setImage(url)
     }
     
     func addNumber(numberString: String) {
@@ -148,7 +156,12 @@ class CustomSymbolView: UIView {
     }
     
     func addCheckMark() {
-        addCenterCircle(image: UIImage(systemName: "checkmark", withConfiguration: UIImage.SymbolConfiguration(weight: .bold)))
+        addCenterCircle(image: UIImage(systemName: "checkmark", withConfiguration: UIImage.SymbolConfiguration(weight: .black)))
+    }
+    
+    func reset() {
+        setupCirclesColor()
+        centerCircle.reset()
     }
 
 }

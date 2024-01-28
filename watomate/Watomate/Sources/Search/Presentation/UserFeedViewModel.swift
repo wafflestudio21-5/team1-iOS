@@ -79,7 +79,11 @@ final class UserFeedViewModel: ViewModelType {
         if isFetching || !canFetchMoreUsers { return }
         isFetching = true
         Task {
-            guard let usersPage = try? await searchUseCase.getMoreUsers(nextUrl: nextUrl!) else {
+            guard let url = self.nextUrl else {
+                fetchInitialUsers()
+                return
+            }
+            guard let usersPage = try? await searchUseCase.getMoreUsers(nextUrl: url) else {
                 isFetching = false
                 return
             }

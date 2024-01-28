@@ -14,6 +14,8 @@ class SearchViewController: UIViewController {
         let searchBar = UISearchBar()
         searchBar.placeholder = "계정 또는 할 일 키워드 검색"
         searchBar.delegate = self
+        searchBar.autocorrectionType = .no
+        searchBar.autocapitalizationType = .none
         return searchBar
     }()
     

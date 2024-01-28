@@ -17,8 +17,12 @@ class SearchDiaryCellViewModel: Identifiable {
     
     let id = UUID()
     
-    var user: UserInfo {
-        diary.user
+    var username: String {
+        diary.user.username
+    }
+    
+    var profilePic: String? {
+        diary.user.profilePic
     }
     
     var description: String {

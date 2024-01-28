@@ -25,6 +25,15 @@ class SearchDiaryCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        profileCircleView.reset()
+        usernameLabel.text = nil
+        dateLabel.text = nil
+        descriptionLabel.text = nil
+        likeCircleView.setBackgroundColor(.systemGray6)
+        likeCircleView.setSymbolColor(.systemGray4)
+    }
+    
     private lazy var containerView = {
        let view = UIView()
         view.backgroundColor = .systemBackground
@@ -147,9 +156,16 @@ class SearchDiaryCell: UITableViewCell {
     
     func configure(with viewModel: SearchDiaryCellViewModel) {
         self.viewModel = viewModel
-        usernameLabel.text = viewModel.user.username
+        usernameLabel.text = viewModel.username
         dateLabel.text = viewModel.date
         descriptionLabel.text = viewModel.description
+        if let profilePic = viewModel.profilePic {
+            profileCircleView.setImage(profilePic)
+        } else {
+            profileCircleView.setSymbol(UIImage(systemName: "person.fill"))
+            profileCircleView.setBackgroundColor(.systemGray5)
+            profileCircleView.setSymbolColor(.white)
+        }
     }
     
 }

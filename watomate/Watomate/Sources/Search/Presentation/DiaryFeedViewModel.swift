@@ -74,7 +74,7 @@ final class DiaryFeedViewModel: ViewModelType {
         isFetching = true
         Task {
             guard let url = self.nextUrl else {
-                isFetching = false
+                fetchInitialDiaries()
                 return
             }
             guard let diariesPage = try? await searchUseCase.getMoreDiaries(nextUrl: url) else {

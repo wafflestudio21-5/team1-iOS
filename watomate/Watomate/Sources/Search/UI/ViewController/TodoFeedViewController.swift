@@ -29,6 +29,7 @@ class TodoFeedViewController: UIViewController {
     private lazy var tableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.register(SearchTodoCell.self, forCellReuseIdentifier: SearchTodoCell.reuseIdentifier)
+        tableView.register(UserHeaderView.self, forHeaderFooterViewReuseIdentifier: UserHeaderView.reuseIdentifier)
         tableView.delegate = self
         tableView.keyboardDismissMode = .onDrag
         tableView.rowHeight = UITableView.automaticDimension
@@ -91,8 +92,9 @@ class TodoFeedViewController: UIViewController {
 extension TodoFeedViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UserHeaderView(username: viewModel.sectionTitle(at: section))
-        return view
+        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: UserHeaderView.reuseIdentifier) as? UserHeaderView else { fatalError() }
+        header.configure(username: viewModel.sectionUsername(at: section), profilePic: viewModel.sectionProfilePic(at: section))
+        return header
     }
     
 }

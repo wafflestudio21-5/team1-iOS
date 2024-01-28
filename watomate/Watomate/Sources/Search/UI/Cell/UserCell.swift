@@ -24,6 +24,12 @@ class UserCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        profileView.reset()
+        usernameLabel.text = nil
+        introLabel.text = nil 
+    }
+    
     private lazy var profileView = CustomSymbolView(size: Constants.SearchUser.profileHeight)
     
     private lazy var usernameLabel = {
@@ -68,6 +74,10 @@ class UserCell: UITableViewCell {
         usernameLabel.text = viewModel.username
         introLabel.text = viewModel.intro
         profileView.setColor(color: viewModel.color)
-        profileView.addDefaultImage()
+        if let profilePic = viewModel.profilePic {
+            profileView.addCenterCircle(url: profilePic)
+        } else {
+            profileView.addDefaultImage()
+        }
     }
 }

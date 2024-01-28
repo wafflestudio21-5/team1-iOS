@@ -43,8 +43,12 @@ final class TodoFeedViewModel: ViewModelType {
         return SearchTodoCellViewModel(todo: todoList[indexPath.section].todos[indexPath.row])
     }
     
-    func sectionTitle(at section: Int) -> String {
+    func sectionUsername(at section: Int) -> String {
         return todoList[section].username
+    }
+    
+    func sectionProfilePic(at section: Int) -> String? {
+        return todoList[section].profilePic
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
@@ -84,7 +88,11 @@ final class TodoFeedViewModel: ViewModelType {
         if isFetching || !canFetchMoreTodo { return }
         isFetching = true
         Task {
-            guard let todoPage = try? await searchUseCase.getMoreTodo(nextUrl: nextUrl!) else {
+            guard let url = self.nextUrl else {
+                fetchInitialTodo()
+                return
+            }
+            guard let todoPage = try? await searchUseCase.getMoreTodo(nextUrl: url) else {
                 isFetching = false
                 return
             }

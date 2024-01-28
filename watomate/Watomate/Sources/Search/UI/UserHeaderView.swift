@@ -9,32 +9,38 @@
 import SnapKit
 import UIKit
 
-class UserHeaderView: UIView {
+class UserHeaderView: UITableViewHeaderFooterView {
+    static let reuseIdentifier = "userHeader"
     
     private lazy var profileCircleView = {
         let view = SymbolCircleView(symbolImage: UIImage(systemName: "person.fill"))
         view.setBackgroundColor(.systemGray5)
         view.setSymbolColor(.systemBackground)
+        view.setSymbolColor(.white)
         return view
     }()
     
     private lazy var usernameLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.medium, size: 16)
+        label.font = UIFont(name: Constants.Font.medium, size: 18)
         return label
     }()
     
-    init(username: String) {
-        super.init(frame: .zero)
-        usernameLabel.text = username
+    override init(reuseIdentifier: String?) {
+        super.init(reuseIdentifier: reuseIdentifier)
         backgroundColor = .systemBackground
-
+        
         setupLayout()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        usernameLabel.text = nil
+        profileCircleView.reset()
     }
     
     private func setupLayout() {
@@ -50,6 +56,13 @@ class UserHeaderView: UIView {
         usernameLabel.snp.makeConstraints { make in
             make.leading.equalTo(profileCircleView.snp.trailing).offset(10)
             make.centerY.equalToSuperview()
+        }
+    }
+    
+    func configure(username: String, profilePic: String?) {
+        usernameLabel.text = username
+        if let profilePic {
+            profileCircleView.setImage(profilePic)
         }
     }
 }

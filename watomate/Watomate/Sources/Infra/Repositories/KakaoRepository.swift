@@ -66,10 +66,7 @@ class KakaoRepository: KakaoRepositoryProtocol {
     }
     
     func logout() {
-        UserApi.shared.logout { error in
-            if let error {
-                return
-            }
+        UserApi.shared.logout { _ in
             return
         }
     }
