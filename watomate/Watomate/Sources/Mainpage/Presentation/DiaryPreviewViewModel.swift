@@ -11,34 +11,38 @@ import Foundation
 
 class DiaryPreviewViewModel {
     private let diaryService = DiaryService.shared
-    var diary: Diary?
+    var diary: Diary? = nil
     func getDiary(userID: Int, date: String, completion: @escaping () -> Void) {
         DiaryService.shared.getDiary(userID: userID, date: date) { (response) in
             switch(response) {
             case .success(let diaryData):
                 if let data = diaryData as? Diary {
-                    print(data.description)
                     self.diary = data
                 }
                 completion()
-
             case .requestErr(let message) :
                 print("requestErr", message)
+                self.diary = nil
                 completion()
             case .pathErr :
                 print("pathErr")
+                self.diary = nil
                 completion()
             case .serverErr :
                 print("serveErr")
+                self.diary = nil
                 completion()
             case .networkFail:
                 print("networkFail")
+                self.diary = nil
                 completion()
             case .decodeErr:
                 print("decodeErr")
+                self.diary = nil
                 completion()
             case .unknownErr:
                 print("unknownErr")
+                self.diary = nil
                 completion()
             }
         }

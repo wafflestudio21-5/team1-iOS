@@ -9,16 +9,17 @@ import UIKit
 import SnapKit
 
 class ToDoViewController: UIViewController {
+    var diaryViewModel = DiaryPreviewViewModel()
+    var userID = 3
     private var diaryDateString: String = {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         return dateFormatter.string(from: Date())
     }()
     
-    var emoji = "?"
-    
+    var emoji = "no emoji"
     @objc func diaryButtonTapped() {
-        if emoji == "?" {
+        if emoji == "no emoji" {
             let diaryViewController = DiaryCreateViewController()
              diaryViewController.receivedDateString = diaryDateString
              diaryViewController.completionClosure = { receivedValue in
@@ -34,11 +35,11 @@ class ToDoViewController: UIViewController {
             setSheetLayout(for: vc)
             present(vc, animated: true, completion: nil)
         }
-       
    }
     
     private func updateDiaryButtonAppearance() {
-        if emoji == "?" {
+        if emoji == "no emoji" {
+            diaryButton.setTitle(nil, for: .normal)
             diaryButton.setImage(UIImage(systemName: "face.dashed"), for: .normal)
         } else {
             diaryButton.setImage(nil, for: .normal)
@@ -327,7 +328,20 @@ class ToDoViewController: UIViewController {
     
 }
 
+
 extension ToDoViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate {
+    func getDiary(userID: Int, date: String) {
+        emoji = "no emoji"
+        updateDiaryButtonAppearance()
+        diaryViewModel.getDiary(userID: userID, date: date) {
+            DispatchQueue.main.async { [weak self] in
+                if let emoji = self?.diaryViewModel.diary?.emoji {
+                    self?.emoji = emoji
+                    self?.updateDiaryButtonAppearance()
+                }
+            }
+        }
+    }
     
     func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
         selection.setSelected(dateComponents, animated: true)
@@ -336,10 +350,12 @@ extension ToDoViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             diaryDateString = dateFormatter.string(from: selectedDate)
+            getDiary(userID: userID, date: diaryDateString)
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             diaryDateString = dateFormatter.string(from: Date())
+            getDiary(userID: userID, date: diaryDateString)
         }
         reloadCalendarView(date: Calendar.current.date(from: dateComponents!))
         
