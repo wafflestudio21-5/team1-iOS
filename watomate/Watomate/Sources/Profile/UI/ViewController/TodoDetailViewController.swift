@@ -12,6 +12,7 @@ import SnapKit
 protocol TodoDetailViewDelegate: AnyObject {
     func deleteTodoCell(with viewModel: TodoCellViewModel)
     func didEndEditingMemo(viewModel: TodoCellViewModel)
+    func editTitle(with viewModel: TodoCellViewModel)
 }
 
 class TodoDetailViewController: SheetCustomViewController {
@@ -207,7 +208,7 @@ class TodoDetailViewController: SheetCustomViewController {
     }
     
     @objc func handleEditBtnTap() {
-//        delegate.editTitle(with: viewModel)
+        delegate?.editTitle(with: viewModel)
         dismiss(animated: true)
     }
     

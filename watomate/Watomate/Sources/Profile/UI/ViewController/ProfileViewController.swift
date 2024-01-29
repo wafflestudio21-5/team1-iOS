@@ -283,4 +283,10 @@ extension ProfileViewController: TodoDetailViewDelegate {
         let todo = Todo(uuid: viewModel.uuid, id: viewModel.id, title: viewModel.title, color: viewModel.color, description: viewModel.memo, isCompleted: viewModel.isCompleted, goal: viewModel.goal, likes: viewModel.likes)
         todoListViewModel.todoCellViewModel(viewModel, didUpdateItem: todo)
     }
+    
+    func editTitle(with viewModel: TodoCellViewModel) {
+        guard let indexPath = todoListViewModel.indexPath(with: viewModel.uuid) else { return }
+        let cell = todoTableView.cellForRow(at: indexPath) as! TodoCell
+        cell.canEditTitle()
+    }
 }

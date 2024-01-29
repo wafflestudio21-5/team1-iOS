@@ -55,6 +55,8 @@ class TodoListViewModel: ViewModelType {
             do {
                 var curVMs = viewModelsSubject.value
                 let goals = try await todoUseCase.getAllTodos()
+                sectionsForGoalId = [:]
+                goalIdsForSections = [:]
                 var cellVM: TodoCellViewModel
                 var cellVMs: [TodoCellViewModel]
                 var goal: Goal
@@ -109,7 +111,6 @@ class TodoListViewModel: ViewModelType {
     }
     
     func goal(at section: Int) -> Goal? {
-
         return todoUseCase.goals[section - 1]
     }
 
@@ -138,12 +139,12 @@ class TodoListViewModel: ViewModelType {
             }
             let newViewModel = TodoCellViewModel(todo: todo)
             newViewModel.delegate = self
+            newViewModel.newlyAdded = true
             var curVMs = viewModelsSubject.value
             curVMs[indexPath.section]?.append(newViewModel)
             viewModelsSubject.send(curVMs)
             return newViewModel
         }()
-        
         delegate?.todoListViewModel(self, didInsertCellViewModel: newViewModel, at: indexPath)
     }
     
@@ -222,17 +223,23 @@ extension TodoListViewModel {
 extension TodoListViewModel: TodoCellViewModelDelegate {
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingWith title: String?) {
         guard let indexPath = indexPath(with: viewModel.uuid) else { return }
+        guard let todo = todo(at: indexPath) else { return }
         if title == nil || title?.isEmpty == true {
             remove(at: indexPath)
+        } else if !viewModel.newlyAdded {
+            Task {
+                try await todoUseCase.updateTodo(todo)
+            }
         } else {
-            guard let todo = todo(at: indexPath) else { return }
             addTodo(at: indexPath, with: todo)
         }
     }
     
     func todoCellViewModelDidReturnTitle(_ viewModel: TodoCellViewModel) {
         guard let section = sectionsForGoalId[viewModel.goal] else { return }
-        appendPlaceholderIfNeeded(at: section)
+        if viewModel.newlyAdded {
+            appendPlaceholderIfNeeded(at: section)
+        }
     }
     
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didUpdateItem todo: Todo) {

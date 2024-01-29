@@ -186,8 +186,16 @@ class TodoCell: UITableViewCell {
     }
     
     override func prepareForReuse() {
+        viewModel?.newlyAdded = false
         checkbox.removeCheckMark()
         checkbox.setColor(color: [])
+    }
+    
+    func canEditTitle() {
+        viewModel?.newlyAdded = false
+        titleTextField.allowsEditingTextAttributes = true
+        titleTextField.isUserInteractionEnabled = true
+        titleTextField.becomeFirstResponder()
     }
 }
 

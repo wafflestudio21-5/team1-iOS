@@ -10,6 +10,8 @@ import Foundation
 import Combine
 
 class TodoCellViewModel: ViewModelType, Hashable {
+    lazy var newlyAdded: Bool = false
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(self.uuid)
     }
