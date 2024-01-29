@@ -16,10 +16,9 @@ struct DiaryService{
     func getDiary(userID : Int, date : String, completion: @escaping (NetworkResult<Any>) -> Void){
         let token = "f9f1b1dd9de499b445077473d45760fdb7e99447"
         let header: HTTPHeaders = ["Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token \(token)"]
-        
-        let getDiaryUrl = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/\(userID)/diarys/\(date)"
+        let diaryUrl = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/\(userID)/diarys/\(date)"
 
-        let dataRequest = AF.request(getDiaryUrl,
+        let dataRequest = AF.request(diaryUrl,
                                      method: .get,
                                      encoding: JSONEncoding.default,
                                      headers: header)
@@ -44,7 +43,28 @@ struct DiaryService{
         }
                     
         }
+    }
+    
+    func deleteDiary(userID : Int, date : String, completion: @escaping (NetworkResult<Any>) -> Void){
+        let token = "f9f1b1dd9de499b445077473d45760fdb7e99447"
+        let header: HTTPHeaders = ["Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token \(token)"]
+        let diaryUrl = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/\(userID)/diarys/\(date)"
+        let dataRequest = AF.request(diaryUrl,
+                                     method: .delete,
+                                     encoding: JSONEncoding.default,
+                                     headers: header)
         
+        dataRequest.responseData { dataResponse in
+            switch dataResponse.result {
+                
+            case .success:
+                guard let statusCode = dataResponse.response?.statusCode else {return}
+                guard let value = dataResponse.value else { return }
+                let networkResult = self.judgeStatus(by: statusCode, value)
+                completion(networkResult)
+            case .failure: completion(.pathErr)
+            }
+        }
     }
     
     private func judgeStatus(by statusCode: Int, _ data: Data) -> NetworkResult<Any> {
@@ -69,6 +89,8 @@ struct DiaryService{
             return .pathErr
         }
     }
+    
+    
     
     /*
     private func makeParameter(diaryText: String?, date: String?) -> Parameters

@@ -47,6 +47,29 @@ class DiaryPreviewViewModel {
             }
         }
     }
+    
+    func deleteDiary(userID : Int, date: String) {
+           DiaryService.shared.deleteDiary(userID: userID, date: date){ (response) in
+            switch(response) {
+            case .success:
+                print("Deleted Diary")
+            case .requestErr(let message) :
+                print("requestErr", message)
+            case .pathErr :
+                print("pathErr")
+            case .serverErr :
+                print("serveErr")
+            case .networkFail:
+                print("networkFail")
+            case .decodeErr:
+                print("decodeErr")
+            case .unknownErr:
+                print("unknownErr")
+            }
+        }
+    }
+    
+    
 
     
 }

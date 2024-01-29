@@ -25,6 +25,7 @@ class DiaryPreviewViewController: SheetCustomViewController {
             make.edges.equalToSuperview() 
         }
         setLeftButtonAction(action: #selector(leftButtonTapped))
+        setRightButtonAction(action: #selector(rightButtonTapped))
         getDiary(userID: userID, date: receivedDateString ?? "no date") //유저아이디 수정, date 오늘로 수정?
     }
     
@@ -55,7 +56,26 @@ class DiaryPreviewViewController: SheetCustomViewController {
         diaryPreviewView.backgroundColor = UIColor(named: viewModel.diary?.color ?? "system")
     }
 
-   
+    @objc func rightButtonTapped() {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        let editAction = UIAlertAction(title: "수정", style: .default) {_ in 
+            
+        }
+
+        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
+            self.viewModel.deleteDiary(userID: self.userID, date: self.receivedDateString ?? "no date")
+        }
+
+        let doneAction = UIAlertAction(title: "완료", style: .cancel)
+        
+        actionSheet.addAction(editAction)
+        actionSheet.addAction(deleteAction)
+        actionSheet.addAction(doneAction)
+       
+        present(actionSheet, animated: true)
+    }
+
     private lazy var diaryPreviewView: UIView = {
         let view = UIView()
         view.addSubview(emojiView)
