@@ -17,10 +17,23 @@ struct Goal {
     var todos: [Todo]
 }
 
-enum Visibility {
+enum Visibility: String {
     case PB
     case PR
     case FL
+    
+    init?(rawValue: String) {
+        switch rawValue {
+        case "PB":
+            self = .PB
+        case "PR":
+            self = .PR
+        case "FL":
+            self = .FL
+        default:
+            self = .FL
+        }
+    }
 }
 
 struct Todo: Codable {
@@ -31,7 +44,7 @@ struct Todo: Codable {
     var description: String?
     var reminder: String?
 //    let createdAt: String
-//    var date: Date?
+    var date: String?
     var isCompleted: Bool
     var goal: Int
     var likes: [Like]

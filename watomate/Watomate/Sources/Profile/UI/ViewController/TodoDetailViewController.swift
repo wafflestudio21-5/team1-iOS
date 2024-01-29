@@ -264,7 +264,6 @@ class TodoDetailViewController: SheetCustomViewController {
 
 extension TodoDetailViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        print("begin")
         memoCell.showDoneBtn()
     }
 }

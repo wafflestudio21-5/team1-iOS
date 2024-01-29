@@ -17,6 +17,15 @@ struct GoalResponseDto: Codable {
     let color: String
 //    let created_at_iso: String
     let todos: [TodoDto]
+    
+    func toDomain() -> Goal {
+        return Goal(id: id,
+                    title: title,
+                    visibility: Visibility(rawValue: visibility)!,
+                    color: color,
+                    todos: todos.map { $0.toDomain() }
+                    )
+    }
 }
 
 struct TodoDto: Codable {
@@ -30,9 +39,27 @@ struct TodoDto: Codable {
     let is_completed: Bool
     let goal: Int
     let likes: [LikeDto]
+    
+    func toDomain() -> Todo {
+        return Todo(uuid: .init(), 
+                    id: id,
+                    title: title,
+                    color: color,
+                    description: description,
+                    reminder: reminder_iso,
+                    date: date,
+                    isCompleted: is_completed,
+                    goal: goal,
+                    likes: likes.map{ $0.toDomain() }
+                    )
+    }
 }
 
 struct LikeDto: Codable {
     let user: Int
     let emoji: String
+    
+    func toDomain() -> Like {
+        return Like(userId: user, emoji: emoji)
+    }
 }
