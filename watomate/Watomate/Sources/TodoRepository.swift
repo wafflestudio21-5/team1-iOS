@@ -11,7 +11,7 @@ import Foundation
 
 class TodoRepository: TodoRepositoryProtocol {
 
-    private let session = Session(interceptor: Interceptor())
+    private let session = NetworkManager.shared.session
     private let decoder = JSONDecoder()
     
     init() {
@@ -22,58 +22,34 @@ class TodoRepository: TodoRepositoryProtocol {
     }
 
     func getAllTodos() async throws -> GoalsResponseDto {
-        do {
-            let response = try await session
-                .request(TodoRouter.getAllTodos(userId: User.shared.id!))
-                .serializingDecodable(GoalsResponseDto.self)
-                .value
-            return response
-        } catch {
-            print("Error fetching todos: \(error)")
-            throw error
-        }
+        let response = try await session
+            .request(TodoRouter.getAllTodos(userId: User.shared.id!))
+            .serializingDecodable(GoalsResponseDto.self)
+            .handlingError()
+        return response
     }
     
     func addTodo(goalId: Int, todo: Todo) async throws -> TodoDto {
-        do {
-            let response = try await session
-                .request(TodoRouter.addTodo(userId: User.shared.id!, goalId: goalId, todo: todo))
-                .serializingDecodable(TodoDto.self)
-                .value
-            return response
-        } catch {
-            print("Error adding todo: \(error)")
-            throw error
-        }
+        let response = try await session
+            .request(TodoRouter.addTodo(userId: User.shared.id!, goalId: goalId, todo: todo))
+            .serializingDecodable(TodoDto.self)
+            .handlingError()
+        return response
     }
     
     func deleteTodo(goalId: Int, todoId: Int) async throws {
-        do {
-            let response = try await session
-                .request(TodoRouter.deleteTodo(userId: User.shared.id!, goalId: goalId, todoId: todoId))
-                .serializingString()
-                .value
-        } catch {
-            throw error
-        }
+        let response = try await session
+            .request(TodoRouter.deleteTodo(userId: User.shared.id!, goalId: goalId, todoId: todoId))
+            .serializingString()
+            .handlingError()
     }
 
     func updateTodo(todo: Todo) async throws -> TodoDto? {
         guard let todoId = todo.id else { return nil }
-        do {
-            let response = try await session
-                .request(TodoRouter.updateTodo(userId: User.shared.id!, todoId: todoId, todo: todo))
-                .serializingDecodable(TodoDto.self)
-                .value
-            print("response: \(response)")
-            return response
-        }
-    }
-}
-
-
-extension Array {
-    subscript(safe index: Int) -> Element? {
-        return self.indices ~= index ? self[index] : nil
+        let response = try await session
+            .request(TodoRouter.updateTodo(userId: User.shared.id!, todoId: todoId, todo: todo))
+            .serializingDecodable(TodoDto.self)
+            .handlingError()
+        return response
     }
 }
