@@ -7,10 +7,39 @@
 
 import UIKit
 import SnapKit
+// import KingFisher
 
 class ToDoViewController: UIViewController {
     var diaryViewModel = DiaryPreviewViewModel()
-    var userID = 3
+    var homeViewModel = HomeViewModel()
+    var userID = 3 //로그인이랑 연동해서 수정!!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupLayout()
+        getHomeUser(userID: userID)
+        setCalendar()
+    }
+    
+    func getHomeUser(userID: Int) {
+        homeViewModel.getHomeUser(userID: userID) {
+            DispatchQueue.main.async { [weak self] in
+                self?.updateUserInfo()
+            }
+        }
+    }
+    
+    private func updateUserInfo(){
+        // let profileImageUrl = URL(string: homeViewModel.user?.profile_pic)
+        // profileImage.kf.setImage(with: profileImageUrl)
+        // kingfisher no such module error
+        profileName.text = homeViewModel.user?.username
+        profileIntro.text = homeViewModel.user?.intro
+        
+        // followingProfileName.text = "following user name"
+        // followingProfileImage.image = UIImage(named: "waffle.jpg")
+    }
+    
     private var diaryDateString: String = {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -45,12 +74,6 @@ class ToDoViewController: UIViewController {
             diaryButton.setImage(nil, for: .normal)
             diaryButton.setTitle(emoji, for: .normal)
         }
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupLayout()
-        setCalendar()
     }
 
     private func setupLayout(){
@@ -88,7 +111,7 @@ class ToDoViewController: UIViewController {
     
     private lazy var logoImage : UIImageView = {
         var view = UIImageView()
-        view.image = UIImage(named: "waffle-2.png") // 추후 최종 로고 이미지로 변경
+        view.image = UIImage(named: "wafflelogo.png") // 추후 최종 로고 이미지로 변경
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -174,14 +197,12 @@ class ToDoViewController: UIViewController {
     
     private lazy var followingProfileImage : UIImageView = {
         var view = UIImageView()
-        view.image = UIImage(named: "waffle.jpg") // 추후 최종 로고 이미지로 변경
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     private lazy var followingProfileName : UILabel = {
         var label = UILabel()
-        label.text = "me"
         label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -250,22 +271,21 @@ class ToDoViewController: UIViewController {
         return view
     }()
     
+    
     private lazy var profileImage : UIImageView = {
-        var view = UIImageView(image: UIImage(named: "waffle.jpg")) // 임의의 예시, 추후 프로필 사진으로 변경
+        var view = UIImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     private lazy var profileName: UILabel = {
         var label = UILabel()
-        label.text = "User" // 임의의 예시, 추후 사용자 이름으로 변경
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var profileIntro: UILabel = {
         var label = UILabel()
-        label.text = "자기소개" // 임의의 예시, 추후 사용자 이름으로 변경
         label.font = UIFont.systemFont(ofSize: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

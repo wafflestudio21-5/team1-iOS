@@ -12,7 +12,6 @@ import Alamofire
 
 struct DiaryService{
     static let shared = DiaryService()
-    let vc = DiaryPreviewViewController()
     
     func getDiary(userID : Int, date : String, completion: @escaping (NetworkResult<Any>) -> Void){
         let token = "f9f1b1dd9de499b445077473d45760fdb7e99447"

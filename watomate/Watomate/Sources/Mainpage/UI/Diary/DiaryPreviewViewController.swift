@@ -12,6 +12,7 @@ import Alamofire
 class DiaryPreviewViewController: SheetCustomViewController {
     lazy var viewModel = DiaryPreviewViewModel()
     var receivedDateString: String?
+    var userID = 3 //로그인이랑 연동해서 수정!!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +25,7 @@ class DiaryPreviewViewController: SheetCustomViewController {
             make.edges.equalToSuperview() 
         }
         setLeftButtonAction(action: #selector(leftButtonTapped))
-        getDiary(userID: 3, date: receivedDateString ?? "2024-01-01")
+        getDiary(userID: userID, date: receivedDateString ?? "no date") //유저아이디 수정, date 오늘로 수정?
     }
     
     func getDiary(userID: Int, date: String) {
