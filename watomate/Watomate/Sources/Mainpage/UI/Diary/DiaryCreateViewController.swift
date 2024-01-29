@@ -13,7 +13,7 @@ class DiaryCreateViewController: PlainCustomBarViewController{
     var completionClosure: ((String) -> Void)?
     
     @objc private func finishButtonTapped() {
-        let entry = DiaryCreateDTO(
+        let entry = DiaryCreate(
             description: diaryTextField.text ?? "no context",
             visibility: diaryVisibility?.toString() ?? "PB",
             mood: moodNumber,

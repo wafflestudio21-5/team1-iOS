@@ -13,7 +13,7 @@ import Alamofire
 struct DiaryCreateService{
     static let shared = DiaryCreateService()
  
-    func createDiary(entry: DiaryCreateDTO, completion: @escaping (NetworkResult<Any>) -> Void){
+    func createDiary(entry: DiaryCreate, completion: @escaping (NetworkResult<Any>) -> Void){
         let diaryCreateUrl = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/diary-create"
         let token = "f9f1b1dd9de499b445077473d45760fdb7e99447"
         let header: HTTPHeaders = ["Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token \(token)"]

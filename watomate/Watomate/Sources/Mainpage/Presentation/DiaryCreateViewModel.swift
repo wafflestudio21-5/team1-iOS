@@ -10,7 +10,7 @@
 import Foundation
 
 class DiaryCreateViewModel {
-    func createDiary(entry: DiaryCreateDTO) {
+    func createDiary(entry: DiaryCreate) {
            DiaryCreateService.shared.createDiary(entry: entry){ (response) in
             switch(response) {
             case .success:
