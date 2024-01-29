@@ -167,7 +167,6 @@ class TodoCell: UITableViewCell {
         viewModel?.isCompleted.toggle()
         let isComplete = viewModel?.isCompleted == true
         configureCheckbox(isComplete: isComplete)
-        // notify todo isCompleted is changed
     }
 
     private func configureCheckbox(isComplete: Bool) {
@@ -185,18 +184,20 @@ class TodoCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
     }
+    
+    override func prepareForReuse() {
+        checkbox.removeCheckMark()
+        checkbox.setColor(color: [])
+    }
 }
 
 extension TodoCell: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        //add bar under the textField
         guard let colorString = viewModel?.color else { return }
-        print(colorString)
         let color = Color(rawValue: colorString)
         bottomLine = CALayer()
         bottomLine.frame = CGRectMake(0.0, textField.frame.height + 4, textField.frame.width, 2.0)
-        bottomLine.backgroundColor = UIColor.systemGreen.cgColor
-//        bottomLine.backgroundColor = color!.uiColor.cgColor
+        bottomLine.backgroundColor = color?.uiColor.cgColor ?? UIColor.systemGray5.cgColor
         textField.borderStyle = .none
         textField.layer.addSublayer(bottomLine)
     }
