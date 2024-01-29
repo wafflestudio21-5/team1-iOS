@@ -21,7 +21,7 @@ class TodoRepository: TodoRepositoryProtocol {
         decoder.dateDecodingStrategy = .formatted(formatter)
     }
 
-    func getAllTodos() async throws -> GoalsResponseDto{
+    func getAllTodos() async throws -> GoalsResponseDto {
         do {
             let response = try await session
                 .request(TodoRouter.getAllTodos(userId: User.shared.id!))
@@ -58,22 +58,17 @@ class TodoRepository: TodoRepositoryProtocol {
         }
     }
 
-//    
-//    func changeTitle(with id: Int, title: String) {
-//        <#code#>
-//    }
-//    
-//    func changeMemo(with id: Int, memo: String) {
-//        <#code#>
-//    }
-//    
-//    func changeReminder(with id: Int, time: String) {
-//        <#code#>
-//    }
-//    
-//    func changeDate(with id: Int, date: String) {
-//        <#code#>
-//    }
+    func updateTodo(todo: Todo) async throws -> TodoDto? {
+        guard let todoId = todo.id else { return nil }
+        do {
+            let response = try await session
+                .request(TodoRouter.updateTodo(userId: User.shared.id!, todoId: todoId, todo: todo))
+                .serializingDecodable(TodoDto.self)
+                .value
+            print("response: \(response)")
+            return response
+        }
+    }
 }
 
 

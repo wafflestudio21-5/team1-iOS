@@ -44,7 +44,10 @@ class TodoCellViewModel: ViewModelType, Hashable {
     }
 
     var id: Int? {
-        todo.id
+        get { todo.id }
+        set {
+            todo.id = newValue
+        }
     }
     
     var goal: Int {
@@ -63,7 +66,6 @@ class TodoCellViewModel: ViewModelType, Hashable {
         get { todo.title }
         set {
             todo.title = newValue
-            delegate?.todoCellViewModel(self, didUpdateItem: todo)
         }
     }
     
@@ -79,7 +81,6 @@ class TodoCellViewModel: ViewModelType, Hashable {
         get { todo.description }
         set {
             todo.description = newValue
-            delegate?.todoCellViewModel(self, didUpdateItem: todo)
         }
     }
     

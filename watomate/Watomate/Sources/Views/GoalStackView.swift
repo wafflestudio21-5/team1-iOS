@@ -13,12 +13,12 @@ class GoalStackView: UIStackView {
     private lazy var visibilityImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "photo.fill"))
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.backgroundColor = .secondarySystemBackground
         return imageView
     }()
     
     private lazy var titleLabel = {
         let label = UILabel()
-//        label.text = "sample goal"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -87,8 +87,6 @@ class GoalStackView: UIStackView {
         case .PR:
             "pr"
         }
-        print("string: \(stringVal)")
-        print("image: \(UIImage(named: stringVal))")
         visibilityImageView.image = UIImage(named: stringVal)
     }
 }

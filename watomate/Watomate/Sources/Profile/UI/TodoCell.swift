@@ -11,6 +11,8 @@ import UIKit
 class TodoCell: UITableViewCell {
     static let reuseIdentifier = "TodoCell"
     var viewModel: TodoCellViewModel?
+    
+    private var bottomLine = CALayer()
 
     private lazy var checkbox = {
         let view = CustomSymbolView(size: 25)
@@ -171,7 +173,9 @@ class TodoCell: UITableViewCell {
     private func configureCheckbox(isComplete: Bool) {
         if isComplete {
             checkbox.addCheckMark()
-            checkbox.setColor(color: [.green])// TODO: change to Goal.color
+            guard let colorString = viewModel?.color else { return }
+            guard let color = Color(rawValue: colorString) else { return }
+            checkbox.setColor(color: [color])
         } else {
             checkbox.removeCheckMark()
             checkbox.setColor(color: [])
@@ -184,14 +188,21 @@ class TodoCell: UITableViewCell {
 }
 
 extension TodoCell: UITextFieldDelegate {
-//    func textFieldDidBeginEditing(_ textField: UITextField) {
-//        //add bar under the textField
-//        guard let viewModel else { return }
-//        
-//        print("did begin editing")
-//    }
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        //add bar under the textField
+        guard let colorString = viewModel?.color else { return }
+        print(colorString)
+        let color = Color(rawValue: colorString)
+        bottomLine = CALayer()
+        bottomLine.frame = CGRectMake(0.0, textField.frame.height + 4, textField.frame.width, 2.0)
+        bottomLine.backgroundColor = UIColor.systemGreen.cgColor
+//        bottomLine.backgroundColor = color!.uiColor.cgColor
+        textField.borderStyle = .none
+        textField.layer.addSublayer(bottomLine)
+    }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
+        bottomLine.removeFromSuperlayer()
         viewModel?.endEditingTitle(with: textField.text)
     }
     

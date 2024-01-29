@@ -11,6 +11,7 @@ import SnapKit
 
 protocol TodoDetailViewDelegate: AnyObject {
     func deleteTodoCell(with viewModel: TodoCellViewModel)
+    func didEndEditingMemo(viewModel: TodoCellViewModel)
 }
 
 class TodoDetailViewController: SheetCustomViewController {
@@ -83,6 +84,7 @@ class TodoDetailViewController: SheetCustomViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMemoCellTap))
         cellView.addGestureRecognizer(tapGesture)
         cellView.icon.addTarget(self, action: #selector(handleMemoCellTap), for: .touchUpInside)
+        cellView.addButtonTarget(self, action: #selector(handleDoneBtnTap), event: .touchUpInside)
         return cellView
     }()
     
@@ -98,6 +100,7 @@ class TodoDetailViewController: SheetCustomViewController {
         textField.leftViewMode = .always
         textField.rightViewMode = .always
         textField.isHidden = true
+        textField.delegate = self
         return textField
     }()
     
@@ -216,26 +219,51 @@ class TodoDetailViewController: SheetCustomViewController {
     @objc func handleMemoCellTap() {
         memoTextField.isHidden = false
         memoTextField.becomeFirstResponder()
-        //showokbutton()
+        memoCell.showDoneBtn()
+    }
+    
+    @objc func handleDoneBtnTap() {
+        if let memo = memoTextField.text,
+           memo != viewModel.memo {
+            viewModel.memo = memo
+            delegate?.didEndEditingMemo(viewModel: viewModel)
+        }
+        memoTextField.resignFirstResponder()
+        dismiss(animated: true)
     }
     
     @objc func handleReminderCellTap() {
         print("reminder tapped")
+        // show reminder setting
     }
     
     @objc func handleDoTodayCellTap() {
         print("do today tapped")
+        // set date to today
+        dismiss(animated: true)
     }
     
     @objc func handleDoTomorrowCellTap() {
         print("do tomorrow tapped")
+        // set date to tomorrow
+        dismiss(animated: true)
     }
     
     @objc func handleChangeDateCellTap() {
+        // show calendar
         print("change date tapped")
     }
     
     @objc func handleMoveToArchiveCellTap() {
         print("move to archive tapped")
+        // remove date
+        dismiss(animated: true)
+    }
+}
+
+extension TodoDetailViewController: UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        print("begin")
+        memoCell.showDoneBtn()
     }
 }

@@ -7,11 +7,14 @@
 //
 
 import UIKit
+import SnapKit
 
 class TodoDetailCellView: UIStackView {
-
+    var delegate: UITextFieldDelegate?
+    
     private lazy var titleLabel = {
         let label = UILabel()
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         return label
     }()
     
@@ -22,11 +25,21 @@ class TodoDetailCellView: UIStackView {
         return button
     }()
     
+    private lazy var doneButton = {
+        let button = UIButton()
+        button.setTitle("완료", for: .normal)
+        button.setTitleColor(.darkText, for: .normal)
+        button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        button.isHidden = true
+        return button
+    }()
+    
     init() {
         super.init(frame: .init())
         self.translatesAutoresizingMaskIntoConstraints = false
         self.axis = .horizontal
         self.spacing = 10
+        self.distribution = .fill
         setupLayout()
     }
     
@@ -37,9 +50,13 @@ class TodoDetailCellView: UIStackView {
     func setupLayout() {
         self.addArrangedSubview(icon)
         self.addArrangedSubview(titleLabel)
+        self.addArrangedSubview(doneButton)
         
         self.snp.makeConstraints { make in
             make.height.equalTo(30)
+            if let view = superview {
+                make.width.equalTo(view.snp.width)
+            }
         }
         
         icon.snp.makeConstraints { make in
@@ -50,6 +67,14 @@ class TodoDetailCellView: UIStackView {
     override func layoutSubviews() {
         super.layoutSubviews()
         icon.layer.cornerRadius = icon.frame.height / 2
+    }
+    
+    func showDoneBtn() {
+        doneButton.isHidden = false
+    }
+    
+    func addButtonTarget(_ target: Any?, action: Selector, event: UIControl.Event) {
+        doneButton.addTarget(target, action: action, for: event)
     }
 }
 

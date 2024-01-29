@@ -82,7 +82,9 @@ class TodoListViewModel: ViewModelType {
     func addTodo(at indexPath: IndexPath, with todo: Todo) {
         Task {
             guard let goalId = goalIdsForSections[indexPath.section] else { return }
-            try? await todoUseCase.addTodo(goalId, todo)
+            let addedTodo = try await todoUseCase.addTodo(goalId, todo)
+            guard let viewModel = viewModel(at: indexPath) else { return }
+            viewModel.id = addedTodo.id
         }
     }
 
@@ -107,6 +109,7 @@ class TodoListViewModel: ViewModelType {
     }
     
     func goal(at section: Int) -> Goal? {
+
         return todoUseCase.goals[section - 1]
     }
 
@@ -233,7 +236,10 @@ extension TodoListViewModel: TodoCellViewModelDelegate {
     }
     
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didUpdateItem todo: Todo) {
-//        todoUseCase.updateTodo()
+        viewModelsSubject.send(viewModelsSubject.value)
+        Task {
+            try await todoUseCase.updateTodo(todo)
+        }
     }
 
     func todoCellViewModelNavigateToDetail(_ cellViewModel: TodoCellViewModel) {
@@ -258,15 +264,12 @@ protocol TodoListViewModelDelegate: AnyObject {
         didInsertCellViewModel todoViewModel: TodoCellViewModel,
         at indexPath: IndexPath
     )
-
     func todoListViewModel(
         _ viewModel: TodoListViewModel,
         didRemoveCellViewModel todoViewModel: TodoCellViewModel,
         at indexPath: IndexPath,
         options: ReloadOptions
     )
-    
     func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateItem: Todo, at indexPath: IndexPath)
-    
     func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel)
 }

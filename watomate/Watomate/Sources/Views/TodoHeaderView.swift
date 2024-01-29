@@ -58,16 +58,6 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         view.setBackgroundColor(.secondarySystemFill)
         return view
     }()
-//    private lazy var profileImageView = {
-//        let imageView = UIImageView(image: UIImage(systemName: "photo.fill"))
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
-//        imageView.backgroundColor = .secondarySystemFill
-//        imageView.layer.cornerRadius = 30
-//        imageView.layer.borderColor = UIColor.black.cgColor
-//        imageView.clipsToBounds = true
-//        imageView.layer.masksToBounds = true
-//        return imageView
-//    }()
     
     private lazy var followerCountLabel = {
         let label = UILabel()

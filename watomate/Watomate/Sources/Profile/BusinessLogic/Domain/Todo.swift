@@ -25,7 +25,7 @@ enum Visibility {
 
 struct Todo: Codable {
     let uuid: UUID
-    let id: Int?
+    var id: Int?
     var title: String
     var color: String
     var description: String?

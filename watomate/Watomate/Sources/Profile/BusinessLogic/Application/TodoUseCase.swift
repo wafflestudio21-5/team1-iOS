@@ -23,20 +23,71 @@ class TodoUseCase {
         return goals
     }
     
-    func addTodo(_ goalId: Int, _ todo: Todo) async {
-        do {
-            try await todoRepository.addTodo(goalId: goalId, todo: todo)
-        } catch {
-            print(error)
+    func addTodo(_ goalId: Int, _ todo: Todo) async throws -> Todo {
+        let todoDto = try await todoRepository.addTodo(goalId: goalId, todo: todo)
+        let todo = convert(todoDto: todoDto, with: todoDto.goal)
+        
+        for i in 0..<goals.count {
+            if goals[i].id == todo.goal {
+                goals[i].todos.append(todo)
+                return todo
+            }
         }
+        return todo
     }
     
     func deleteTodo(_ goalId: Int, _ todoId: Int) async {
         do {
             try await todoRepository.deleteTodo(goalId: goalId, todoId: todoId)
+            // change self.goals
+            guard var goal = goal(with: goalId) else {
+                print("no such goal id: \(goalId)")
+                return
+            }
+            guard let index = goal.todos.firstIndex(where: { todo in
+                todo.id == todoId
+            }) else { return }
+            goal.todos.remove(at: index)
         } catch {
             print(error)
         }
+    }
+    
+    func updateTodo(_ todo: Todo) async throws {
+        do {
+            guard var goal = goal(with: todo.goal) else { 
+                print("goal not found")
+                return }
+            for i in 0..<goal.todos.count {
+                if goal.todos[i].id == todo.id {
+                    goal.todos[i] = todo
+                    break
+                }
+            }
+            guard let todoDto = try await todoRepository.updateTodo(todo: todo) else { return }
+        } catch {
+            print(error)
+            return
+        }
+    }
+    
+    private func todo(_ goalId: Int, _ todoId: Int) -> Todo? {
+        guard let goal = goal(with: goalId) else { return nil }
+        for todo in goal.todos {
+            if todo.id == todoId {
+                return todo
+            }
+        }
+        return nil
+    }
+    
+    private func goal(with goalId: Int) -> Goal? {
+        for goal in goals {
+            if goal.id == goalId {
+                return goal
+            }
+        }
+        return nil
     }
     
     private func convert(goalsDto: GoalsResponseDto) -> [Goal] {

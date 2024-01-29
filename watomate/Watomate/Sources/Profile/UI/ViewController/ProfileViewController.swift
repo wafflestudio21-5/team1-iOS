@@ -154,6 +154,7 @@ class ProfileViewController: UIViewController {
             guard let cellVMs = viewModels[i + 1] else { return }
             snapshot.appendItems(cellVMs, toSection: i + 1)
         }
+        todoTableView.reloadData()
         self.dataSource.apply(snapshot, animatingDifferences: false)
     }
     
@@ -177,12 +178,6 @@ class ProfileViewController: UIViewController {
 extension ProfileViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         return nil
-    }
-
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-//            todoListViewModel.remove(at: indexPath)
-        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -282,5 +277,10 @@ extension ProfileViewController: TodoDetailViewDelegate {
     func deleteTodoCell(with viewModel: TodoCellViewModel) {
         guard let indexPath = todoListViewModel.indexPath(with: viewModel.uuid) else { return }
         self.todoListViewModel.remove(at: indexPath)
+    }
+    
+    func didEndEditingMemo(viewModel: TodoCellViewModel) {
+        let todo = Todo(uuid: viewModel.uuid, id: viewModel.id, title: viewModel.title, color: viewModel.color, description: viewModel.memo, isCompleted: viewModel.isCompleted, goal: viewModel.goal, likes: viewModel.likes)
+        todoListViewModel.todoCellViewModel(viewModel, didUpdateItem: todo)
     }
 }

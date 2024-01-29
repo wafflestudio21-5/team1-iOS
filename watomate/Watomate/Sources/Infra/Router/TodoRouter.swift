@@ -13,11 +13,11 @@ enum TodoRouter: Router {
     case getAllTodos(userId: Int)
     case addTodo(userId: Int, goalId: Int, todo: Todo)
     case deleteTodo(userId: Int, goalId: Int, todoId: Int)
+    case updateTodo(userId: Int, todoId: Int, todo: Todo)
 //    case getGoalData(userId: Int, goalId: Int)
 //    case addGoal(userId: Int, goalId: Int, goal: GoalDto)
 //    case updateGoal(userId: Int, goalId: Int, goal: GoalDto)
 //    case deleteGoal(userId: Int, goalId: Int)
-//    case get
 
     var method: HTTPMethod {
         switch self {
@@ -27,6 +27,8 @@ enum TodoRouter: Router {
             return .post
         case .deleteTodo:
             return .delete
+        case .updateTodo:
+            return .patch
         }
     }
     
@@ -38,6 +40,8 @@ enum TodoRouter: Router {
             return "/\(userId)/goals/\(goalId)/todos"
         case let .deleteTodo(userId, goalId, todoId):
             return "/\(userId)/goals/\(goalId)/todos/\(todoId)"
+        case let .updateTodo(userId, todoId, todo):
+            return "/\(userId)/goals/\(todo.goal)/todos/\(todoId)"
         }
     }
     
@@ -49,6 +53,8 @@ enum TodoRouter: Router {
             return ["title": todo.title, "is_completed": false]
         case .deleteTodo:
             return nil
+        case let .updateTodo(_, _, todo):
+            return ["title": todo.title, "description": todo.description ?? "", "is_completed": todo.isCompleted]
         }
     }
 }

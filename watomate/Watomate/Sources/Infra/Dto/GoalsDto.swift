@@ -15,7 +15,7 @@ struct GoalResponseDto: Codable {
     let title: String
     let visibility: String
     let color: String
-    let created_at_iso: String
+//    let created_at_iso: String
     let todos: [TodoDto]
 }
 
@@ -25,9 +25,10 @@ struct TodoDto: Codable {
     let color: String
     let description: String
     let reminder_iso: String?
-    let created_at_iso: String
+//    let created_at_iso: String
     let date: String?
     let is_completed: Bool
+    let goal: Int
     let likes: [LikeDto]
 }
 
