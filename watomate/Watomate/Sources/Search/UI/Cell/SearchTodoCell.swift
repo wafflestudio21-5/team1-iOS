@@ -62,7 +62,6 @@ class SearchTodoCell: UITableViewCell {
     func configure(with viewModel: SearchTodoCellViewModel) {
         self.viewModel = viewModel
         titleLabel.text = viewModel.title
-        print(viewModel.isCompleted)
         if viewModel.isCompleted {
             completeView.setColor(color: [Color(rawValue: viewModel.color) ?? Color.gray])
             completeView.addCheckMark()

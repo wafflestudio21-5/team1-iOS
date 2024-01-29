@@ -51,10 +51,11 @@ struct DiaryFeedResponseDto: Decodable {
     let results: [DiaryDto]
     
     struct DiaryDto: Decodable {
+        let id: Int 
         let createdBy: Int
         let description: String
         let visibility: String
-        let mood: Int
+        let mood: Int?
         let color: String
         let emoji: String
         let image: String?
@@ -66,7 +67,7 @@ struct DiaryFeedResponseDto: Decodable {
 
 struct SearchLikeDto: Decodable {
     let user: Int
-    let emoji: Int
+    let emoji: String
     
     func toDomain() -> SearchLike {
         return .init(user: user, emoji: emoji)

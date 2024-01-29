@@ -9,9 +9,14 @@
 import UIKit
 import SnapKit
 
+protocol SearchDiaryCellDelegate: AnyObject {
+    func searchDiaryCell(_ searchDiaryCell: SearchDiaryCell, userId: Int, date:String)
+}
+
 class SearchDiaryCell: UITableViewCell {
     static let reuseIdentifier = "DiaryCell"
     private var viewModel: SearchDiaryCellViewModel?
+    weak var delegate: SearchDiaryCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -29,6 +34,8 @@ class SearchDiaryCell: UITableViewCell {
         profileCircleView.reset()
         usernameLabel.text = nil
         dateLabel.text = nil
+        moodStackView.isHidden = true
+        moodLabel.text = nil
         descriptionLabel.text = nil
         likeCircleView.setBackgroundColor(.systemGray6)
         likeCircleView.setSymbolColor(.systemGray4)
@@ -60,6 +67,12 @@ class SearchDiaryCell: UITableViewCell {
             make.leading.equalTo(profileCircleView.snp.trailing).offset(Constants.SearchDiary.offset)
         }
         
+        view.addSubview(statusStackView)
+        statusStackView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.top.equalToSuperview()
+        }
+        
         return view
     }()
     
@@ -84,22 +97,72 @@ class SearchDiaryCell: UITableViewCell {
     private lazy var usernameLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        label.font = UIFont(name: Constants.Font.semiBold, size: 16.adjusted)
         return label
     }()
     
     private lazy var dateLabel = {
         let label = UILabel()
+        label.textColor = .secondaryLabel
+        label.font = UIFont(name: Constants.Font.regular, size: 13.adjusted)
+        return label
+    }()
+    
+    private lazy var statusStackView = {
+        let stackView = UIStackView()
+        stackView.alignment = .center
+        stackView.axis = .horizontal
+        stackView.spacing = 5.adjusted
+        
+        stackView.addArrangedSubview(moodStackView)
+        stackView.addArrangedSubview(emojiLabel)
+        return stackView
+    }()
+    
+    private lazy var moodStackView = {
+        let view = UIStackView()
+        view.axis = .vertical
+        view.spacing = 4.adjusted
+        view.distribution = .equalCentering
+        view.isHidden = true
+        
+        view.addArrangedSubview(moodLabel)
+        view.addArrangedSubview(moodBar)
+        return view
+    }()
+    
+    private lazy var moodLabel = {
+        let label = UILabel()
         label.textColor = .label
-        label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        label.font = UIFont(name: Constants.Font.bold, size: 10.adjusted)
+        return label
+    }()
+    
+    private lazy var moodBar = {
+        let bar = UIProgressView()
+        bar.clipsToBounds = true
+        bar.layer.cornerRadius = 3.adjusted
+        bar.progressTintColor = UIColor(red: 236.0/255.0, green: 110.0/255.0, blue: 223.0/255.0, alpha: 1)
+        bar.trackTintColor = UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1)
+        
+        bar.snp.makeConstraints { make in
+            make.width.equalTo(32.adjusted)
+            make.height.equalTo(6.adjusted)
+        }
+        return bar
+    }()
+    
+    private lazy var emojiLabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 29.adjusted)
         return label
     }()
     
     private lazy var descriptionLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
-        label.numberOfLines = 0
+        label.font = UIFont(name: Constants.Font.regular, size: 16.adjusted)
+        label.numberOfLines = 3
         label.lineBreakMode = .byWordWrapping
         return label
     }()
@@ -121,10 +184,16 @@ class SearchDiaryCell: UITableViewCell {
     
     private lazy var likeCircleView = {
         let view = SymbolCircleView(symbolImage: UIImage(systemName: "heart.fill"))
-        view.setBackgroundColor(.systemGray6)
-        view.setSymbolColor(.systemGray4)
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(likeTapped)))
         return view
     }()
+    
+    @objc func likeTapped() {
+        if let viewModel,
+           let delegate {
+            delegate.searchDiaryCell(self, userId: viewModel.userId, date: viewModel.date)
+        }
+    }
     
     private func setupLayout() {
         addSubview(containerView)
@@ -162,10 +231,22 @@ class SearchDiaryCell: UITableViewCell {
         if let profilePic = viewModel.profilePic {
             profileCircleView.setImage(profilePic)
         } else {
-            profileCircleView.setSymbol(UIImage(systemName: "person.fill"))
-            profileCircleView.setBackgroundColor(.systemGray5)
-            profileCircleView.setSymbolColor(.white)
+            profileCircleView.setDefault()
         }
+        if let mood = viewModel.mood {
+            moodLabel.text = "\(mood)°"
+            moodBar.setProgress(Float(mood) / 100.0 , animated: false)
+            moodStackView.isHidden = false
+        }
+        containerView.backgroundColor = viewModel.color.uiColor
+        emojiLabel.text = viewModel.emoji
+        usernameLabel.textColor = viewModel.color.label
+        moodLabel.textColor = viewModel.color.label
+        descriptionLabel.textColor = viewModel.color.label
+        dateLabel.textColor = viewModel.color.secondaryLabel
+        
+        likeCircleView.setBackgroundColor(viewModel.color.heartBackground)
+        likeCircleView.setSymbolColor(viewModel.color.heartSymbol)
     }
     
 }

@@ -29,7 +29,6 @@ class UserHeaderView: UITableViewHeaderFooterView {
     
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
-        backgroundColor = .systemBackground
         
         setupLayout()
     }

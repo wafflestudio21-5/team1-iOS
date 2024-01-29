@@ -81,7 +81,7 @@ class DiaryFeedViewController: UIViewController {
 
 extension DiaryFeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        present(MateDiaryViewController(), animated: true)
+        present(MateDiaryViewController(viewModel.viewModel(at: indexPath)), animated: true)
     }
 }
 

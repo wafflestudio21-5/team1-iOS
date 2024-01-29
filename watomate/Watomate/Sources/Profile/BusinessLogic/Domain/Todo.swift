@@ -17,7 +17,7 @@ struct Goal {
     var todos: [Todo]
 }
 
-enum Visibility {
+enum Visibility: String {
     case PB
     case PR
     case FL

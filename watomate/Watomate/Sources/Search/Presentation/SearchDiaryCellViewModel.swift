@@ -17,6 +17,10 @@ class SearchDiaryCellViewModel: Identifiable {
     
     let id = UUID()
     
+    var userId: Int {
+        diary.user.id
+    }
+    
     var username: String {
         diary.user.username
     }
@@ -29,11 +33,15 @@ class SearchDiaryCellViewModel: Identifiable {
         diary.description
     }
     
-    var mood: Int {
+    var visibility: Visibility {
+        diary.visibility
+    }
+    
+    var mood: Int? {
         diary.mood
     }
     
-    var color: String {
+    var color: Color {
         diary.color
     }
     
@@ -45,7 +53,7 @@ class SearchDiaryCellViewModel: Identifiable {
         diary.image
     }
     
-    var date: String? {
+    var date: String {
         diary.date
     }
     

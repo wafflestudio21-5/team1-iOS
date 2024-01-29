@@ -17,6 +17,7 @@ enum SearchRouter: Router {
     case getTodoFeed
     case searchUser(username: String)
     case searchTodo(title: String)
+//    case likeDiary(userId: Int, )
     
     var method: HTTPMethod {
         switch self {

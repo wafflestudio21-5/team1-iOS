@@ -80,6 +80,12 @@ class SymbolCircleView: UIImageView {
         kf.setImage(with: URL(string: url)!)
     }
     
+    func setDefault() {
+        setSymbol(UIImage(systemName: "person.fill"))
+        setBackgroundColor(.systemGray5)
+        setSymbolColor(.white)
+    }
+    
     func reset() {
         backgroundColor = .clear
         symbolImageView.image = nil
