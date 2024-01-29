@@ -10,15 +10,27 @@
 import Foundation
 
 class DiaryCreateViewModel {
-    private var useCase: DiaryUseCase
-
-    init() {
-        self.useCase = DiaryUseCase(diaryRepository: DiaryRepository())
+    func createDiary(entry: DiaryCreateDTO) {
+           DiaryCreateService.shared.createDiary(entry: entry){ (response) in
+            switch(response) {
+            case .success:
+                print("Created Diary")
+            case .requestErr(let message) :
+                print("requestErr", message)
+            case .pathErr :
+                print("pathErr")
+            case .serverErr :
+                print("serveErr")
+            case .networkFail:
+                print("networkFail")
+            case .decodeErr:
+                print("decodeErr")
+            case .unknownErr:
+                print("unknownErr")
+            }
+        }
     }
     
-    func diaryFinishButtonTapped(diary: DiaryCreateDTO) async throws{
-       try await useCase.createDiary(diary: diary)
-    }
 }
 
     

@@ -46,7 +46,32 @@ class EmojiViewController: SheetCustomViewController, UICollectionViewDelegate, 
         return collectionView
     }()
     
-    var emojis: [DiaryEmoji] = [.happy, .angry, .pleading, .laughing, .books, .note, .star, .island, .guitar, .heart]
+    var emojis: [DiaryEmoji] = [
+        .smilingFace,
+        .heartEyes,
+        .smilingFaceSlightly,
+        .faceHoldingBackTears,
+        .laughingWithTears,
+        .partyFace,
+        .pleadingFace,
+        .cryingFace,
+        .thinkingFace,
+        .smilingFaceWithHearts,
+        .dizzyFace,
+        .meltingFace,
+        .sunny,
+        .partlySunny,
+        .snowman,
+        .umbrellaWithRainDrops,
+        .clinkingBeerMugs,
+        .cameraWithFlash,
+        .computer,
+        .teddyBear,
+        .heart,
+        .twoHearts,
+        .loveLetter
+    ]
+
 }
 
 extension EmojiViewController: UICollectionViewDataSource {
@@ -64,7 +89,7 @@ extension EmojiViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let cellWidth = collectionView.bounds.width / CGFloat(emojis.count)
+        let cellWidth = collectionView.bounds.width / 10
         return CGSize(width: cellWidth, height: cellWidth)
     }
     

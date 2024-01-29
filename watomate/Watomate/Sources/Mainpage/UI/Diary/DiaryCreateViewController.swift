@@ -9,60 +9,37 @@ import UIKit
 import SnapKit
 
 class DiaryCreateViewController: PlainCustomBarViewController{
-    var viewModel = DiaryCreateViewModel()
+    lazy var viewModel = DiaryCreateViewModel()
     var completionClosure: ((String) -> Void)?
+    
+    @objc private func finishButtonTapped() {
+        let entry = DiaryCreateDTO(
+            description: diaryTextField.text ?? "no context",
+            visibility: diaryVisibility?.toString() ?? "PB",
+            mood: moodNumber,
+            color: backgroundColor ?? "system",
+            emoji: emoji,
+            image: nil,
+            created_by: 3,
+            date: profileDate.text ?? "no date" // Format the date as required
+        )
 
-    // @objc와 비동기 같이 사용 불가 -> synchronous wrapper
-    @objc private func finishButtonTappedSync() {
+        viewModel.createDiary(entry: entry)
+
         completionClosure?(emoji ?? "no emoji")
         navigationController?.popViewController(animated: true)
-        /*
-        do {
-            try Task.detached {
-                try await self.finishButtonTapped()
-            }
-        } catch {
-            // Handle any errors here
-            print("An error occurred: \(error)")
-        }
-         */
     }
-     
-/*
-    // 비동기 Asynchronous method
-    private func finishButtonTapped() async {
-        let diaryText = diaryTextField.text ?? "error : no context"
-        let profileDate = profileDate.text ?? "error : no date"
-        let caseString = String(describing: diaryVisibility)
-        var visibilityString : String? = caseString.replacingOccurrences(of: "Watomate.DiaryVisibility.", with: "")
-        if visibilityString == "ND"{
-            visibilityString = nil
-        }
-        let createdDiary = DiaryCreateDTO(description: diaryText, visibility: visibilityString, mood: nil, color: backgroundColor, emoji: nil, image: nil, created_by: 3, date: profileDate)
-        print(createdDiary)
-         
-        do {
-            try await viewModel.diaryFinishButtonTapped(diary: createdDiary)
-            completionClosure?(emoji ?? "no emoji")
-            navigationController?.popViewController(animated: true)
-        } catch {
-            // Handle any errors here
-            print("An error occurred: \(error)")
-        }
-         
-    }
-    //서버로 전달됨, 그러나 An error occurred: decodingError
-    //badRequest도 뜸 -> 서버로 전달 안 됨
-*/
-        
+
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setTitle("일기")
         setLeftButtonStyle(symbolName:"xmark", title:nil)
         setRightButtonStyle(symbolName: nil, title:"완료")
         setLeftButtonAction(target: self, action: #selector(backButtonTapped))
-        setRightButtonAction(target: self, action: #selector(finishButtonTappedSync))
-        // Do any additional setup after loading the view.
+        setRightButtonAction(target: self, action: #selector(finishButtonTapped))
+
         setupLayout()
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         tapGesture.delegate = self
@@ -217,7 +194,7 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         return label
     }()
     
-    var diaryVisibility: DiaryVisibility = .ND
+    var diaryVisibility: DiaryVisibility? = nil
     @objc private func visibilityButtonTapped() {
         let vc = DiaryVisibilityViewController()
         setSheetLayout(for: vc)
@@ -233,10 +210,10 @@ class DiaryCreateViewController: PlainCustomBarViewController{
     }
     
     private func updateVisibilityButtonAppearance() {
-        if diaryVisibility == .ND {
+        if diaryVisibility == nil {
             visibilityButton.setTitle("공개 설정", for: .normal)
         } else {
-            visibilityButton.setTitle(diaryVisibility.rawValue, for: .normal)
+            visibilityButton.setTitle(diaryVisibility?.rawValue, for: .normal)
         }
     }
     

@@ -7,32 +7,54 @@
 //
 
 import UIKit
+import Alamofire
 
 class DiaryPreviewViewController: SheetCustomViewController {
+    lazy var viewModel = DiaryPreviewViewModel()
+    var receivedDateString: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setTitle("일기")
         hideOkButton()
         setLeftButtonStyle(symbolName: "xmark")
         setRightButtonStyle(symbolName: "ellipsis")
-        setDiarySheetLayout(for: self)
         sheetView.addSubview(diaryPreviewView)
         diaryPreviewView.snp.makeConstraints { make in
-            make.edges.equalToSuperview() // 추후 프로필 이미지 사이즈에 따라 변형
+            make.edges.equalToSuperview() 
         }
         setLeftButtonAction(action: #selector(leftButtonTapped))
+        getDiary(userID: 3, date: receivedDateString ?? "2024-01-01")
     }
-
-    func setDiarySheetLayout(for viewController: SheetCustomViewController) {
-        viewController.modalPresentationStyle = .pageSheet
-
-        if let sheet = viewController.sheetPresentationController {
-            sheet.detents = [.large()]  // Set the detent directly to .large()
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = true
-            sheet.prefersGrabberVisible = true
+    
+    func getDiary(userID: Int, date: String) {
+        viewModel.getDiary(userID: userID, date: date) {
+            DispatchQueue.main.async { [weak self] in
+                self?.updateUI()
+            }
         }
     }
 
+    func updateUI() {
+        diaryTextField.text = viewModel.diary?.description
+        emojiView.setTitle(viewModel.diary?.emoji, for: .normal)
+        if let visibilityString = viewModel.diary?.visibility,
+           let visibilityEnum = DiaryVisibility.from(string: visibilityString) {
+            visibilityLabel.text = visibilityEnum.rawValue
+        } else {
+            visibilityLabel.text = "전체공개"
+        }
+
+        if let mood = viewModel.diary?.mood {
+            moodView.text = "\(mood)°"
+            moodView.isHidden = false
+        } else {
+            moodView.isHidden = true
+        }
+        diaryPreviewView.backgroundColor = UIColor(named: viewModel.diary?.color ?? "system")
+    }
+
+   
     private lazy var diaryPreviewView: UIView = {
         let view = UIView()
         view.addSubview(emojiView)
@@ -65,7 +87,7 @@ class DiaryPreviewViewController: SheetCustomViewController {
     
     private lazy var emojiView: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("😊", for: .normal)
+        button.setTitle(viewModel.diary?.emoji, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 40)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isUserInteractionEnabled = true //
@@ -74,7 +96,7 @@ class DiaryPreviewViewController: SheetCustomViewController {
     
     private lazy var moodView : UILabel = {
         var label = UILabel()
-        label.text = "50" // 마음온도, 변경
+        label.text = String(viewModel.diary?.mood ?? 25) // 마음온도, 변경
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 24)
         label.contentMode = .top
@@ -125,7 +147,7 @@ class DiaryPreviewViewController: SheetCustomViewController {
         return label
     }()
     
-    var receivedDateString = "2024-01-27"
+    
     lazy var profileDate: UILabel = {
         var label = UILabel()
         label.text = receivedDateString
@@ -137,7 +159,6 @@ class DiaryPreviewViewController: SheetCustomViewController {
     
     private lazy var visibilityLabel : UILabel = {
         let label = UILabel()
-        label.text = "전체공개"
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 14)
         return label
@@ -146,7 +167,6 @@ class DiaryPreviewViewController: SheetCustomViewController {
     lazy var diaryTextField: UITextField = {
         var view = UITextField()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.text = "오늘의 다이어리" // 00님의 오늘은 어떤 하루였나요? <- 00에 이름
         view.contentVerticalAlignment = .top
         return view
     }()

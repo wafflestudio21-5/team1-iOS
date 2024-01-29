@@ -9,15 +9,18 @@ import UIKit
 import SnapKit
 
 class ToDoViewController: UIViewController {
-    
-    private var dateString: String?
+    private var diaryDateString: String = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.string(from: Date())
+    }()
     
     var emoji = "?"
     
     @objc func diaryButtonTapped() {
         if emoji == "?" {
             let diaryViewController = DiaryCreateViewController()
-             diaryViewController.receivedDateString = dateString
+             diaryViewController.receivedDateString = diaryDateString
              diaryViewController.completionClosure = { receivedValue in
                  self.emoji = receivedValue
                  self.updateDiaryButtonAppearance()
@@ -27,6 +30,7 @@ class ToDoViewController: UIViewController {
         }
         else{
             let vc = DiaryPreviewViewController()
+            vc.receivedDateString = diaryDateString
             setSheetLayout(for: vc)
             present(vc, animated: true, completion: nil)
         }
@@ -46,10 +50,8 @@ class ToDoViewController: UIViewController {
         super.viewDidLoad()
         setupLayout()
         setCalendar()
-        
-        // Do any additional setup after loading the view.
     }
-    
+
     private func setupLayout(){
         view.addSubview(header)
         view.addSubview(body)
@@ -312,6 +314,7 @@ class ToDoViewController: UIViewController {
         return dateFormatter.date(from: strDate)!
     } //UICalendar은 date형 데이터 사용 : string -> date 형변환 함수
     
+    
     let dummy_day = "2024-01-13"
     private lazy var dummy_days = [getStringToDate(strDate: dummy_day) : [1, "green"]] // [남은 일의 수, 목표 색]
     
@@ -329,6 +332,15 @@ extension ToDoViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
     func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
         selection.setSelected(dateComponents, animated: true)
         selectedDate = dateComponents
+        if let selectedDate = dateComponents?.date {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            diaryDateString = dateFormatter.string(from: selectedDate)
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            diaryDateString = dateFormatter.string(from: Date())
+        }
         reloadCalendarView(date: Calendar.current.date(from: dateComponents!))
         
     }
@@ -337,10 +349,6 @@ extension ToDoViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
     func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -> UICalendarView.Decoration? {
         
         let date = dateComponents.date!
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateString = dateFormatter.string(from: date)
-        
         if dateComponents == selectedDate {
             // 서버 연동 후 날짜별로 맞는 emoji 가져오기
             return nil

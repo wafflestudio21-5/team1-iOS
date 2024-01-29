@@ -19,7 +19,6 @@ struct DiaryCreateDTO: Codable {
     let date: String
 }
 
-
 struct DiaryDTO: Codable {
     let id: Int
     let description: String
@@ -27,17 +26,17 @@ struct DiaryDTO: Codable {
     let mood: Int
     let color: String
     let emoji: String
-    let image: [String]?
+    let image: String
     let created_by: Int
     let date: String
-    let likes: [LikeDTO]
-    let comments: [CommentDTO]
+    let likes: [LikeDTO]?
+    let comments: [CommentDTO]?
 
-    func toDomain() -> Diary {
-        let convertedLikes = likes.map { $0.toDomain() }
-        let convertedComments = comments.map { $0.toDomain() }
-        return Diary(id: id, description: description, visibility: visibility, mood: mood, color: color, emoji: emoji, image: image, created_by: created_by, date: date, likes: convertedLikes, comments: convertedComments)
-    }
+     func toDomain() -> Diary {
+         let convertedLikes = likes?.map { $0.toDomain() } ?? []
+         let convertedComments = comments?.map { $0.toDomain() } ?? []
+         return Diary(id: id, description: description, visibility: visibility, mood: mood, color: color, emoji: emoji, image: image, created_by: created_by, date: date, likes: convertedLikes, comments: convertedComments)
+     }
 }
 
 struct LikeDTO: Codable {
@@ -64,20 +63,47 @@ enum DiaryVisibility: String, Codable {
     case PB = "전체공개"
     case PR = "나만 보기"
     case FL = "팔로워 공개"
-    case ND //not declared
+    
+    func toString() -> String {
+        switch self {
+        case .PB: return "PB"
+        case .PR: return "PR"
+        case .FL: return "FL"
+        }
+    }
+    
+    static func from(string: String) -> DiaryVisibility? {
+        switch string {
+        case "PB": return .PB
+        case "PR": return .PR
+        case "FL": return .FL
+        default: return nil
+        }
+    }
 }
-
 
 enum DiaryEmoji: String {
-    case happy = "😊"
-    case angry = "😠"
-    case pleading = "🥺"
-    case laughing = "😂"
-    case books = "📚"
-    case note = "📝"
-    case star = "🌟"
-    case island = "🏝️"
-    case guitar = "🎸"
+    case smilingFace = "😃"
+    case heartEyes = "😍"
+    case smilingFaceSlightly = "☺️"
+    case faceHoldingBackTears = "🥲"
+    case laughingWithTears = "😂"
+    case partyFace = "🥳"
+    case pleadingFace = "🥺"
+    case cryingFace = "😭"
+    case thinkingFace = "🤔"
+    case smilingFaceWithHearts = "🥰"
+    case dizzyFace = "😵‍💫"
+    case meltingFace = "🫠"
+    case sunny = "☀️"
+    case partlySunny = "⛅"
+    case snowman = "☃️"
+    case umbrellaWithRainDrops = "☔"
+    case clinkingBeerMugs = "🍻"
+    case cameraWithFlash = "📸"
+    case computer = "💻"
+    case teddyBear = "🧸"
     case heart = "❤️"
+    case twoHearts = "💗"
+    case loveLetter = "💌"
 }
-

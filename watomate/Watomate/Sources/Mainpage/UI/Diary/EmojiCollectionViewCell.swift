@@ -50,7 +50,7 @@ class EmojiCollectionViewCell: UICollectionViewCell {
     override var isSelected: Bool {
       didSet {
         if isSelected {
-            selectedEmoji = emojiLabel.text ?? "🍕"
+            selectedEmoji = emojiLabel.text ?? "no emoji"
             emojiLabel.backgroundColor = .blue
         } else {
             emojiLabel.backgroundColor = .white
