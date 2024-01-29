@@ -19,6 +19,7 @@ class ToDoViewController: UIViewController {
         setupLayout()
         getHomeUser(userID: userID)
         setCalendar()
+        //setupInnerBorder()
     }
     
     func getHomeUser(userID: Int) {
@@ -35,10 +36,24 @@ class ToDoViewController: UIViewController {
         // kingfisher no such module error
         profileName.text = homeViewModel.user?.username
         profileIntro.text = homeViewModel.user?.intro
-        
+        updateUserTedoori()
         // followingProfileName.text = "following user name"
         // followingProfileImage.image = UIImage(named: "waffle.jpg")
     }
+    
+    private func updateUserTedoori(){
+        if homeViewModel.user?.tedoori == true{
+            profileImageContainer.layer.borderWidth =  TedooriConstants.outerBorderWidth
+            profileImageContainer.layer.borderColor = TedooriConstants.outerBorderColor.cgColor
+            profileImage.layer.borderWidth = TedooriConstants.innerBorderWidth
+            profileImage.layer.borderColor = TedooriConstants.innerBorderColor.cgColor
+        }
+        else{
+            profileImageContainer.layer.borderWidth =  0
+            profileImage.layer.borderWidth = 0
+        }
+    } // todo 상태 바뀔 때마다 updateusertedoori 불러와야 함
+    
     
     private var diaryDateString: String = {
         let dateFormatter = DateFormatter()
@@ -217,7 +232,78 @@ class ToDoViewController: UIViewController {
         return view
     }()
     
-    //
+    private lazy var statusView: UIView = {
+        var view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(profileImageContainer)
+        view.addSubview(profileName)
+        view.addSubview(profileIntro)
+        view.addSubview(diaryButton)
+        profileImageContainer.snp.makeConstraints { make in
+            make.centerY.equalToSuperview() //추후 프로필 이미지 사이즈에 따라 변형
+            make.leading.equalToSuperview().inset(8)
+            make.width.height.equalTo(ProfileImageConstant.thumbnailSize)
+         }
+        
+        profileName.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(4)
+            make.leading.equalTo(profileImage.snp.trailing).offset(16)
+         }
+        profileIntro.snp.makeConstraints { make in
+            make.top.equalTo(profileName.snp.bottom)
+            make.bottom.equalToSuperview().inset(8)
+            make.leading.equalTo(profileImage.snp.trailing).offset(16)
+         }
+        diaryButton.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.trailing.equalToSuperview().inset(16)
+         }
+        return view
+    }()
+    
+    private lazy var profileImageContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = ProfileImageConstant.thumbnailSize / 2.0
+        view.addSubview(profileImage)
+        profileImage.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(TedooriConstants.innerBorderWidth)
+        }
+        return view
+    }()
+
+    
+    private lazy var profileImage : UIImageView = {
+        var imageView = UIImageView()
+        imageView.layer.cornerRadius = (ProfileImageConstant.thumbnailSize - ProfileImageConstant.spacing) / 2.0
+        imageView.clipsToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+
+        return imageView
+    }()
+    
+    
+    private lazy var profileName: UILabel = {
+        var label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var profileIntro: UILabel = {
+        var label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var diaryButton : UIButton = {
+        let button = UIButton(type: .system)
+        button.addTarget(self, action: #selector(diaryButtonTapped), for: .touchUpInside)
+        button.setImage(UIImage(systemName: "face.dashed"), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
     private lazy var body: UIView = {
         var view = UIView()
@@ -241,62 +327,6 @@ class ToDoViewController: UIViewController {
             make.leading.trailing.equalToSuperview()
          }
         return view
-    }()
-    
-    private lazy var statusView: UIView = {
-        var view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(profileImage)
-        view.addSubview(profileName)
-        view.addSubview(profileIntro)
-        view.addSubview(diaryButton)
-        profileImage.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(4) //추후 프로필 이미지 사이즈에 따라 변형
-            make.leading.equalToSuperview().inset(8)
-            make.width.equalTo(view.snp.height).multipliedBy(0.9)
-         }
-        profileName.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(8)
-            make.leading.equalTo(profileImage.snp.trailing).inset(-8)
-         }
-        profileIntro.snp.makeConstraints { make in
-            make.top.equalTo(profileName.snp.bottom)
-            make.bottom.equalToSuperview().inset(8)
-            make.leading.equalTo(profileImage.snp.trailing).inset(-8)
-         }
-        diaryButton.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
-            make.trailing.equalToSuperview().inset(16)
-         }
-        return view
-    }()
-    
-    
-    private lazy var profileImage : UIImageView = {
-        var view = UIImageView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    private lazy var profileName: UILabel = {
-        var label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private lazy var profileIntro: UILabel = {
-        var label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 12)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private lazy var diaryButton : UIButton = {
-        let button = UIButton(type: .system)
-        button.addTarget(self, action: #selector(diaryButtonTapped), for: .touchUpInside)
-        button.setImage(UIImage(systemName: "face.dashed"), for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
     }()
     
     private lazy var calendarView: UICalendarView = {
