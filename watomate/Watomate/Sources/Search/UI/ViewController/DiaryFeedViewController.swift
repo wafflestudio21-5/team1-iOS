@@ -57,6 +57,7 @@ class DiaryFeedViewController: UIViewController {
         diaryListDataSource = UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, itemIdentifier in
             guard let self else { fatalError() }
             guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchDiaryCell.reuseIdentifier, for: indexPath) as? SearchDiaryCell else { fatalError() }
+            cell.delegate = self
             cell.configure(with: self.viewModel.viewModel(at: indexPath))
             return cell
         }
@@ -94,4 +95,12 @@ extension DiaryFeedViewController: UIScrollViewDelegate {
             viewModel.input.send(.reachedEndOfScrollView)
         }
     }
+}
+
+extension DiaryFeedViewController: SearchDiaryCellDelegate {
+    func searchDiaryCell(_ searchDiaryCell: SearchDiaryCell, userId: Int, date: String) {
+        print("tap")
+    }
+    
+    
 }

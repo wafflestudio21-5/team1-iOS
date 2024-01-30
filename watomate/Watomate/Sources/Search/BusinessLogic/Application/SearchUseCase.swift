@@ -89,4 +89,8 @@ class SearchUseCase {
         let todoPage = try await searchRepository.searchInitialTodo(title: title)
         return todoPage
     }
+
+    func postLike(diaryUserId: Int, date: String, diaryId: Int, user: Int, emoji: String) async throws {
+        try await searchRepository.postLike(diaryUserId: diaryUserId, date: date, diaryId: diaryId, user: user, emoji: emoji)
+    }
 }

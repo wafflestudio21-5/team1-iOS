@@ -185,6 +185,7 @@ class SearchDiaryCell: UITableViewCell {
     private lazy var likeCircleView = {
         let view = SymbolCircleView(symbolImage: UIImage(systemName: "heart.fill"))
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(likeTapped)))
+        view.isUserInteractionEnabled = true 
         return view
     }()
     
@@ -196,7 +197,7 @@ class SearchDiaryCell: UITableViewCell {
     }
     
     private func setupLayout() {
-        addSubview(containerView)
+        contentView.addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(Constants.SearchDiary.containerHorizontalInset)
             make.top.bottom.equalToSuperview().inset(Constants.SearchDiary.containerVerticalInset)

@@ -8,11 +8,15 @@
 
 import Foundation
 
-class TodoUserCellViewModel: Identifiable {
+class TodoSectionViewModel: Identifiable {
     private let todoUser: TodoUser
+    var todoCells = [SearchTodoCellViewModel]()
     
     init(todoUser: TodoUser) {
         self.todoUser = todoUser
+        for todo in todoUser.todos {
+            todoCells.append(SearchTodoCellViewModel(todo: todo))
+        }
     }
     
     let id = UUID()
@@ -25,16 +29,12 @@ class TodoUserCellViewModel: Identifiable {
         todoUser.profilePic
     }
     
-    var todos: [SearchTodo] {
-        todoUser.todos
-    }
-    
     var todoCount: Int {
-        todos.count
+        todoCells.count
     }
     
     func viewModel(at indexPath: IndexPath) -> SearchTodoCellViewModel {
-        return SearchTodoCellViewModel(todo: todos[indexPath.row])
+        return todoCells[indexPath.row]
     }
     
 }

@@ -12,7 +12,7 @@ import UIKit
 
 class TodoFeedViewController: UIViewController {
     private let viewModel: TodoFeedViewModel
-    private var todoListDataSource: UITableViewDiffableDataSource<TodoUserCellViewModel.ID, SearchTodoCellViewModel.ID>!
+    private var todoListDataSource: UITableViewDiffableDataSource<TodoSectionViewModel.ID, SearchTodoCellViewModel.ID>!
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -74,12 +74,10 @@ class TodoFeedViewController: UIViewController {
             .sink { [weak self] event in
                 switch event {
                 case .updateTodoList(let todoList):
-                    var snapshot = NSDiffableDataSourceSnapshot<TodoUserCellViewModel.ID, SearchTodoCellViewModel.ID>()
+                    var snapshot = NSDiffableDataSourceSnapshot<TodoSectionViewModel.ID, SearchTodoCellViewModel.ID>()
                     snapshot.appendSections(todoList.map{ $0.id })
                     for user in todoList {
-                        for todo in user.todos {
-                            snapshot.appendItems([SearchTodoCellViewModel(todo: todo).id], toSection: user.id)
-                        }
+                        snapshot.appendItems(user.todoCells.map{ $0.id }, toSection: user.id)
                     }
                     self?.todoListDataSource.apply(snapshot, animatingDifferences: true)
                 }
