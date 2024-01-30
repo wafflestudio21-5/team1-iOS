@@ -19,6 +19,7 @@ class DiaryPreviewViewController: SheetCustomViewController {
     var receivedDateString: String?
     var userID = 3 //로그인이랑 연동해서 수정!!
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setTitle("일기")
@@ -33,6 +34,77 @@ class DiaryPreviewViewController: SheetCustomViewController {
         setRightButtonAction(action: #selector(rightButtonTapped))
         getPreviewDiary(userID: userID, date: receivedDateString ?? "no date") //유저아이디 수정, date 오늘로 수정?
     }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        adjustLayoutForSize(view.bounds.size)
+    }
+
+    private func adjustLayoutForSize(_ size: CGSize) {
+        guard let sheet = self.sheetPresentationController else { return }
+        let isCustomDetent: Bool
+
+        switch sheet.selectedDetentIdentifier {
+        case UISheetPresentationController.Detent.Identifier.large:
+            isCustomDetent = false
+        case UISheetPresentationController.Detent.Identifier("customDetent"):
+            isCustomDetent = true
+        default:
+            isCustomDetent = true
+        }
+        
+        let moodViewTopOffset = isCustomDetent ? 10 : 20
+        let profileViewTopOffset = isCustomDetent ? 10 : 20
+        let diaryTextFieldTopOffset = isCustomDetent ? 12 : 24
+
+        emojiView.snp.remakeConstraints { make in
+            make.top.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.height.equalToSuperview().multipliedBy(isCustomDetent ? 0.2 : 0.15)
+        }
+        
+        moodView.snp.remakeConstraints { make in
+            make.top.equalTo(emojiView.snp.bottom).offset(moodViewTopOffset)
+            make.centerX.equalToSuperview()
+            make.height.equalToSuperview().multipliedBy(isCustomDetent ? 0.1 : 0.05)
+        }
+        
+        profileView.snp.remakeConstraints { make in
+            make.top.equalTo(moodView.snp.bottom).offset(profileViewTopOffset)
+            make.leading.trailing.equalToSuperview().inset(8)
+            make.height.equalToSuperview().multipliedBy(isCustomDetent ? 0.3 : 0.08)
+        }
+        
+        diaryTextField.snp.remakeConstraints { make in
+            make.top.equalTo(profileView.snp.bottom).offset(diaryTextFieldTopOffset)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalToSuperview().multipliedBy(isCustomDetent ? 0.35 : 0.5)
+        }
+        
+        if !isCustomDetent {
+            if likeView.superview == nil {
+                diaryPreviewView.addSubview(likeView)
+            }
+            if commentView.superview == nil {
+                diaryPreviewView.addSubview(commentView)
+            }
+            likeView.snp.remakeConstraints { make in
+                make.top.equalTo(diaryTextField.snp.bottom)
+                make.leading.trailing.equalToSuperview().inset(16)
+                make.height.equalToSuperview().multipliedBy(0.1)
+            }
+            
+            commentView.snp.remakeConstraints { make in
+                make.top.equalTo(likeView.snp.bottom)
+                make.leading.trailing.equalToSuperview().inset(16)
+                make.bottom.equalToSuperview()
+            }
+        } else {
+            likeView.removeFromSuperview()
+            commentView.removeFromSuperview()
+        }
+    }
+
     
     func getPreviewDiary(userID: Int, date: String) {
         viewModel.getDiary(userID: userID, date: date) {
@@ -86,41 +158,10 @@ class DiaryPreviewViewController: SheetCustomViewController {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(emojiView)
-        emojiView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.centerX.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.15)
-         }
         view.addSubview(moodView)
-        moodView.snp.makeConstraints { make in
-            make.top.equalTo(emojiView.snp.bottom).inset(20) 
-            make.centerX.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.05)
-         }
         view.addSubview(profileView)
-        profileView.snp.makeConstraints { make in
-            make.top.equalTo(moodView.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(8)
-            make.height.equalToSuperview().multipliedBy(0.08)
-         }
         view.addSubview(diaryTextField)
-        diaryTextField.snp.makeConstraints { make in
-            make.top.equalTo(profileView.snp.bottom).offset(24)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalToSuperview().multipliedBy(0.5)
-         }
-        view.addSubview(likeView)
-        likeView.snp.makeConstraints { make in
-            make.top.equalTo(diaryTextField.snp.bottom)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalToSuperview().multipliedBy(0.1)
-         }
-        view.addSubview(commentView)
-        commentView.snp.makeConstraints { make in
-            make.top.equalTo(likeView.snp.bottom)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview()
-         }
+        
         return view
     }()
     
