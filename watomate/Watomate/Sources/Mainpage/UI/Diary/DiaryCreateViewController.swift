@@ -208,15 +208,20 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         return view
     }()
     
+    var userProfile : String?
     private lazy var profileImage : UIImageView = {
-        var view = UIImageView(image: UIImage(named: "waffle.jpg")) // 임의의 예시, 추후 프로필 사진으로 변경
+        var view = UIImageView()
+        let profileImageUrl = URL(string: userProfile ?? "default image url")
+        // profileImage.kf.setImage(with: profileImageUrl)
+        // kingfisher no such module error
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
+    var userName : String?
     private lazy var profileName: UILabel = {
         var label = UILabel()
-        label.text = "User" // 임의의 예시, 추후 사용자 이름으로 변경
+        label.text = userName
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 16)
         label.contentMode = .top

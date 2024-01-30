@@ -30,6 +30,7 @@ class ToDoViewController: UIViewController {
         }
     }
     
+    
     private func updateUserInfo(){
         // let profileImageUrl = URL(string: homeViewModel.user?.profile_pic)
         // profileImage.kf.setImage(with: profileImageUrl)
@@ -71,12 +72,16 @@ class ToDoViewController: UIViewController {
                  self.emoji = receivedValue
                  self.updateDiaryButtonAppearance()
              }
+            diaryCreateVC.userName = homeViewModel.user?.username
+            diaryCreateVC.userProfile = homeViewModel.user?.profile_pic
             diaryCreateVC.hidesBottomBarWhenPushed = true //tabBar 숨기기
             navigationController?.pushViewController(diaryCreateVC, animated: false)
         }
         else{
             let diaryPreviewVC = DiaryPreviewViewController()
             diaryPreviewVC.receivedDateString = diaryDateString
+            diaryPreviewVC.userName = homeViewModel.user?.username
+            diaryPreviewVC.userProfile = homeViewModel.user?.profile_pic
             setSheetLayout(for: diaryPreviewVC)
             diaryPreviewVC.delegate = self
             present(diaryPreviewVC, animated: true, completion: nil)
@@ -445,6 +450,8 @@ extension ToDoViewController: DiaryPreviewViewControllerDelegate {
         controller.dismiss(animated: true) {
             let diaryCreateVC = DiaryCreateViewController()
             diaryCreateVC.receivedDateString = self.diaryDateString
+            diaryCreateVC.userName = self.homeViewModel.user?.username
+            diaryCreateVC.userProfile = self.homeViewModel.user?.profile_pic
             diaryCreateVC.existence = true
             diaryCreateVC.completionClosure = { receivedValue in
                 self.emoji = receivedValue
