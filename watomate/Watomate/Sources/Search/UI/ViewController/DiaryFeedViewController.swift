@@ -31,7 +31,7 @@ class DiaryFeedViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.register(SearchDiaryCell.self, forCellReuseIdentifier: SearchDiaryCell.reuseIdentifier)
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 162
+        tableView.estimatedRowHeight = 200
         tableView.delegate = self
         return tableView
     }()
@@ -74,6 +74,9 @@ class DiaryFeedViewController: UIViewController {
                     snapshot.appendSections(DiaryFeedSection.allCases)
                     snapshot.appendItems(diaryList.map{ $0.id }, toSection: .main)
                     self?.diaryListDataSource.apply(snapshot, animatingDifferences: true)
+                case .likeUpdate:
+                    guard let self else { return }
+                    self.diaryListDataSource.applySnapshotUsingReloadData(self.diaryListDataSource.snapshot())
                 }
             }.store(in: &cancellables)
     }
@@ -82,7 +85,16 @@ class DiaryFeedViewController: UIViewController {
 
 extension DiaryFeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        present(MateDiaryViewController(viewModel.viewModel(at: indexPath)), animated: true)
+        let vc = MateDiaryViewController(viewModel.viewModel(at: indexPath))
+        vc.delegate = self
+        
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return UIScreen.main.bounds.height
+            })]
+        }
+        present(vc, animated: true)
+        
     }
 }
 
@@ -98,9 +110,11 @@ extension DiaryFeedViewController: UIScrollViewDelegate {
 }
 
 extension DiaryFeedViewController: SearchDiaryCellDelegate {
-    func searchDiaryCell(_ searchDiaryCell: SearchDiaryCell, userId: Int, date: String) {
+    func selectEmoji(diaryId: Int, userId: Int) {
         let vc = LikeEmojiViewController()
-        vc.delegate = self 
+        vc.diaryId = diaryId
+        vc.userId = userId
+        vc.delegate = self
         if let sheet = vc.sheetPresentationController {
             sheet.detents = [.custom(resolver: { context in
                 return 280
@@ -111,8 +125,16 @@ extension DiaryFeedViewController: SearchDiaryCellDelegate {
 }
 
 extension DiaryFeedViewController: LikeEmojiViewControllerDelegate {
-    func likeWithEmoji(_ emoji: String) {
-        print("hello")
+    func likeWithEmoji(diaryId: Int, user: Int, emoji: String) {
+        viewModel.input.send(.likeTapped(diaryId: diaryId, userId: user, emoji: emoji))
     }
+    
+}
+
+extension DiaryFeedViewController: MateDiaryViewControllerDelegate {
+    func likedWithEmoji(diaryId: Int, user: Int, emoji: String) {
+        viewModel.input.send(.likeAppended(diaryId: diaryId, userId: user, emoji: emoji))
+    }
+    
     
 }

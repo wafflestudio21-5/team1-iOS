@@ -6,14 +6,22 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
+import Combine
 import SnapKit
 import UIKit
 
+protocol MateDiaryViewControllerDelegate: AnyObject {
+    func likedWithEmoji(diaryId: Int, user: Int, emoji: String)
+}
+
 class MateDiaryViewController: DraggableCustomBarViewController {
-    private let viewModel: SearchDiaryCellViewModel
+    var delegate: MateDiaryViewControllerDelegate?
+    private let viewModel: MateDiaryViewModel
+    
+    private var cancellables = Set<AnyCancellable>()
     
     init(_ viewModel: SearchDiaryCellViewModel) {
-        self.viewModel = viewModel
+        self.viewModel = MateDiaryViewModel(diaryCellViewModel: viewModel, searchUserCase: SearchUseCase(searchRepository: SearchRepository()))
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -33,12 +41,25 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         setupLayout()
         configure()
         setupColor()
+        bindViewModel()
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         contentView.addGestureRecognizer(tap)
-
+        
+    }
+    
+    private func bindViewModel() {
+        viewModel.output
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] emoji in
+            guard let userId = User.shared.id else { return }
+            guard let self else { return }
+            self.configure()
+            self.likeCircleView.setSymbolColor(UIColor(red: 253.0/255.0, green: 93.0/255.0, blue: 93.0/255.0, alpha: 1))
+            self.delegate?.likedWithEmoji(diaryId: self.viewModel.diaryId, user: userId, emoji: emoji)
+        }.store(in: &cancellables)
     }
     
     private func setupColor() {
@@ -56,7 +77,11 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         diaryContents.textColor = viewModel.color.label
         
         likeCircleView.setBackgroundColor(viewModel.color.heartBackground)
-        likeCircleView.setSymbolColor(viewModel.color.heartSymbol)
+        if viewModel.isLiked {
+            likeCircleView.setSymbolColor(UIColor(red: 253.0/255.0, green: 93.0/255.0, blue: 93.0/255.0, alpha: 1))
+        } else {
+            likeCircleView.setSymbolColor(viewModel.color.heartSymbol)
+        }
     }
     
     @objc func hideKeyboard() {
@@ -66,7 +91,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     @objc func keyboardWillShow(notification: NSNotification) {
         bottomPadding.isHidden = true
     }
-
+    
     @objc func keyboardWillHide(notification: NSNotification) {
         bottomPadding.isHidden = false
     }
@@ -84,13 +109,13 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         contentView.addSubview(commentContainerView)
         
         statusStackView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20.adjusted)
+            make.top.equalToSuperview().offset(5.adjustedH)
             make.leading.trailing.equalToSuperview()
         }
         
         userInfoView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(30.adjusted)
-            make.top.equalTo(statusStackView.snp.bottom).offset(30.adjusted).priority(999) // 나중에 고칠 수 있을까?
+            make.top.equalTo(statusStackView.snp.bottom).offset(20.adjustedH).priority(999) // 나중에 고칠 수 있을까?
         }
         
         diaryContainerView.snp.makeConstraints { make in
@@ -110,8 +135,8 @@ class MateDiaryViewController: DraggableCustomBarViewController {
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).inset(-10)
         }
     }
-
     
+    @MainActor
     private func configure() {
         emojiView.text = viewModel.emoji
         if let mood = viewModel.mood {
@@ -143,6 +168,24 @@ class MateDiaryViewController: DraggableCustomBarViewController {
             visibilityLabel.text = "팔로워 공개"
         }
         
+        let likeCount = viewModel.likes.count
+        switch likeCount {
+        case 0:
+            break
+        case 1:
+            emojiLabel1.isHidden = false
+            emojiLabel1.text = viewModel.likes[0].emoji
+            emojiCountLabel.isHidden = false
+            emojiCountLabel.text = "1"
+        default:
+            emojiLabel1.isHidden = false
+            emojiLabel1.text = viewModel.likes[likeCount - 1].emoji
+            emojiLabel2.isHidden = false
+            emojiLabel2.text = viewModel.likes[likeCount - 2].emoji
+            emojiCountLabel.isHidden = false
+            emojiCountLabel.text = String(likeCount)
+        }
+        
     }
     
     // status(emoji, mood) 스택 뷰
@@ -159,7 +202,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private lazy var emojiView = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 60)
+        label.font = UIFont.systemFont(ofSize: 50)
         return label
     }()
     
@@ -287,7 +330,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         label.textColor = .label
         return label
     }()
-
+    
     private lazy var diaryContainerView = {
         let view = UIScrollView()
         
@@ -322,7 +365,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     private lazy var diaryContents = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.regular, size: 18)
+        label.font = UIFont(name: Constants.Font.regular, size: 16)
         label.numberOfLines = 0
         label.lineBreakMode = .byCharWrapping
         return label
@@ -330,8 +373,19 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private lazy var footerView = {
         let view = UIView()
+        emojiContainerView.snp.makeConstraints { make in
+            make.height.equalTo(Constants.SearchDiary.footerViewHeight)
+        }
+        
         likeCircleView.snp.makeConstraints { make in
             make.width.height.equalTo(Constants.SearchDiary.footerViewHeight)
+        }
+        
+        view.addSubview(emojiContainerView)
+        emojiContainerView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(15.adjustedH)
+            make.bottom.equalToSuperview()
+            make.leading.equalToSuperview()
         }
         
         view.addSubview(likeCircleView)
@@ -343,15 +397,58 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         return view
     }()
     
+    private lazy var emojiContainerView = {
+        let view = UIStackView()
+        view.axis = .horizontal
+        view.spacing = 5.adjusted
+        
+        view.addArrangedSubview(emojiLabel1)
+        view.addArrangedSubview(emojiLabel2)
+        view.addArrangedSubview(emojiCountLabel)
+        return view
+    }()
+    
+    private lazy var emojiLabel1 = {
+        let label = UILabel()
+        label.isHidden = true
+        label.font = .systemFont(ofSize: 18)
+        return label
+    }()
+    
+    private lazy var emojiLabel2 = {
+        let label = UILabel()
+        label.isHidden = true
+        label.font = .systemFont(ofSize: 18)
+        return label
+    }()
+    
+    private lazy var emojiCountLabel = {
+        let label = UILabel()
+        label.textColor = .label
+        label.isHidden = true
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        return label
+    }()
+    
     private lazy var likeCircleView = {
         let view = SymbolCircleView(symbolImage: UIImage(systemName: "heart.fill"))
-        view.setBackgroundColor(.systemGray6)
-        view.setSymbolColor(.systemGray4)
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(likeTapped)))
+        view.isUserInteractionEnabled = true
         return view
     }()
     
     @objc func likeTapped() {
+        guard let userId = User.shared.id else { return }
+        let vc = LikeEmojiViewController()
+        vc.diaryId = viewModel.diaryId
+        vc.userId = userId
+        vc.delegate = self
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return 280
+            })]
+        }
+        present(vc, animated: true)
     }
     
     private lazy var shadowView = {
@@ -359,7 +456,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         view.backgroundColor = .systemBackground
         view.layer.shadowOffset = CGSize(width: 0, height: -8)
         view.layer.shadowOpacity = 0.1
-        view.layer.shadowRadius = 10 
+        view.layer.shadowRadius = 10
         view.layer.shadowColor = UIColor.label.cgColor
         return view
     }()
@@ -416,13 +513,20 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private lazy var bottomPadding = {
         let view = UIView()
-
+        
         view.snp.makeConstraints { make in
             make.height.equalTo(60)
         }
         
         return view
     }()
- 
+    
+}
 
+extension MateDiaryViewController: LikeEmojiViewControllerDelegate {
+    func likeWithEmoji(diaryId: Int, user: Int, emoji: String) {
+        viewModel.saveLike(diaryId: diaryId, userId: user, emoji: emoji)
+    }
+    
+    
 }

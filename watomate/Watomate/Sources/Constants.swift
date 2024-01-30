@@ -53,7 +53,7 @@ enum Constants {
         static let contentsInset = 20.0.adjusted
         static let offset = 20.0.adjusted
         static let spacing = 15.0.adjusted
-        static let profileHeight = 55.adjusted
+        static let profileHeight = 50.adjusted
     }
 }
 

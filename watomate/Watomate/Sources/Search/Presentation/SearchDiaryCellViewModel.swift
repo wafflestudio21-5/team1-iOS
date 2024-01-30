@@ -11,11 +11,22 @@ import Foundation
 class SearchDiaryCellViewModel: Identifiable {
     private let diary: SearchDiary
     
+    let id: Int
+    
+    var likes: [SearchLike]
+    
+    var comments: [SearchComment]
+    
     init(diary: SearchDiary) {
         self.diary = diary
+        id = diary.id
+        likes = diary.likes
+        comments = diary.comments
     }
     
-    let id = UUID()
+    var diaryId: Int {
+        diary.id
+    }
     
     var userId: Int {
         diary.user.id
@@ -57,11 +68,8 @@ class SearchDiaryCellViewModel: Identifiable {
         diary.date
     }
     
-    var likes: [SearchLike] {
-        diary.likes
+    func getDiary() -> SearchDiary {
+        diary
     }
-    
-    var comments: [SearchComment] {
-        diary.comments
-    }
+
 }

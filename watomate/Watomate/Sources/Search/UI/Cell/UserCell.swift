@@ -35,14 +35,14 @@ class UserCell: UITableViewCell {
     private lazy var usernameLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.medium, size: 20)
+        label.font = UIFont(name: Constants.Font.medium, size: 18)
         return label
     }()
     
     private lazy var introLabel = {
         let label = UILabel()
         label.textColor = .secondaryLabel
-        label.font = UIFont(name: Constants.Font.regular, size: 16)
+        label.font = UIFont(name: Constants.Font.regular, size: 14)
         return label
     }()
     

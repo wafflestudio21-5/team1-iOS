@@ -10,11 +10,13 @@ import UIKit
 import SnapKit
 
 protocol LikeEmojiViewControllerDelegate: AnyObject {
-    func likeWithEmoji(_ emoji: String)
+    func likeWithEmoji(diaryId: Int, user: Int, emoji: String)
 }
 
 class LikeEmojiViewController: DraggableCustomBarViewController {
     weak var delegate: LikeEmojiViewControllerDelegate?
+    var diaryId: Int?
+    var userId: Int?
     
     let emojis = ["😀", "😍", "☺️", "🥲", "😂", "🥳", "🥺", "😭", "🤔", "🥰", "🫠", "👍", "👏", "🖐️", "👀", "🙇", "🔥", "⭐️", "❓", "💯", "✅", "❤️", "🙏", "👌"]
     let columns: CGFloat = 6
@@ -62,7 +64,8 @@ extension LikeEmojiViewController: UICollectionViewDataSource {
 
 extension LikeEmojiViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        delegate?.likeWithEmoji(emojis[indexPath.row])
+        guard let userId, let diaryId else { return }
+        delegate?.likeWithEmoji(diaryId: diaryId, user: userId, emoji: emojis[indexPath.row])
         dismiss(animated: true)
     }
 }

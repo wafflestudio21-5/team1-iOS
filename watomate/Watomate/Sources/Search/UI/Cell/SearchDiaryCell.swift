@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 
 protocol SearchDiaryCellDelegate: AnyObject {
-    func searchDiaryCell(_ searchDiaryCell: SearchDiaryCell, userId: Int, date:String)
+    func selectEmoji(diaryId: Int, userId: Int)
 }
 
 class SearchDiaryCell: UITableViewCell {
@@ -39,6 +39,9 @@ class SearchDiaryCell: UITableViewCell {
         descriptionLabel.text = nil
         likeCircleView.setBackgroundColor(.systemGray6)
         likeCircleView.setSymbolColor(.systemGray4)
+        emojiLabel1.isHidden = true
+        emojiLabel2.isHidden = true
+        emojiCountLabel.isHidden = true
     }
     
     private lazy var containerView = {
@@ -207,25 +210,22 @@ class SearchDiaryCell: UITableViewCell {
     private lazy var emojiLabel1 = {
         let label = UILabel()
         label.isHidden = true
-        label.font = .systemFont(ofSize: 20)
-//        label.text = "👏"
+        label.font = .systemFont(ofSize: 18)
         return label
     }()
     
     private lazy var emojiLabel2 = {
         let label = UILabel()
-//        label.isHidden = true
-        label.font = .systemFont(ofSize: 20)
-//        label.text = "😀"
+        label.isHidden = true
+        label.font = .systemFont(ofSize: 18)
         return label
     }()
     
     private lazy var emojiCountLabel = {
         let label = UILabel()
         label.textColor = .label
-//        label.isHidden = true
-        label.font = .systemFont(ofSize: 18, weight: .semibold)
-//        label.text = "2"
+        label.isHidden = true
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
         return label
     }()
     
@@ -238,8 +238,9 @@ class SearchDiaryCell: UITableViewCell {
     
     @objc func likeTapped() {
         if let viewModel,
-           let delegate {
-            delegate.searchDiaryCell(self, userId: viewModel.userId, date: viewModel.date)
+           let delegate,
+        let userId = User.shared.id  {
+            delegate.selectEmoji(diaryId: viewModel.diaryId, userId: userId)
         }
     }
     
@@ -294,7 +295,31 @@ class SearchDiaryCell: UITableViewCell {
         dateLabel.textColor = viewModel.color.secondaryLabel
         
         likeCircleView.setBackgroundColor(viewModel.color.heartBackground)
-        likeCircleView.setSymbolColor(viewModel.color.heartSymbol)
+        if viewModel.likes.contains(where: { $0.user == User.shared.id }) {
+            likeCircleView.setSymbolColor(UIColor(red: 253.0/255.0, green: 93.0/255.0, blue: 93.0/255.0, alpha: 1))
+        } else {
+            likeCircleView.setSymbolColor(viewModel.color.heartSymbol)
+        }
+        
+        
+        let likeCount = viewModel.likes.count
+        switch likeCount {
+        case 0:
+            break
+        case 1:
+            emojiLabel1.isHidden = false
+            emojiLabel1.text = viewModel.likes[0].emoji
+            emojiCountLabel.isHidden = false 
+            emojiCountLabel.text = "1"
+        default:
+            emojiLabel1.isHidden = false
+            emojiLabel1.text = viewModel.likes[likeCount - 1].emoji
+            emojiLabel2.isHidden = false
+            emojiLabel2.text = viewModel.likes[likeCount - 2].emoji
+            emojiCountLabel.isHidden = false 
+            emojiCountLabel.text = String(likeCount)
+        }
+        
     }
     
 }
