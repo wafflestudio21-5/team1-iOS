@@ -32,17 +32,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         self.window = window
         
-        print(User.shared.token)
-        let repo = SearchRepository()
-        let useCase = SearchUseCase(searchRepository: repo)
-        Task {
-            do {
-                let result = try await useCase.postLike(diaryId: 61, user: 1, emoji: "👏") 
-                print(result)
-            } catch {
-                print(error)
-            }
-        }
+//        print(User.shared.token)
+//        let repo = SearchRepository()
+//        let useCase = SearchUseCase(searchRepository: repo)
+//        Task {
+//            do {
+//                let result = try await useCase.postLike(diaryId: 61, user: 1, emoji: "👏")
+//                print(result)
+//            } catch {
+//                print(error)
+//            }
+//        }
     }
     
     private func getUserInfo() {

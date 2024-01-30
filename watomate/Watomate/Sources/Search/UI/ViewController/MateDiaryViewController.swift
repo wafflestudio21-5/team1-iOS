@@ -52,7 +52,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         moodLabel.textColor = viewModel.color.label
         usernameLabel.textColor = viewModel.color.label
         dateLabel.textColor = viewModel.color.label
-        visibilityView.setLabelColor(viewModel.color.label)
+        visibilityLabel.textColor = viewModel.color.label
         diaryContents.textColor = viewModel.color.label
         
         likeCircleView.setBackgroundColor(viewModel.color.heartBackground)
@@ -113,7 +113,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
 
     
     private func configure() {
-        emojiView.text = "🥳"
+        emojiView.text = viewModel.emoji
         if let mood = viewModel.mood {
             moodLabel.text = "\(mood)°"
             moodBar.setProgress(Float(mood) / 100.0 , animated: false)
@@ -131,6 +131,17 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         }
         diaryContents.text = viewModel.description
         
+        switch viewModel.visibility {
+        case .PB:
+            boxView.image = UIImage(named: "pb")
+            visibilityLabel.text = "전체공개"
+        case .PR:
+            boxView.image = UIImage(named: "pr")
+            visibilityLabel.text = "나만보기"
+        case .FL:
+            boxView.image = UIImage(named: "fl")
+            visibilityLabel.text = "팔로워 공개"
+        }
         
     }
     
@@ -194,22 +205,30 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         
         view.addSubview(profileCircleView)
         profileCircleView.snp.makeConstraints { make in
-            make.leading.top.bottom.equalToSuperview()
+            make.leading.top.equalToSuperview()
         }
         
         view.addSubview(infoStackView)
         infoStackView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
+            make.centerY.equalTo(profileCircleView)
             make.leading.equalTo(profileCircleView.snp.trailing).offset(Constants.SearchDiary.offset)
         }
         
-        view.addSubview(visibilityView)
-        visibilityView.snp.makeConstraints { make in
+        view.addSubview(boxView)
+        boxView.snp.makeConstraints { make in
             make.centerY.equalTo(dateLabel)
-            make.leading.equalTo(dateLabel.snp.trailing).offset(Constants.SearchDiary.offset)
-            make.height.equalTo(16)
+            make.leading.equalTo(dateLabel.snp.trailing).offset(5.adjusted)
+            make.width.height.equalTo(25)
+            make.bottom.equalToSuperview()
         }
-        visibilityView.setFontSize(14)
+        
+        view.addSubview(visibilityLabel)
+        visibilityLabel.snp.makeConstraints { make in
+            make.top.equalTo(usernameLabel.snp.bottom).offset(1.adjusted)
+            make.leading.equalTo(boxView.snp.trailing).offset(2.adjusted)
+            make.height.equalTo(25)
+            make.bottom.equalToSuperview()
+        }
         return view
     }()
     
@@ -245,7 +264,6 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         stackView.spacing = 2.adjusted
         
         stackView.addArrangedSubview(dateLabel)
-        stackView.addArrangedSubview(visibilityView)
         
         return stackView
     }()
@@ -257,7 +275,18 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         return label
     }()
     
-    private lazy var visibilityView = VisibilityView(viewModel.visibility)
+    private lazy var boxView = {
+        let view = UIImageView()
+        view.contentMode = .scaleAspectFit
+        return view
+    }()
+    
+    private lazy var visibilityLabel = {
+        let label = UILabel()
+        label.font = UIFont(name: Constants.Font.regular, size: 14)
+        label.textColor = .label
+        return label
+    }()
 
     private lazy var diaryContainerView = {
         let view = UIScrollView()
