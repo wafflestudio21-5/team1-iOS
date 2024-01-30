@@ -6,6 +6,7 @@
 //  Copyright © 2023 tuist.io. All rights reserved.
 //
 
+import KakaoSDKAuth
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -13,14 +14,59 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = TabBarController()
+
+        
+        let userDefaultsRepository = UserDefaultsRepository()
+        let isLoggedIn = userDefaultsRepository.get(Bool.self, key: .isLoggedIn) ?? false
+        User.shared.isLoggedin = isLoggedIn
+        if isLoggedIn {
+            User.shared.id = userDefaultsRepository.get(Int.self, key: .userId)
+            User.shared.token = userDefaultsRepository.get(String.self, key: .accessToken)
+            
+            let searchUseCase = SearchUseCase(searchRepository: SearchRepository())
+            
+            Task {
+                guard let id = User.shared.id else { return }
+//                print(id)
+                let userInfo = try? await searchUseCase.getUserInfo(id: id)
+                User.shared.username = userDefaultsRepository.get(String.self, key: .username)
+                User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)
+                User.shared.profilePic = userDefaultsRepository.get(String.self, key: .profilePic)
+                User.shared.followerCount = userDefaultsRepository.get(Int.self, key: .followerCount)
+                User.shared.followingCount = userDefaultsRepository.get(Int.self, key: .followingCount)
+            }
+            
+            User.shared.loginMethod = LoginMethod(rawValue: userDefaultsRepository.get(String.self, key: .loginMethod) ?? "")
+            window.rootViewController = TabBarController()
+        } else {
+            let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), searchRepository: SearchRepository(), kakaoRepository: KakaoRepository())
+            window.rootViewController = UINavigationController(rootViewController: FirstViewController(viewModel: FirstViewModel(authUseCase: authUseCase)))
+        }
+
         window.makeKeyAndVisible()
         self.window = window
+        
+//        print(User.shared.token)
+//        let repo = SearchRepository()
+//        let useCase = SearchUseCase(searchRepository: repo)
+//        Task {
+//            do {
+//                let result = try await useCase.getInitialUsers()
+//                print(result)
+//            } catch {
+//                print(error)
+//            }
+//        }
+    }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if let url = URLContexts.first?.url {
+            if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                _ = AuthController.handleOpenUrl(url: url)
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

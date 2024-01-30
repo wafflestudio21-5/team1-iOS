@@ -19,10 +19,23 @@ class TabBarController: UITabBarController {
         let searchVC = UINavigationController(rootViewController: SearchViewController())
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
         
-        let profileVC = UINavigationController(rootViewController: ProfileViewController())
+
+        let groupVC = UINavigationController(rootViewController: GroupViewController())
+        groupVC.tabBarItem = UITabBarItem(title: "Group", image: UIImage(systemName: "rectangle.3.group.fill"), tag: 2)
+
+        let todoRepository = TodoRepository()
+        let todoUseCase = TodoUseCase(todoRepository: todoRepository)
+        let todoListViewModel = TodoListViewModel(todoUseCase: todoUseCase)
+        let profileVC = UINavigationController(rootViewController: ProfileViewController(todoListViewModel: todoListViewModel))
+
         profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.crop.circle.fill"), tag: 3)
 */
         viewControllers = [todoVC]
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
     }
 }
 
