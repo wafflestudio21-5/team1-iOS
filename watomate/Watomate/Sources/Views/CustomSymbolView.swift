@@ -88,7 +88,7 @@ class CustomSymbolView: UIView {
     private func setupCirclesColor() {
         for circle in [circle1, circle2, circle3, circle4] {
             circle.setBackgroundColor(Color.gray.uiColor)
-            circle.alpha = 1
+            circle.alpha = 0.9
         }
         centerCircle.setBackgroundColor(.clear)
     }
@@ -110,15 +110,15 @@ class CustomSymbolView: UIView {
             circle3.backgroundColor = color[0].uiColor
             circle4.backgroundColor = color[1].uiColor
         } else if color.count == 1{
-            circle1.backgroundColor = color[0].uiColor
-            circle2.backgroundColor = color[0].uiColor
-            circle3.backgroundColor = color[0].uiColor
-            circle4.backgroundColor = color[0].uiColor
+            for circle in [circle1, circle2, circle3, circle4] {
+                circle.backgroundColor = color[0].uiColor
+                circle.alpha = 1
+            }
         } else {
-            circle1.backgroundColor = Color.gray.uiColor
-            circle2.backgroundColor = Color.gray.uiColor
-            circle3.backgroundColor = Color.gray.uiColor
-            circle4.backgroundColor = Color.gray.uiColor
+            for circle in [circle1, circle2, circle3, circle4] {
+                circle.backgroundColor = Color.gray.uiColor
+                circle.alpha = 1
+            }
         }
     }
     
@@ -129,8 +129,7 @@ class CustomSymbolView: UIView {
     
     func addDefaultImage() {
         addCenterCircle(image: UIImage(systemName: "person.fill"))
-        centerCircle.setBackgroundColor(Color.gray.uiColor)
-        centerCircle.setSymbolColor(.white)
+        centerCircle.setDefault()
     }
     
     func addCenterCircle(url: String) { 

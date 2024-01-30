@@ -17,6 +17,7 @@ final class DiaryFeedViewModel: ViewModelType {
     enum Input {
         case viewDidLoad
         case reachedEndOfScrollView
+        case likeTapped(id: Int, emoji: String)
     }
     
     enum Output {
@@ -48,6 +49,8 @@ final class DiaryFeedViewModel: ViewModelType {
                 self?.fetchInitialDiaries()
             case .reachedEndOfScrollView:
                 self?.fetchMoreDiaries()
+            case let .likeTapped(id, emoji):
+                self?.saveLike(id: id, emoji: emoji)
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -89,5 +92,9 @@ final class DiaryFeedViewModel: ViewModelType {
             output.send(.updateDiaryList(diaryList: diaryList))
             isFetching = false
         }
+    }
+    
+    private func saveLike(id: Int, emoji: String) {
+//        searchUseCase.postLike(diaryUserId: <#T##Int#>, date: <#T##String#>, diaryId: <#T##Int#>, user: <#T##Int#>, emoji: <#T##String#>)
     }
 }

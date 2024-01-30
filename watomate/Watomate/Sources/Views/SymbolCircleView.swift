@@ -80,6 +80,12 @@ class SymbolCircleView: UIImageView {
         kf.setImage(with: URL(string: url)!)
     }
     
+    func setProfileImage() {
+        symbolImageView.image = nil
+        guard let imageUrl = User.shared.profilePic else { return }
+        kf.setImage(with: URL(string: imageUrl)!)
+    }
+    
     func setDefault() {
         setSymbol(UIImage(systemName: "person.fill"))
         setBackgroundColor(.systemGray5)

@@ -17,7 +17,7 @@ enum SearchRouter: Router {
     case getTodoFeed
     case searchUser(username: String)
     case searchTodo(title: String)
-    case likeDiary(diaryUserId: Int, date: String, diaryId: Int, user: Int, emoji: String)
+    case likeDiary(diaryId: Int, user: Int, emoji: String)
     
     var method: HTTPMethod {
         switch self {
@@ -56,8 +56,8 @@ enum SearchRouter: Router {
             return "/todofeed"
         case .searchTodo:
             return "todo-search"
-        case let .likeDiary(diaryUserId, date, diaryId, _, _):
-            return "/\(diaryUserId)/diarys/\(date)/\(diaryId)/like"
+        case let .likeDiary(diaryId, _, _):
+            return "/diarys/\(diaryId)/like"
         }
     }
     
@@ -77,7 +77,7 @@ enum SearchRouter: Router {
             return [:]
         case let .searchTodo(title):
             return ["title": title]
-        case let .likeDiary(_, _, _, user, emoji):
+        case let .likeDiary(_, user, emoji):
             return ["user": user, "emoji": emoji]
         }
     }

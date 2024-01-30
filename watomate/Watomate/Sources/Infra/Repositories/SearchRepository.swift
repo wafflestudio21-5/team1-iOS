@@ -20,7 +20,7 @@ protocol SearchRepositoryProtocol {
     func getMoreTodo(url: String) async throws -> TodoPage
     func searchInitialUsers(username: String) async throws -> UsersPage
     func searchInitialTodo(title: String) async throws -> TodoPage
-    func postLike(diaryUserId: Int, date: String, diaryId: Int, user: Int, emoji: String) async throws
+    func postLike(diaryId: Int, user: Int, emoji: String) async throws
 }
 
 class SearchRepository: SearchRepositoryProtocol {
@@ -120,7 +120,7 @@ class SearchRepository: SearchRepositoryProtocol {
         return dto.toDomain()
     }
     
-    func postLike(diaryUserId: Int, date: String, diaryId: Int, user: Int, emoji: String) async throws {
-        let dto = try await session.request(SearchRouter.likeDiary(diaryUserId: diaryUserId, date: date, diaryId: diaryId, user: user, emoji: emoji)).serializingDecodable(SearchLikeDto.self, decoder: decoder).handlingError()
+    func postLike(diaryId: Int, user: Int, emoji: String) async throws {
+        let dto = try await session.request(SearchRouter.likeDiary(diaryId: diaryId, user: user, emoji: emoji)).serializingDecodable(SearchLikeDto.self, decoder: decoder).handlingError()
     }
 }

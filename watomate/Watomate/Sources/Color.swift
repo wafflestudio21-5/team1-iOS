@@ -29,7 +29,7 @@ enum Color: String {
         case .system:
             return .systemBackground
         case .gray:
-            return .systemGray5
+            return .systemGray4
         default:
             return UIColor(named: self.rawValue) ?? .systemBackground
         }

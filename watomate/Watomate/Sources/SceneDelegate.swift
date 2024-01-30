@@ -37,7 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let useCase = SearchUseCase(searchRepository: repo)
         Task {
             do {
-                let result = try await repo.postLike(diaryUserId: 3, date: "2024-01-29", diaryId: 35, user: 1, emoji: "😀")
+                let result = try await useCase.postLike(diaryId: 61, user: 1, emoji: "👏") 
                 print(result)
             } catch {
                 print(error)

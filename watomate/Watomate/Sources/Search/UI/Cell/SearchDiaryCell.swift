@@ -169,17 +169,64 @@ class SearchDiaryCell: UITableViewCell {
     
     private lazy var footerView = {
         let view = UIView()
+        
+        emojiContainerView.snp.makeConstraints { make in
+            make.height.equalTo(Constants.SearchDiary.footerViewHeight)
+        }
+        
         likeCircleView.snp.makeConstraints { make in
             make.width.height.equalTo(Constants.SearchDiary.footerViewHeight)
         }
         
+        view.addSubview(emojiContainerView)
+        emojiContainerView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.equalToSuperview()
+        }
+        
         view.addSubview(likeCircleView)
         likeCircleView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
+            make.top.bottom.equalToSuperview()
             make.trailing.equalToSuperview()
         }
         
         return view
+    }()
+    
+    private lazy var emojiContainerView = {
+        let view = UIStackView()
+        view.axis = .horizontal
+        view.spacing = 5.adjusted
+        
+        view.addArrangedSubview(emojiLabel1)
+        view.addArrangedSubview(emojiLabel2)
+        view.addArrangedSubview(emojiCountLabel)
+        return view
+    }()
+    
+    private lazy var emojiLabel1 = {
+        let label = UILabel()
+        label.isHidden = true
+        label.font = .systemFont(ofSize: 20)
+//        label.text = "👏"
+        return label
+    }()
+    
+    private lazy var emojiLabel2 = {
+        let label = UILabel()
+//        label.isHidden = true
+        label.font = .systemFont(ofSize: 20)
+//        label.text = "😀"
+        return label
+    }()
+    
+    private lazy var emojiCountLabel = {
+        let label = UILabel()
+        label.textColor = .label
+//        label.isHidden = true
+        label.font = .systemFont(ofSize: 18, weight: .semibold)
+//        label.text = "2"
+        return label
     }()
     
     private lazy var likeCircleView = {
@@ -217,7 +264,7 @@ class SearchDiaryCell: UITableViewCell {
         
         containerView.addSubview(footerView)
         footerView.snp.makeConstraints { make in
-            make.top.equalTo(descriptionLabel.snp.bottom).offset(Constants.SearchDiary.offset)
+            make.top.equalTo(descriptionLabel.snp.bottom).offset(Constants.SearchDiary.offset + 10.adjusted)
             make.height.equalTo(Constants.SearchDiary.footerViewHeight)
             make.leading.trailing.bottom.equalToSuperview().inset(Constants.SearchDiary.contentsInset)
         }

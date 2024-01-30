@@ -99,8 +99,20 @@ extension DiaryFeedViewController: UIScrollViewDelegate {
 
 extension DiaryFeedViewController: SearchDiaryCellDelegate {
     func searchDiaryCell(_ searchDiaryCell: SearchDiaryCell, userId: Int, date: String) {
-        print("tap")
+        let vc = LikeEmojiViewController()
+        vc.delegate = self 
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return 280
+            })]
+        }
+        present(vc, animated: true)
     }
-    
+}
+
+extension DiaryFeedViewController: LikeEmojiViewControllerDelegate {
+    func likeWithEmoji(_ emoji: String) {
+        print("hello")
+    }
     
 }

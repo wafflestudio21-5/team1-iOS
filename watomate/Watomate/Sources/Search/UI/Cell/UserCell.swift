@@ -35,14 +35,14 @@ class UserCell: UITableViewCell {
     private lazy var usernameLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.medium, size: 18)
+        label.font = UIFont(name: Constants.Font.medium, size: 20)
         return label
     }()
     
     private lazy var introLabel = {
         let label = UILabel()
         label.textColor = .secondaryLabel
-        label.font = UIFont(name: Constants.Font.regular, size: 14)
+        label.font = UIFont(name: Constants.Font.regular, size: 16)
         return label
     }()
     
@@ -62,7 +62,7 @@ class UserCell: UITableViewCell {
         
         addSubview(introLabel)
         introLabel.snp.makeConstraints { make in
-            make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.offset)
+            make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.spacing)
             make.top.equalTo(usernameLabel.snp.bottom).offset(5.adjusted)
             make.trailing.bottom.equalToSuperview().inset(Constants.SearchUser.contentsInset)
         }
