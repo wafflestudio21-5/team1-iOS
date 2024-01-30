@@ -16,6 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
+
         
         let userDefaultsRepository = UserDefaultsRepository()
         let isLoggedIn = userDefaultsRepository.get(Bool.self, key: .isLoggedIn) ?? false
@@ -27,6 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), searchRepository: SearchRepository(), kakaoRepository: KakaoRepository())
             window.rootViewController = UINavigationController(rootViewController: FirstViewController(viewModel: FirstViewModel(authUseCase: authUseCase)))
         }
+
         window.makeKeyAndVisible()
         self.window = window
         

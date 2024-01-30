@@ -10,6 +10,8 @@ import Foundation
 import Combine
 
 class TodoCellViewModel: ViewModelType, Hashable {
+    lazy var newlyAdded: Bool = false
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(self.uuid)
     }
@@ -44,7 +46,10 @@ class TodoCellViewModel: ViewModelType, Hashable {
     }
 
     var id: Int? {
-        todo.id
+        get { todo.id }
+        set {
+            todo.id = newValue
+        }
     }
     
     var goal: Int {
@@ -63,6 +68,13 @@ class TodoCellViewModel: ViewModelType, Hashable {
         get { todo.title }
         set {
             todo.title = newValue
+        }
+    }
+    
+    var color: String {
+        get { todo.color }
+        set {
+            todo.color = newValue
             delegate?.todoCellViewModel(self, didUpdateItem: todo)
         }
     }
@@ -71,6 +83,29 @@ class TodoCellViewModel: ViewModelType, Hashable {
         get { todo.description }
         set {
             todo.description = newValue
+        }
+    }
+    
+    var reminder: String? {
+        get { todo.reminder }
+        set {
+            todo.reminder = newValue
+            delegate?.todoCellViewModel(self, didUpdateItem: todo)
+        }
+    }
+    
+    var date: String? {
+        get { todo.date }
+        set {
+            todo.date = newValue
+            delegate?.todoCellViewModel(self, didUpdateItem: todo)
+        }
+    }
+    
+    var likes: [Like] {
+        get { todo.likes }
+        set {
+            todo.likes = newValue
             delegate?.todoCellViewModel(self, didUpdateItem: todo)
         }
     }
@@ -79,18 +114,28 @@ class TodoCellViewModel: ViewModelType, Hashable {
         guard let description = todo.description else { return true }
         return description.isEmpty
     }
+    
+    var isReminderHidden: Bool {
+        guard let reminder = todo.reminder else { return true }
+        return reminder.isEmpty
+    }
 
     func addNewTodoItem() {
         delegate?.todoCellViewModelDidReturnTitle(self)
     }
 
     func endEditingTitle(with title: String?) {
-        delegate?.todoCellViewModel(self, didEndEditingWith: title)
+        delegate?.todoCellViewModel(self, didEndEditingTitleWith: title)
+    }
+    
+    func navigateToDetail() {
+        delegate?.todoCellViewModelNavigateToDetail(self)
     }
 }
 
 protocol TodoCellViewModelDelegate: AnyObject {
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didUpdateItem: Todo)
     func todoCellViewModelDidReturnTitle(_ viewModel: TodoCellViewModel)
-    func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingWith title: String?)
+    func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingTitleWith title: String?)
+    func todoCellViewModelNavigateToDetail(_ viewModel: TodoCellViewModel)
 }

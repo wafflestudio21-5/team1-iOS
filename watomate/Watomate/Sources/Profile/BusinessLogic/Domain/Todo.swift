@@ -13,7 +13,7 @@ struct Goal {
     var title: String
     var visibility: Visibility
     var color: String
-    let createdAt: String
+//    let createdAt: String
     var todos: [Todo]
 }
 
@@ -21,27 +21,37 @@ enum Visibility: String {
     case PB
     case PR
     case FL
+    
+    init?(rawValue: String) {
+        switch rawValue {
+        case "PB":
+            self = .PB
+        case "PR":
+            self = .PR
+        case "FL":
+            self = .FL
+        default:
+            self = .FL
+        }
+    }
 }
 
 struct Todo: Codable {
     let uuid: UUID
-    let id: Int?
+    var id: Int?
     var title: String
+    var color: String
     var description: String?
     var reminder: String?
 //    let createdAt: String
-//    var date: Date?
+    var date: String?
     var isCompleted: Bool
     var goal: Int
     var likes: [Like]
 }
 
 extension Todo {
-    static func placeholderItem(with goalId: Int) -> Self {
-        .init(uuid: UUID(), id: nil, title: "", isCompleted: false, goal: goalId, likes: [])
+    static func placeholderItem(with goal: Goal) -> Self {
+        .init(uuid: UUID(), id: nil, title: "", color: goal.color, isCompleted: false, goal: goal.id, likes: [])
     }
-}
-
-struct Like: Codable {
-    let userId: Int
 }

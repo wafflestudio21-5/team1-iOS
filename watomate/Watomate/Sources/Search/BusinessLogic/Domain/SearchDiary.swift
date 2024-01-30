@@ -24,7 +24,7 @@ struct SearchDiary {
 
 struct SearchLike {
     let user: Int
-    let emoji: String 
+    let emoji: String
 }
 
 struct SearchComment {
