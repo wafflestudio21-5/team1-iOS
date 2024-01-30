@@ -25,6 +25,15 @@ class TodoDetailCellView: UIStackView {
         return button
     }()
     
+    private lazy var deleteButton = {
+        let button = UIButton()
+        button.setTitle("삭제", for: .normal)
+        button.setTitleColor(.systemRed, for: .normal)
+        button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        button.isHidden = true
+        return button
+    }()
+    
     private lazy var doneButton = {
         let button = UIButton()
         button.setTitle("완료", for: .normal)
@@ -50,6 +59,7 @@ class TodoDetailCellView: UIStackView {
     func setupLayout() {
         self.addArrangedSubview(icon)
         self.addArrangedSubview(titleLabel)
+        self.addArrangedSubview(deleteButton)
         self.addArrangedSubview(doneButton)
         
         self.snp.makeConstraints { make in
@@ -73,8 +83,16 @@ class TodoDetailCellView: UIStackView {
         doneButton.isHidden = false
     }
     
-    func addButtonTarget(_ target: Any?, action: Selector, event: UIControl.Event) {
+    func showDeleteBtn() {
+        deleteButton.isHidden = false
+    }
+    
+    func addDoneBtnTarget(_ target: Any?, action: Selector, event: UIControl.Event) {
         doneButton.addTarget(target, action: action, for: event)
+    }
+    
+    func addDeleteBtnTarget(_ target: Any?, action: Selector, event: UIControl.Event) {
+        deleteButton.addTarget(target, action: action, for: event)
     }
 }
 

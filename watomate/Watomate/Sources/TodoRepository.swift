@@ -50,6 +50,7 @@ class TodoRepository: TodoRepositoryProtocol {
             .request(TodoRouter.updateTodo(userId: User.shared.id!, todoId: todoId, todo: todo))
             .serializingDecodable(TodoDto.self)
             .handlingError()
+        print(response)
         return response
     }
 }

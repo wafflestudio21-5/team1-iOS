@@ -99,7 +99,7 @@ class TodoDetailViewController: SheetCustomViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMemoCellTap))
         cellView.addGestureRecognizer(tapGesture)
         cellView.icon.addTarget(self, action: #selector(handleMemoCellTap), for: .touchUpInside)
-        cellView.addButtonTarget(self, action: #selector(handleMemoDoneBtnTap), event: .touchUpInside)
+        cellView.addDoneBtnTarget(self, action: #selector(handleMemoDoneBtnTap), event: .touchUpInside)
         return cellView
     }()
     
@@ -127,7 +127,8 @@ class TodoDetailViewController: SheetCustomViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleReminderCellTap))
         cellView.addGestureRecognizer(tapGesture)
         cellView.icon.addTarget(self, action: #selector(handleReminderCellTap), for: .touchUpInside)
-        cellView.addButtonTarget(self, action: #selector(handleReminderDoneBtnTap), event: .touchUpInside)
+        cellView.addDoneBtnTarget(self, action: #selector(handleReminderDoneBtnTap), event: .touchUpInside)
+        cellView.addDeleteBtnTarget(self, action: #selector(handleReminderDeleteBtnTap), event: .touchUpInside)
         return cellView
     }()
     
@@ -274,6 +275,7 @@ class TodoDetailViewController: SheetCustomViewController {
     @objc func handleReminderCellTap() {
         print("reminder tapped")
         reminderPicker.isHidden = false
+        reminderCell.showDeleteBtn()
         reminderCell.showDoneBtn()
         print(timeFormatter.string(from: reminderPicker.date))
     }
@@ -282,6 +284,12 @@ class TodoDetailViewController: SheetCustomViewController {
         print(timeFormatter.string(from: reminderPicker.date))
 //        viewModel.date = datePicker.date.toString()
 //        delegate?.didEndEditingReminder()
+//        dismiss(animated: true)
+    }
+    
+    @objc func handleReminderDeleteBtnTap() {
+        print("delete button tapped")
+        viewModel.reminder = nil
 //        dismiss(animated: true)
     }
     
