@@ -55,8 +55,3 @@ extension Todo {
         .init(uuid: UUID(), id: nil, title: "", color: goal.color, isCompleted: false, goal: goal.id, likes: [])
     }
 }
-
-struct Like: Codable {
-    let userId: Int
-    let emoji: String
-}

@@ -57,14 +57,16 @@ final class DiaryFeedViewModel: ViewModelType {
         if isFetching || !canFetchMoreDiaries { return }
         isFetching = true
         Task {
-            guard let diariesPage = try? await searchUseCase.getInitialDiaries(id: User.shared.id!) else {
-                isFetching = false
-                return
+            do {
+                let diariesPage = try await searchUseCase.getInitialDiaries(id: User.shared.id!)
+                nextUrl = diariesPage.nextUrl
+                if nextUrl == nil { canFetchMoreDiaries = false }
+                diaryList.append(contentsOf: diariesPage.results.map{ SearchDiaryCellViewModel(diary: $0) })
+                output.send(.updateDiaryList(diaryList: diaryList))
+            } catch {
+                print(error)
             }
-            nextUrl = diariesPage.nextUrl
-            if nextUrl == nil { canFetchMoreDiaries = false }
-            diaryList.append(contentsOf: diariesPage.results.map{ SearchDiaryCellViewModel(diary: $0) })
-            output.send(.updateDiaryList(diaryList: diaryList))
+            
             isFetching = false
         }
     }

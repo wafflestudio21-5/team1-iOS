@@ -163,7 +163,7 @@ extension PlainCustomBarViewController {
         setLeftButtonAction(target: self, action: #selector(backButtonTapped))
     }
     
-    @objc private func backButtonTapped() {
+    @objc func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
     

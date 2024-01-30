@@ -12,7 +12,7 @@ struct SearchDiary {
     let user: UserInfo
     let description: String
     let visibility: String
-    let mood: Int
+    let mood: Int?
     let color: String
     let emoji: String
     let image: String?
@@ -23,7 +23,7 @@ struct SearchDiary {
 
 struct SearchLike {
     let user: Int
-    let emoji: Int
+    let emoji: String
 }
 
 struct SearchComment {

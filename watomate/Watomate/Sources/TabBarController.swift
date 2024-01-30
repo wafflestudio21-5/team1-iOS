@@ -1,6 +1,6 @@
 //
 //  TabBarController.swift
-//  Watomate
+//  WaToMate
 //
 //  Created by 이수민 on 2023/12/31.
 //  Copyright © 2023 tuist.io. All rights reserved.
@@ -19,6 +19,7 @@ class TabBarController: UITabBarController {
         let searchVC = UINavigationController(rootViewController: SearchViewController())
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
         
+
         let groupVC = UINavigationController(rootViewController: GroupViewController())
         groupVC.tabBarItem = UITabBarItem(title: "Group", image: UIImage(systemName: "rectangle.3.group.fill"), tag: 2)
 
@@ -26,8 +27,9 @@ class TabBarController: UITabBarController {
         let todoUseCase = TodoUseCase(todoRepository: todoRepository)
         let todoListViewModel = TodoListViewModel(todoUseCase: todoUseCase)
         let profileVC = UINavigationController(rootViewController: ProfileViewController(todoListViewModel: todoListViewModel))
+
         profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.crop.circle.fill"), tag: 3)
-        
+
         viewControllers = [todoVC, searchVC, groupVC, profileVC]
     }
     
@@ -36,3 +38,4 @@ class TabBarController: UITabBarController {
         navigationController?.isNavigationBarHidden = true
     }
 }
+

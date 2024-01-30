@@ -1,3 +1,10 @@
+//
+//  SheetCustomViewController.swift
+//  WaToDoMate
+//
+//  Created by 이수민 on 2024/01/09.
+//
+
 import UIKit
 
 class SheetCustomViewController: UIViewController {
@@ -105,7 +112,6 @@ extension SheetCustomViewController {
     func setLeftButtonStyle(symbolName: String) {
         leftButton.isHidden = false
         leftButton.setImage(UIImage(systemName: symbolName)?.withTintColor(.black, renderingMode: .alwaysOriginal), for: .normal)
-        
     }
     
     func setRightButtonStyle(symbolName: String) {
