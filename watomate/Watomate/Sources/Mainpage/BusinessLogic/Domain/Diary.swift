@@ -9,7 +9,7 @@
 import Foundation
 
 struct DiaryCreate: Codable {
-    let description: String
+    let description: String?
     let visibility: String?
     let mood: Int?
     let color: String?
@@ -18,6 +18,7 @@ struct DiaryCreate: Codable {
     let created_by: Int
     let date: String
 }
+
 
 struct Diary: Codable{
     let id: Int

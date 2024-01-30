@@ -64,20 +64,22 @@ class ToDoViewController: UIViewController {
     var emoji = "no emoji"
     @objc func diaryButtonTapped() {
         if emoji == "no emoji" {
-            let diaryViewController = DiaryCreateViewController()
-             diaryViewController.receivedDateString = diaryDateString
-             diaryViewController.completionClosure = { receivedValue in
+             let diaryCreateVC = DiaryCreateViewController()
+             diaryCreateVC.receivedDateString = diaryDateString
+             diaryCreateVC.existence = false
+             diaryCreateVC.completionClosure = { receivedValue in
                  self.emoji = receivedValue
                  self.updateDiaryButtonAppearance()
              }
-            diaryViewController.hidesBottomBarWhenPushed = true //tabBar 숨기기
-            navigationController?.pushViewController(diaryViewController, animated: false)
+            diaryCreateVC.hidesBottomBarWhenPushed = true //tabBar 숨기기
+            navigationController?.pushViewController(diaryCreateVC, animated: false)
         }
         else{
-            let vc = DiaryPreviewViewController()
-            vc.receivedDateString = diaryDateString
-            setSheetLayout(for: vc)
-            present(vc, animated: true, completion: nil)
+            let diaryPreviewVC = DiaryPreviewViewController()
+            diaryPreviewVC.receivedDateString = diaryDateString
+            setSheetLayout(for: diaryPreviewVC)
+            diaryPreviewVC.delegate = self
+            present(diaryPreviewVC, animated: true, completion: nil)
         }
    }
     
@@ -438,3 +440,18 @@ extension ToDoViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
     
 }
 
+extension ToDoViewController: DiaryPreviewViewControllerDelegate {
+    func diaryPreviewViewControllerDidRequestDiaryCreation(_ controller: DiaryPreviewViewController) {
+        controller.dismiss(animated: true) {
+            let diaryCreateVC = DiaryCreateViewController()
+            diaryCreateVC.receivedDateString = self.diaryDateString
+            diaryCreateVC.existence = true
+            diaryCreateVC.completionClosure = { receivedValue in
+                self.emoji = receivedValue
+                self.updateDiaryButtonAppearance()
+            }
+            diaryCreateVC.hidesBottomBarWhenPushed = true //tabBar 숨기기
+            self.navigationController?.pushViewController(diaryCreateVC, animated: false)
+        }
+    }
+}

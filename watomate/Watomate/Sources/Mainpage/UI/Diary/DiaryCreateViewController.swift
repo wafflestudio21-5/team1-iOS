@@ -9,8 +9,11 @@ import UIKit
 import SnapKit
 
 class DiaryCreateViewController: PlainCustomBarViewController{
-    lazy var viewModel = DiaryCreateViewModel()
+    lazy var viewModel = DiaryPreviewViewModel()
+    lazy var createViewModel = DiaryCreateViewModel()
     var completionClosure: ((String) -> Void)?
+    var existence : Bool = false
+    var userID = 3
     
     @objc private func finishButtonTapped() {
         let entry = DiaryCreate(
@@ -18,19 +21,52 @@ class DiaryCreateViewController: PlainCustomBarViewController{
             visibility: diaryVisibility?.toString() ?? "PB",
             mood: moodNumber,
             color: backgroundColor ?? "system",
-            emoji: emoji,
+            emoji: emoji ?? "emoji",
             image: nil,
             created_by: 3,
             date: profileDate.text ?? "no date" // Format the date as required
         )
-
-        viewModel.createDiary(entry: entry)
-
+        
+        if existence == false{
+            createViewModel.createDiary(entry: entry)
+        }
+        else{
+            createViewModel.patchDiary(userID: userID, date: receivedDateString ?? "no date", entry: entry)
+        }
+        print(existence)
+        
         completionClosure?(emoji ?? "no emoji")
         navigationController?.popViewController(animated: true)
     }
 
 
+    func getDiary(userID: Int, date: String) {
+        viewModel.getDiary(userID: userID, date: date) {
+            DispatchQueue.main.async { [weak self] in
+                self?.updateUI()
+            }
+        }
+    }
+
+    func updateUI() {
+        diaryTextField.text = viewModel.diary?.description
+        emojiView.setImage(nil, for: .normal)
+        emojiView.setTitle(viewModel.diary?.emoji, for: .normal)
+        if let visibilityString = viewModel.diary?.visibility,
+           let visibilityEnum = DiaryVisibility.from(string: visibilityString) {
+            visibilityButton.setTitle(visibilityEnum.rawValue, for: .normal)
+        } else {
+            visibilityButton.setTitle("공개설정", for: .normal)
+        }
+        if let mood = viewModel.diary?.mood {
+            moodView.text = "\(mood)°"
+            moodView.isHidden = false
+        } else {
+            moodView.isHidden = true
+        }
+        contentView.backgroundColor = UIColor(named: viewModel.diary?.color ?? "system")
+        diaryMenuView.backgroundColor = UIColor(named: "system")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +77,11 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         setRightButtonAction(target: self, action: #selector(finishButtonTapped))
 
         setupLayout()
+        
+        if existence == true {
+            getDiary(userID: userID, date: receivedDateString ?? "no date")
+        }
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         tapGesture.delegate = self
         self.view.addGestureRecognizer(tapGesture)
@@ -73,12 +114,10 @@ class DiaryCreateViewController: PlainCustomBarViewController{
             make.leading.trailing.equalToSuperview().inset(16)
             make.height.equalToSuperview().multipliedBy(0.6)
          }
-        
         contentView.addSubview(diaryMenuView)
         diaryMenuView.snp.makeConstraints { make in
             make.top.equalTo(diaryTextField.snp.bottom)
-            make.leading.trailing.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.1)
+            make.leading.trailing.bottom.equalToSuperview()
          }
         
     }
@@ -236,6 +275,8 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         view.translatesAutoresizingMaskIntoConstraints = false
         view.placeholder = "오늘은 어떤 하루였나요?" // 00님의 오늘은 어떤 하루였나요? <- 00에 이름
         view.contentVerticalAlignment = .top
+        view.autocorrectionType = .no
+        view.spellCheckingType = .no
         return view
     }()
     

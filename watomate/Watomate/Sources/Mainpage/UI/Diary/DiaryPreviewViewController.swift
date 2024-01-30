@@ -9,7 +9,12 @@
 import UIKit
 import Alamofire
 
+protocol DiaryPreviewViewControllerDelegate: AnyObject {
+    func diaryPreviewViewControllerDidRequestDiaryCreation(_ controller: DiaryPreviewViewController)
+}
+
 class DiaryPreviewViewController: SheetCustomViewController {
+    weak var delegate: DiaryPreviewViewControllerDelegate?
     lazy var viewModel = DiaryPreviewViewModel()
     var receivedDateString: String?
     var userID = 3 //로그인이랑 연동해서 수정!!
@@ -26,18 +31,18 @@ class DiaryPreviewViewController: SheetCustomViewController {
         }
         setLeftButtonAction(action: #selector(leftButtonTapped))
         setRightButtonAction(action: #selector(rightButtonTapped))
-        getDiary(userID: userID, date: receivedDateString ?? "no date") //유저아이디 수정, date 오늘로 수정?
+        getPreviewDiary(userID: userID, date: receivedDateString ?? "no date") //유저아이디 수정, date 오늘로 수정?
     }
     
-    func getDiary(userID: Int, date: String) {
+    func getPreviewDiary(userID: Int, date: String) {
         viewModel.getDiary(userID: userID, date: date) {
             DispatchQueue.main.async { [weak self] in
-                self?.updateUI()
+                self?.updatePreviewUI()
             }
         }
     }
 
-    func updateUI() {
+    func updatePreviewUI() {
         diaryTextField.text = viewModel.diary?.description
         emojiView.setTitle(viewModel.diary?.emoji, for: .normal)
         if let visibilityString = viewModel.diary?.visibility,
@@ -53,14 +58,15 @@ class DiaryPreviewViewController: SheetCustomViewController {
         } else {
             moodView.isHidden = true
         }
-        diaryPreviewView.backgroundColor = UIColor(named: viewModel.diary?.color ?? "system")
+        sheetView.backgroundColor = UIColor(named: viewModel.diary?.color ?? "system")
+        
     }
 
     @objc func rightButtonTapped() {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
-        let editAction = UIAlertAction(title: "수정", style: .default) {_ in 
-            
+        let editAction = UIAlertAction(title: "수정", style: .default) { [weak self] _ in
+            self?.delegate?.diaryPreviewViewControllerDidRequestDiaryCreation(self!)
         }
 
         let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
@@ -78,16 +84,16 @@ class DiaryPreviewViewController: SheetCustomViewController {
 
     private lazy var diaryPreviewView: UIView = {
         let view = UIView()
-        view.addSubview(emojiView)
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emojiView)
         emojiView.snp.makeConstraints { make in
-            make.top.equalToSuperview() //추후 프로필 이미지 사이즈에 따라 변형
+            make.top.equalToSuperview()
             make.centerX.equalToSuperview()
             make.height.equalToSuperview().multipliedBy(0.15)
          }
         view.addSubview(moodView)
         moodView.snp.makeConstraints { make in
-            make.top.equalTo(emojiView.snp.bottom).inset(20) //추후 프로필 이미지 사이즈에 따라 변형
+            make.top.equalTo(emojiView.snp.bottom).inset(20) 
             make.centerX.equalToSuperview()
             make.height.equalToSuperview().multipliedBy(0.05)
          }
@@ -101,7 +107,19 @@ class DiaryPreviewViewController: SheetCustomViewController {
         diaryTextField.snp.makeConstraints { make in
             make.top.equalTo(profileView.snp.bottom).offset(24)
             make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalToSuperview().multipliedBy(0.6)
+            make.height.equalToSuperview().multipliedBy(0.5)
+         }
+        view.addSubview(likeView)
+        likeView.snp.makeConstraints { make in
+            make.top.equalTo(diaryTextField.snp.bottom)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.height.equalToSuperview().multipliedBy(0.1)
+         }
+        view.addSubview(commentView)
+        commentView.snp.makeConstraints { make in
+            make.top.equalTo(likeView.snp.bottom)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview()
          }
         return view
     }()
@@ -189,10 +207,23 @@ class DiaryPreviewViewController: SheetCustomViewController {
         var view = UITextField()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentVerticalAlignment = .top
+        view.autocorrectionType = .no
+        view.spellCheckingType = .no
+        
         return view
     }()
  
-
+    private lazy var likeView : UIView = {
+        var view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var commentView : UIView = {
+        var view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
 }
 
     

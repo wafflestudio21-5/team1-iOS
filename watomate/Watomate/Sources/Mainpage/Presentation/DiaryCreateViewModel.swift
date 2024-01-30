@@ -31,6 +31,28 @@ class DiaryCreateViewModel {
         }
     }
     
+    
+    func patchDiary(userID: Int, date: String, entry: DiaryCreate) {
+        DiaryCreateService.shared.patchDiary(userID: userID, date: date, entry: entry){ (response) in
+            switch(response) {
+            case .success:
+                print("Patched Diary")
+            case .requestErr(let message) :
+                print("requestErr", message)
+            case .pathErr :
+                print("pathErr")
+            case .serverErr :
+                print("serveErr")
+            case .networkFail:
+                print("networkFail")
+            case .decodeErr:
+                print("decodeErr")
+            case .unknownErr:
+                print("unknownErr")
+            }
+        }
+    }
+    
 }
 
     
