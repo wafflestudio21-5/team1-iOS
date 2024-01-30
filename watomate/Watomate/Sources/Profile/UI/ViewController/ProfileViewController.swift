@@ -234,9 +234,6 @@ extension ProfileViewController: UITableViewDelegate {
 }
 
 extension ProfileViewController: TodoListViewModelDelegate {
-    func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateItem: Todo, at indexPath: IndexPath) {
-
-    }
     
     func todoListViewModel(_ viewModel: TodoListViewModel, didInsertCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath) {
         Task { @MainActor in
@@ -259,6 +256,9 @@ extension ProfileViewController: TodoListViewModelDelegate {
     func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel) {
         let vc = TodoDetailViewController(viewModel: cellViewModel)
         vc.delegate = self
+//        vc.sheetPresentationController?.detents = [.custom(resolver: { context in
+//            return 600
+//        })]
         present(vc, animated: true)
     }
 }

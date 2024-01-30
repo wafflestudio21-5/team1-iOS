@@ -55,6 +55,13 @@ class TodoListViewModel: ViewModelType {
             do {
                 var curVMs = viewModelsSubject.value
                 let goals = try await todoUseCase.getAllTodos()
+//                let goals = try await todoUseCase.getAllTodos().map { originalGoal in
+//                    var goal = originalGoal
+//                    goal.todos = goal.todos.filter { todo in
+//                        todo.date == nil
+//                    }
+//                    return goal
+//                }
                 sectionsForGoalId = [:]
                 goalIdsForSections = [:]
                 var cellVM: TodoCellViewModel
@@ -206,11 +213,13 @@ class TodoListViewModel: ViewModelType {
 extension TodoListViewModel {
     func appendPlaceholderIfNeeded(at section: Int) -> Bool {
         guard let goal = goal(at: section) else { return false }
-        if viewModelsSubject.value[section]?.count == 0 {
+//        if viewModelsSubject.value[section]?.count == 0 {
+        if todoUseCase.goals[section - 1].todos.count == 0 {
             append(.placeholderItem(with: goal))
             return true
         }
-        guard let lastItem = viewModelsSubject.value[section]?.last else { return false }
+//        guard let lastItem = viewModelsSubject.value[section]?.last else { return false }
+        guard let lastItem = todoUseCase.goals[section - 1].todos.last else { return false }
         if !lastItem.title.isEmpty {
             append(.placeholderItem(with: goal))
             return true
@@ -221,7 +230,7 @@ extension TodoListViewModel {
 }
 
 extension TodoListViewModel: TodoCellViewModelDelegate {
-    func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingWith title: String?) {
+    func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingTitleWith title: String?) {
         guard let indexPath = indexPath(with: viewModel.uuid) else { return }
         guard let todo = todo(at: indexPath) else { return }
         if title == nil || title?.isEmpty == true {
@@ -277,6 +286,7 @@ protocol TodoListViewModelDelegate: AnyObject {
         at indexPath: IndexPath,
         options: ReloadOptions
     )
-    func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateItem: Todo, at indexPath: IndexPath)
+//    func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateItem: Todo, at indexPath: IndexPath)
     func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel)
+//    func indexPathForDisplayedCells(_ viewModel: TodoListViewModel, )
 }

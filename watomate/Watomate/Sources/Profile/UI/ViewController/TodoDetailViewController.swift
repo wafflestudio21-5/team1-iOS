@@ -19,6 +19,20 @@ class TodoDetailViewController: SheetCustomViewController {
     private var viewModel: TodoCellViewModel
     var delegate: TodoDetailViewDelegate?
     
+    private let dateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY-MM-DD"
+        formatter.timeZone = .init(identifier: "Asia/Seoul")
+        return formatter
+    }()
+    
+    private let timeFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "a H:mm"
+        formatter.timeZone = .init(identifier: "Asia/Seoul")
+        return formatter
+    }()
+    
     init(viewModel: TodoCellViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -85,7 +99,7 @@ class TodoDetailViewController: SheetCustomViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMemoCellTap))
         cellView.addGestureRecognizer(tapGesture)
         cellView.icon.addTarget(self, action: #selector(handleMemoCellTap), for: .touchUpInside)
-        cellView.addButtonTarget(self, action: #selector(handleDoneBtnTap), event: .touchUpInside)
+        cellView.addButtonTarget(self, action: #selector(handleMemoDoneBtnTap), event: .touchUpInside)
         return cellView
     }()
     
@@ -113,7 +127,17 @@ class TodoDetailViewController: SheetCustomViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleReminderCellTap))
         cellView.addGestureRecognizer(tapGesture)
         cellView.icon.addTarget(self, action: #selector(handleReminderCellTap), for: .touchUpInside)
+        cellView.addButtonTarget(self, action: #selector(handleReminderDoneBtnTap), event: .touchUpInside)
         return cellView
+    }()
+    
+    private lazy var reminderPicker = {
+        let pickerView = UIDatePicker()
+        pickerView.datePickerMode = .time
+        pickerView.timeZone = TimeZone(identifier: "Asia/Seoul")
+        pickerView.preferredDatePickerStyle = .wheels
+        pickerView.isHidden = true
+        return pickerView
     }()
     
     private lazy var doTodayCell = {
@@ -149,6 +173,15 @@ class TodoDetailViewController: SheetCustomViewController {
         return cellView
     }()
     
+    private lazy var datePicker = {
+        let pickerView = UIDatePicker()
+        pickerView.datePickerMode = .date
+        pickerView.timeZone = TimeZone(identifier: "Asia/Seoul")
+        pickerView.preferredDatePickerStyle = .inline
+        pickerView.isHidden = true
+        return pickerView
+    }()
+    
     private lazy var moveToArchiveCell = {
         let cellView = TodoDetailCellView()
         cellView.setTitle("보관함으로 이동")
@@ -179,6 +212,7 @@ class TodoDetailViewController: SheetCustomViewController {
         cellStackView.addArrangedSubview(memoCell)
         cellStackView.addArrangedSubview(memoTextField)
         cellStackView.addArrangedSubview(reminderCell)
+        cellStackView.addArrangedSubview(reminderPicker)
         cellStackView.addArrangedSubview(doTodayCell)
         cellStackView.addArrangedSubview(doTomorrowCell)
         cellStackView.addArrangedSubview(changeDateCell)
@@ -193,6 +227,10 @@ class TodoDetailViewController: SheetCustomViewController {
         }
         
         memoTextField.snp.makeConstraints { make in
+            make.height.equalTo(100)
+        }
+        
+        reminderPicker.snp.makeConstraints { make in
             make.height.equalTo(100)
         }
     }
@@ -223,7 +261,7 @@ class TodoDetailViewController: SheetCustomViewController {
         memoCell.showDoneBtn()
     }
     
-    @objc func handleDoneBtnTap() {
+    @objc func handleMemoDoneBtnTap() {
         if let memo = memoTextField.text,
            memo != viewModel.memo {
             viewModel.memo = memo
@@ -235,29 +273,47 @@ class TodoDetailViewController: SheetCustomViewController {
     
     @objc func handleReminderCellTap() {
         print("reminder tapped")
-        // show reminder setting
+        reminderPicker.isHidden = false
+        reminderCell.showDoneBtn()
+        print(timeFormatter.string(from: reminderPicker.date))
+    }
+    
+    @objc func handleReminderDoneBtnTap() {
+        print(timeFormatter.string(from: reminderPicker.date))
+//        viewModel.date = datePicker.date.toString()
+//        delegate?.didEndEditingReminder()
+//        dismiss(animated: true)
     }
     
     @objc func handleDoTodayCellTap() {
         print("do today tapped")
-        // set date to today
+        viewModel.date = dateFormatter.string(from: Date())
         dismiss(animated: true)
     }
     
     @objc func handleDoTomorrowCellTap() {
         print("do tomorrow tapped")
         // set date to tomorrow
+//        let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "YYYY-MM-DD"
+//        dateFormatter.timeZone = .init(identifier: "Asia/Seoul")
+        viewModel.date = dateFormatter.string(from: Date(timeIntervalSinceNow: 86400))
         dismiss(animated: true)
     }
     
     @objc func handleChangeDateCellTap() {
         // show calendar
         print("change date tapped")
+        let vc = DatePickerViewController()
+        vc.sheetPresentationController?.detents = [.custom(resolver: { context in
+            context.maximumDetentValue * 0.7
+        })]
+        present(vc, animated: true)
     }
     
     @objc func handleMoveToArchiveCellTap() {
         print("move to archive tapped")
-        // remove date
+        viewModel.date = nil
         dismiss(animated: true)
     }
 }
