@@ -17,7 +17,7 @@ class DiaryPreviewViewController: SheetCustomViewController {
     weak var delegate: DiaryPreviewViewControllerDelegate?
     lazy var viewModel = DiaryPreviewViewModel()
     var receivedDateString: String?
-    var userID = 3 //로그인이랑 연동해서 수정!!
+    var userID = User.shared.id
     
     
     override func viewDidLoad() {
@@ -32,7 +32,8 @@ class DiaryPreviewViewController: SheetCustomViewController {
         }
         setLeftButtonAction(action: #selector(leftButtonTapped))
         setRightButtonAction(action: #selector(rightButtonTapped))
-        getPreviewDiary(userID: userID, date: receivedDateString ?? "no date") //유저아이디 수정, date 오늘로 수정?
+        guard let userID else { return }
+        getPreviewDiary(userID: userID, date: receivedDateString ?? "no date") //date 오늘로 수정?
     }
     
     override func viewWillLayoutSubviews() {
@@ -142,7 +143,8 @@ class DiaryPreviewViewController: SheetCustomViewController {
         }
 
         let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { _ in
-            self.viewModel.deleteDiary(userID: self.userID, date: self.receivedDateString ?? "no date")
+            guard let userID = self.userID else { return }
+            self.viewModel.deleteDiary(userID: userID, date: self.receivedDateString ?? "no date")
         }
 
         let doneAction = UIAlertAction(title: "완료", style: .cancel)

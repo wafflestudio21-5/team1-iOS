@@ -35,20 +35,6 @@ struct Diary: Codable{
 }
 
 
-struct Like: Codable{
-    let user : Int
-    let emoji : String
-}
-
-struct Comment: Codable{
-    let id : Int
-    let created_at_iso : String
-    let user : Int
-    let description : String
-    let likes : [Like]?
-}
-
-
 enum DiaryVisibility: String, Codable {
     case PB = "전체공개"
     case PR = "나만 보기"

@@ -12,11 +12,13 @@ import SnapKit
 class ToDoViewController: UIViewController {
     var diaryViewModel = DiaryPreviewViewModel()
     var homeViewModel = HomeViewModel()
-    var userID = 3 //로그인이랑 연동해서 수정!!
+    var userID = User.shared.id
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setupLayout()
+        guard let userID else { return }
         getHomeUser(userID: userID)
         setCalendar()
         //setupInnerBorder()
@@ -407,11 +409,13 @@ extension ToDoViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             diaryDateString = dateFormatter.string(from: selectedDate)
+            guard let userID else { return }
             getDiary(userID: userID, date: diaryDateString)
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             diaryDateString = dateFormatter.string(from: Date())
+            guard let userID else { return }
             getDiary(userID: userID, date: diaryDateString)
         }
         reloadCalendarView(date: Calendar.current.date(from: dateComponents!))

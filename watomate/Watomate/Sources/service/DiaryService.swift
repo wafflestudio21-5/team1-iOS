@@ -14,7 +14,7 @@ struct DiaryService{
     static let shared = DiaryService()
     
     func getDiary(userID : Int, date : String, completion: @escaping (NetworkResult<Any>) -> Void){
-        let token = "f9f1b1dd9de499b445077473d45760fdb7e99447"
+        guard let token = User.shared.token else { return }
         let header: HTTPHeaders = ["Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token \(token)"]
         let diaryUrl = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/\(userID)/diarys/\(date)"
 
@@ -46,7 +46,7 @@ struct DiaryService{
     }
     
     func deleteDiary(userID : Int, date : String, completion: @escaping (NetworkResult<Any>) -> Void){
-        let token = "f9f1b1dd9de499b445077473d45760fdb7e99447"
+        guard let token = User.shared.token else { return }
         let header: HTTPHeaders = ["Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token \(token)"]
         let diaryUrl = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/\(userID)/diarys/\(date)"
         let dataRequest = AF.request(diaryUrl,

@@ -15,7 +15,7 @@ struct DiaryCreateService{
  
     func createDiary(entry: DiaryCreate, completion: @escaping (NetworkResult<Any>) -> Void){
         let diaryCreateUrl = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/diary-create"
-        let token = "f9f1b1dd9de499b445077473d45760fdb7e99447"
+        guard let token = User.shared.token else { return }
         let header: HTTPHeaders = ["Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token \(token)"]
         let parameters: Parameters = [
             "description": entry.description ?? "no context",
@@ -62,7 +62,7 @@ struct DiaryCreateService{
     func patchDiary(userID: Int, date: String, entry: DiaryCreate, completion: @escaping (NetworkResult<Any>) -> Void){
         let diaryUrl = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/\(userID)/diarys/\(date)"
         
-        let token = "f9f1b1dd9de499b445077473d45760fdb7e99447"
+        guard let token = User.shared.token else { return }
         let header: HTTPHeaders = ["Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token \(token)"]
         
         let parameters: Parameters = [

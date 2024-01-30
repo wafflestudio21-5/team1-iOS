@@ -15,7 +15,7 @@ class TabBarController: UITabBarController {
         
         let todoVC = UINavigationController(rootViewController: ToDoViewController())
         todoVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house.fill"), tag: 0)
-/*
+
         let searchVC = UINavigationController(rootViewController: SearchViewController())
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
         
@@ -29,8 +29,8 @@ class TabBarController: UITabBarController {
         let profileVC = UINavigationController(rootViewController: ProfileViewController(todoListViewModel: todoListViewModel))
 
         profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.crop.circle.fill"), tag: 3)
-*/
-        viewControllers = [todoVC]
+
+        viewControllers = [todoVC, searchVC, groupVC, profileVC]
     }
     
     override func viewWillAppear(_ animated: Bool) {

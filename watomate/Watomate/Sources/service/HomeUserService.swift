@@ -13,7 +13,7 @@ struct HomeUserService{
     static let shared = HomeUserService()
 
     func getHomeUser(userID : Int, completion: @escaping (NetworkResult<Any>) -> Void){
-        let token = "f9f1b1dd9de499b445077473d45760fdb7e99447"
+        guard let token = User.shared.token else { return }
         let header: HTTPHeaders = ["Content-Type": "application/json", "Accept": "application/json", "Authorization": "Token \(token)"]
         
         let getHomeUserUrl = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/\(userID)"
@@ -30,7 +30,8 @@ struct HomeUserService{
                 guard let value = dataResponse.value else { return }
                 let networkResult = self.judgeStatus(by: statusCode, value)
                 completion(networkResult)
-            case .failure: completion(.pathErr)
+            case .failure:
+                completion(.pathErr)
             }
         }
     }

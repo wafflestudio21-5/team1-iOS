@@ -25,7 +25,7 @@ class SearchDiaryCellViewModel: Identifiable {
         diary.description
     }
     
-    var mood: Int {
+    var mood: Int? {
         diary.mood
     }
     
