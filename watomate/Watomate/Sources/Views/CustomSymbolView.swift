@@ -151,5 +151,8 @@ class CustomSymbolView: UIView {
         addCenterCircle(image: UIImage(systemName: "checkmark", withConfiguration: UIImage.SymbolConfiguration(weight: .bold)))
     }
 
+    func removeCheckMark() {
+        addCenterCircle(image: nil)
+    }
 }
 

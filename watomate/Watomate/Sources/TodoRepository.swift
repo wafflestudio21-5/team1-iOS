@@ -10,7 +10,8 @@ import Alamofire
 import Foundation
 
 class TodoRepository: TodoRepositoryProtocol {
-    private let session = Session(interceptor: Interceptor())
+
+    private let session = NetworkManager.shared.session
     private let decoder = JSONDecoder()
     
     init() {
@@ -19,91 +20,36 @@ class TodoRepository: TodoRepositoryProtocol {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.dateDecodingStrategy = .formatted(formatter)
     }
-    
-//    func get(at indexPath: IndexPath) -> Todo? {
-//        <#code#>
-//    }
 
-    func getAllTodos() async throws -> GoalsResponseDto{
-        do {
-            let response = try await session
-                .request(GoalsRouter.getAllTodos(userId: 1))
-                .serializingDecodable(GoalsResponseDto.self)
-                .value
-            return response
-        } catch {
-            print("Error fetching todos: \(error)")
-            throw error
-        }
+    func getAllTodos() async throws -> GoalsResponseDto {
+        let response = try await session
+            .request(TodoRouter.getAllTodos(userId: User.shared.id!))
+            .serializingDecodable(GoalsResponseDto.self)
+            .handlingError()
+        return response
     }
     
-    func addTodo(userId: Int, goalId: Int, todo: Todo) async {
-        
+    func addTodo(goalId: Int, todo: Todo) async throws -> TodoDto {
+        let response = try await session
+            .request(TodoRouter.addTodo(userId: User.shared.id!, goalId: goalId, todo: todo))
+            .serializingDecodable(TodoDto.self)
+            .handlingError()
+        return response
     }
     
-//    func deleteTodo(with id: Int) {
-//        <#code#>
-//    }
-//    
-//    func changeTitle(with id: Int, title: String) {
-//        <#code#>
-//    }
-//    
-//    func changeMemo(with id: Int, memo: String) {
-//        <#code#>
-//    }
-//    
-//    func changeReminder(with id: Int, time: String) {
-//        <#code#>
-//    }
-//    
-//    func changeDate(with id: Int, date: String) {
-//        <#code#>
-//    }
+    func deleteTodo(goalId: Int, todoId: Int) async throws {
+        let response = try await session
+            .request(TodoRouter.deleteTodo(userId: User.shared.id!, goalId: goalId, todoId: todoId))
+            .serializingString()
+            .handlingError()
+    }
 
-//    var numberOfItems: Int {
-//        todoItems.count
-//    }
-//
-//    func indexPath(with id: UUID) -> IndexPath? {
-//        guard let firstIndex = todoItems.firstIndex(where: { $0.id == id }) else { return nil }
-//        return .init(row: firstIndex, section: 0)
-//    }
-//
-//    func get(with id: UUID) -> TodoItem? {
-//        guard let indexPath = indexPath(with: id) else { return nil }
-//        return get(at: indexPath)
-//    }
-//
-//    func get(at indexPath: IndexPath) -> TodoItem? {
-//        print(indexPath.row)
-//        print(todoItems[indexPath.row])
-//        return todoItems[safe: indexPath.row]
-//    }
-//
-//    func append(_ todoItem: TodoItem) {
-//        todoItems.append(todoItem)
-//    }
-//
-//    func insert(_ todoItem: TodoItem, at indexPath: IndexPath) {
-//        todoItems.insert(todoItem, at: indexPath.row)
-//    }
-//
-//    func remove(_ todoItem: TodoItem) {
-//        guard let indexPath = indexPath(with: todoItem.id) else { return }
-//        todoItems.remove(at: indexPath.row)
-//    }
-//
-//    func update(_ newValue: TodoItem) {
-//        guard let indexPath = indexPath(with: newValue.id) else { return }
-//        todoItems[indexPath.row] = newValue
-//        print("updated to new value:\(newValue) at \(indexPath)")
-//    }
-}
-
-
-extension Array {
-    subscript(safe index: Int) -> Element? {
-        return self.indices ~= index ? self[index] : nil
+    func updateTodo(todo: Todo) async throws -> TodoDto? {
+        guard let todoId = todo.id else { return nil }
+        let response = try await session
+            .request(TodoRouter.updateTodo(userId: User.shared.id!, todoId: todoId, todo: todo))
+            .serializingDecodable(TodoDto.self)
+            .handlingError()
+        return response
     }
 }

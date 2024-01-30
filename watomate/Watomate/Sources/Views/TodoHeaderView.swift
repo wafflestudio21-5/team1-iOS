@@ -40,35 +40,42 @@ class TodoHeaderView: UITableViewHeaderFooterView {
     func setTitle(with title: String) {
         self.goalView.setTitle(with: title)
     }
+    
+    func setColor(with color: Color) {
+        self.goalView.setColor(color: color)
+    }
+    
+    func setVisibility(with visibility: Visibility) {
+        self.goalView.setVisibility(visibility: visibility)
+    }
 }
 
 class ProfileHeaderView: UITableViewHeaderFooterView {
     static let reuseIdentifier = "ProfileHeaderView"
 
     private lazy var profileImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "photo.fill"))
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = .secondarySystemFill
-        imageView.layer.cornerRadius = 30
-        imageView.layer.borderColor = UIColor.black.cgColor
-        imageView.clipsToBounds = true
-        imageView.layer.masksToBounds = true
-        return imageView
+        let view = SymbolCircleView(symbolImage: UIImage(systemName: "person.fill"))
+        view.setBackgroundColor(.secondarySystemFill)
+        return view
+    }()
+    
+    private lazy var followerCountLabel = {
+        let label = UILabel()
+        label.text = "-"
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.textAlignment = .center
+        label.sizeToFit()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
     private lazy var followerStackView = {
-        let followerNumLabel = UILabel()
-        followerNumLabel.text = "0"
-        followerNumLabel.font = UIFont.boldSystemFont(ofSize: 20)
-        followerNumLabel.textAlignment = .center
-        followerNumLabel.sizeToFit()
-        followerNumLabel.translatesAutoresizingMaskIntoConstraints = false
-        let followerLabel = UILabel()
-        followerLabel.text = "팔로워"
-        followerLabel.font = UIFont.systemFont(ofSize: 12)
-        followerLabel.textAlignment = .center
-        followerLabel.translatesAutoresizingMaskIntoConstraints = false
-        let stackView = UIStackView(arrangedSubviews: [followerNumLabel, followerLabel])
+        let label = UILabel()
+        label.text = "팔로워"
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        let stackView = UIStackView(arrangedSubviews: [followerCountLabel, label])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -76,18 +83,22 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         return stackView
     }()
     
+    private lazy var followingCountLabel = {
+        let label = UILabel()
+        label.text = "-"
+        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     private lazy var followingStackView = {
-        let followingNumLabel = UILabel()
-        followingNumLabel.text = "0"
-        followingNumLabel.font = UIFont.boldSystemFont(ofSize: 20)
-        followingNumLabel.textAlignment = .center
-        followingNumLabel.translatesAutoresizingMaskIntoConstraints = false
-        let followingLabel = UILabel()
-        followingLabel.text = "팔로잉"
-        followingLabel.font = UIFont.systemFont(ofSize: 12)
-        followingLabel.textAlignment = .center
-        followingLabel.translatesAutoresizingMaskIntoConstraints = false
-        let stackView = UIStackView(arrangedSubviews: [followingNumLabel, followingLabel])
+        let label = UILabel()
+        label.text = "팔로잉"
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        let stackView = UIStackView(arrangedSubviews: [followingCountLabel, label])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -147,13 +158,31 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         }
     }
     
-    func setProfileImage(_ image: UIImage?) {
-        profileImageView.image = image
-    }
-    
     func addProfileTapEvent(target: Any?, action: Selector?) {
         let gestureRecognizer = UITapGestureRecognizer(target: target, action: action)
         profileImageView.addGestureRecognizer(gestureRecognizer)
         profileImageView.isUserInteractionEnabled = true
+    }
+}
+
+extension ProfileHeaderView {
+    func setProfileImage(with image: UIImage?) {
+        guard let img = image else {
+            profileImageView.setProfileImage()
+            return
+        }
+        profileImageView.image = image
+    }
+    
+    func setFollowerCount() {
+        if let count = User.shared.followerCount {
+            followerCountLabel.text = "\(count)"
+        }
+    }
+    
+    func setFollowingCount() {
+        if let count = User.shared.followingCount {
+            followingCountLabel.text = "\(count)"
+        }
     }
 }
