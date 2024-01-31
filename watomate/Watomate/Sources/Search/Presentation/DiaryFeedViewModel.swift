@@ -109,6 +109,7 @@ final class DiaryFeedViewModel: ViewModelType {
                     }
                     likes.append(SearchLike(user: userId, emoji: emoji))
                     diaryList[index].likes = likes
+                    diaryList[index].updateDiaryLikes(likes)
                     output.send(.likeUpdate)
                 }
                 
@@ -126,6 +127,7 @@ final class DiaryFeedViewModel: ViewModelType {
             }
             likes.append(SearchLike(user: userId, emoji: emoji))
             diaryList[index].likes = likes
+            diaryList[index].updateDiaryLikes(likes)
             output.send(.likeUpdate)
         }
     }

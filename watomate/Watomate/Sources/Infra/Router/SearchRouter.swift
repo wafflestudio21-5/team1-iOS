@@ -18,6 +18,7 @@ enum SearchRouter: Router {
     case searchUser(username: String)
     case searchTodo(title: String)
     case likeDiary(diaryId: Int, user: Int, emoji: String)
+    case commentDiary(diaryId: Int, userId: Int, description: String)
     
     var method: HTTPMethod {
         switch self {
@@ -36,6 +37,8 @@ enum SearchRouter: Router {
         case .searchTodo:
             return .get
         case .likeDiary:
+            return .put
+        case .commentDiary:
             return .post
         }
     }
@@ -58,6 +61,8 @@ enum SearchRouter: Router {
             return "todo-search"
         case let .likeDiary(diaryId, _, _):
             return "/diarys/\(diaryId)/like"
+        case let .commentDiary(diaryId, _, _):
+            return "/diarys/\(diaryId)/comment"
         }
     }
     
@@ -79,6 +84,8 @@ enum SearchRouter: Router {
             return ["title": title]
         case let .likeDiary(_, user, emoji):
             return ["user": user, "emoji": emoji]
+        case let .commentDiary(_, userId, description):
+            return ["user": userId, "description": description]
         }
     }
 }
