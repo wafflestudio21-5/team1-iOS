@@ -13,7 +13,11 @@ class TabBarController: UITabBarController {
         super.viewDidLoad()
         view.backgroundColor = UIColor.systemBackground
         
-        let todoVC = UINavigationController(rootViewController: ToDoViewController())
+        let todoRepository = TodoRepository()
+        let todoUseCase = TodoUseCase(todoRepository: todoRepository)
+        let todoListViewModel = TodoListViewModel(todoUseCase: todoUseCase)
+        
+        let todoVC = UINavigationController(rootViewController: HomeViewController(todoListViewModel: todoListViewModel))
         todoVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house.fill"), tag: 0)
 
         let searchVC = UINavigationController(rootViewController: SearchViewController())
@@ -23,9 +27,6 @@ class TabBarController: UITabBarController {
         let groupVC = UINavigationController(rootViewController: GroupViewController())
         groupVC.tabBarItem = UITabBarItem(title: "Group", image: UIImage(systemName: "rectangle.3.group.fill"), tag: 2)
 
-        let todoRepository = TodoRepository()
-        let todoUseCase = TodoUseCase(todoRepository: todoRepository)
-        let todoListViewModel = TodoListViewModel(todoUseCase: todoUseCase)
         let profileVC = UINavigationController(rootViewController: ProfileViewController(todoListViewModel: todoListViewModel))
 
         profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.crop.circle.fill"), tag: 3)
