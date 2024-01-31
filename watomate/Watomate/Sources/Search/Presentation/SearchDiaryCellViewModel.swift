@@ -9,7 +9,7 @@
 import Foundation
 
 class SearchDiaryCellViewModel: Identifiable {
-    private let diary: SearchDiary
+    private var diary: SearchDiary
     
     let id: Int
     
@@ -70,6 +70,10 @@ class SearchDiaryCellViewModel: Identifiable {
     
     func getDiary() -> SearchDiary {
         diary
+    }
+    
+    func updateDiaryLikes(_ likes: [SearchLike]) {
+        diary.likes = likes
     }
 
 }

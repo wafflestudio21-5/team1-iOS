@@ -75,14 +75,20 @@ struct SearchLikeDto: Decodable {
 }
 
 struct CommentDto: Decodable {
+    let id: Int
     let createdAtIso: String
     let user: Int
+    let username: String
+    let profilePic: String?
     let description: String
     let likes: [SearchLikeDto]
     
     func toDomain() -> SearchComment {
-        return .init(createdAtIso: createdAtIso,
+        return .init(id: id,
+                     createdAtIso: createdAtIso,
                      user: user,
+                     username: username,
+                     profilePic: profilePic,
                      description: description,
                      likes: likes.map{ $0.toDomain() })
     }
