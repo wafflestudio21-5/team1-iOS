@@ -22,23 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let isLoggedIn = userDefaultsRepository.get(Bool.self, key: .isLoggedIn) ?? false
         User.shared.isLoggedin = isLoggedIn
         if isLoggedIn {
-            User.shared.id = userDefaultsRepository.get(Int.self, key: .userId)
-            User.shared.token = userDefaultsRepository.get(String.self, key: .accessToken)
-            
-            let searchUseCase = SearchUseCase(searchRepository: SearchRepository())
-            
-            Task {
-                guard let id = User.shared.id else { return }
-//                print(id)
-                let userInfo = try? await searchUseCase.getUserInfo(id: id)
-                User.shared.username = userDefaultsRepository.get(String.self, key: .username)
-                User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)
-                User.shared.profilePic = userDefaultsRepository.get(String.self, key: .profilePic)
-                User.shared.followerCount = userDefaultsRepository.get(Int.self, key: .followerCount)
-                User.shared.followingCount = userDefaultsRepository.get(Int.self, key: .followingCount)
-            }
-            
-            User.shared.loginMethod = LoginMethod(rawValue: userDefaultsRepository.get(String.self, key: .loginMethod) ?? "")
+            getUserInfo()
             window.rootViewController = TabBarController()
         } else {
             let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), searchRepository: SearchRepository(), kakaoRepository: KakaoRepository())
@@ -53,12 +37,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        let useCase = SearchUseCase(searchRepository: repo)
 //        Task {
 //            do {
-//                let result = try await useCase.getInitialUsers()
+//                let result = try await useCase.postLike(diaryId: 61, user: 1, emoji: "👏")
 //                print(result)
 //            } catch {
 //                print(error)
 //            }
 //        }
+    }
+    
+    private func getUserInfo() {
+        let userDefaultsRepository = UserDefaultsRepository()
+        User.shared.id = userDefaultsRepository.get(Int.self, key: .userId)
+        User.shared.token = userDefaultsRepository.get(String.self, key: .accessToken)
+//        print(User.shared.id)
+//        print(User.shared.token)
+        
+        Task {
+            // 앱 처음 시작했을 때 사용자 정보 가져올까? 
+//            guard let id = User.shared.id else { return }
+//                print(id)
+//                let userInfo = try? await searchUseCase.getUserInfo(id: id)
+            User.shared.username = userDefaultsRepository.get(String.self, key: .username)
+            User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)
+            User.shared.profilePic = userDefaultsRepository.get(String.self, key: .profilePic)
+            User.shared.followerCount = userDefaultsRepository.get(Int.self, key: .followerCount)
+            User.shared.followingCount = userDefaultsRepository.get(Int.self, key: .followingCount)
+        }
+        
+        User.shared.loginMethod = LoginMethod(rawValue: userDefaultsRepository.get(String.self, key: .loginMethod) ?? "")
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

@@ -22,13 +22,19 @@ class SearchTodoCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func prepareForReuse() {
+        titleLabel.text = nil
+        completeView.reset()
+    }
+    
     private lazy var containerView = UIView()
     
     private lazy var completeView = CustomSymbolView(size: 25)
     private lazy var titleLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.medium, size: 16)
+        label.font = UIFont(name: Constants.Font.medium, size: 17)
         return label
     }()
     
@@ -56,8 +62,13 @@ class SearchTodoCell: UITableViewCell {
     func configure(with viewModel: SearchTodoCellViewModel) {
         self.viewModel = viewModel
         titleLabel.text = viewModel.title
-        completeView.setColor(color: [Color(rawValue: viewModel.color) ?? Color.gray])
-        completeView.addCheckMark()
+        if viewModel.isCompleted {
+            completeView.setColor(color: [Color(rawValue: viewModel.color) ?? Color.gray])
+            completeView.addCheckMark()
+        } else {
+            completeView.setColor(color: [])
+        }
+        
     }
     
 }

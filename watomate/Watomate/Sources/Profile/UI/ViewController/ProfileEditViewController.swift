@@ -63,7 +63,7 @@ class ProfileEditViewController: PlainCustomBarViewController {
         view.setSymbolColor(.systemBackground)
         
         if let profilePic = User.shared.profilePic {
-            view.setProfileImage()
+            view.setImage(profilePic)
         }
         
         return view

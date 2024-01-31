@@ -14,6 +14,7 @@ class GoalStackView: UIStackView {
         let imageView = UIImageView(image: UIImage(systemName: "photo.fill"))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.backgroundColor = .secondarySystemBackground
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
@@ -44,11 +45,16 @@ class GoalStackView: UIStackView {
     }
     
     private func setupLayout() {
+        
+        visibilityImageView.snp.makeConstraints { make in
+            make.width.height.equalTo(30)
+        }
+        
         self.addArrangedSubview(visibilityImageView)
         self.addArrangedSubview(titleLabel)
         self.addArrangedSubview(addImage)
         
-        self.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        self.layoutMargins = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         self.isLayoutMarginsRelativeArrangement = true
         
         self.snp.makeConstraints { make in

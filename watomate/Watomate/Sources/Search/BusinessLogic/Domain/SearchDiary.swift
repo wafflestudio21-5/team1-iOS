@@ -9,11 +9,12 @@
 import Foundation
 
 struct SearchDiary {
+    let id: Int 
     let user: UserInfo
     let description: String
-    let visibility: String
+    let visibility: Visibility
     let mood: Int?
-    let color: String
+    let color: Color
     let emoji: String
     let image: String?
     let date: String
