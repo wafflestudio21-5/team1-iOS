@@ -43,7 +43,7 @@ struct Todo: Codable {
     var color: String
     var description: String?
     var reminder: String?
-//    let createdAt: String
+    var reminderIso: String?
     var date: String?
     var isCompleted: Bool
     var goal: Int

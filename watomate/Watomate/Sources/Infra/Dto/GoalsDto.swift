@@ -33,8 +33,8 @@ struct TodoDto: Codable {
     let title: String
     let color: String
     let description: String
+    let reminder: String?
     let reminder_iso: String?
-//    let created_at_iso: String
     let date: String?
     let is_completed: Bool
     let goal: Int
@@ -46,7 +46,8 @@ struct TodoDto: Codable {
                     title: title,
                     color: color,
                     description: description,
-                    reminder: reminder_iso,
+                    reminder: reminder,
+                    reminderIso: reminder_iso,
                     date: date,
                     isCompleted: is_completed,
                     goal: goal,

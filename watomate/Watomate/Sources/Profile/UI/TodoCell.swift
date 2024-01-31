@@ -87,11 +87,10 @@ class TodoCell: UITableViewCell {
     
     private lazy var reminderLabel = {
         let label = UILabel()
-        label.text = "AM 7:30"//viewModel?.reminder
         label.font = .systemFont(ofSize: 13)
         label.textColor = .label
         label.textAlignment = .left
-        label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        label.setContentHuggingPriority(.init(rawValue: 2), for: .horizontal)
         return label
     }()
     
@@ -100,6 +99,7 @@ class TodoCell: UITableViewCell {
         stackView.axis = .horizontal
         stackView.spacing = 1
         stackView.distribution = .fill
+        stackView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return stackView
     }()
     
@@ -118,7 +118,7 @@ class TodoCell: UITableViewCell {
         label.font = .systemFont(ofSize: 13)
         label.textColor = .label
         label.textAlignment = .left
-        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        label.setContentHuggingPriority(.init(rawValue: 1), for: .horizontal)
         return label
     }()
 
@@ -179,6 +179,10 @@ class TodoCell: UITableViewCell {
         titleTextField.text = viewModel.title
         titleTextField.allowsEditingTextAttributes = false
         reminderStackView.isHidden = viewModel.isReminderHidden
+        if let reminder = viewModel.reminder,
+           let date = Utils.HHmmssFormatter().date(from: reminder) {
+            reminderLabel.text = Utils.aHmmFormatter().string(from: date)
+        }
         memoStackView.isHidden = viewModel.isMemoHidden
         configureCheckbox(isComplete: viewModel.isCompleted)
     }
