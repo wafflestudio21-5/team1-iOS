@@ -56,7 +56,7 @@ class UserCell: UITableViewCell {
         
         addSubview(usernameLabel)
         usernameLabel.snp.makeConstraints { make in
-            make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.offset)
+            make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.spacing)
             make.top.trailing.equalToSuperview().inset(Constants.SearchUser.contentsInset)
         }
         

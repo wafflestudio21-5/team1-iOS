@@ -34,7 +34,7 @@ class SearchRepository: SearchRepositoryProtocol {
     
     func getUserInfo(id: Int) async throws -> UserInfo {
         let dto = try await session.request(SearchRouter.getUserInfo(id: id))
-            .serializingDecodable(UserDto.self, decoder: decoder).handlingError()
+            .serializingDecodable(UserInfoDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }
     

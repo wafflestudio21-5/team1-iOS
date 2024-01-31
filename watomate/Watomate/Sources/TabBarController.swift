@@ -29,16 +29,12 @@ class TabBarController: UITabBarController {
 
         let searchVC = UINavigationController(rootViewController: SearchViewController())
         searchVC.tabBarItem = UITabBarItem(title: "검색", image: UIImage(named: "search"), tag: 1)
-        
-
-        let groupVC = UINavigationController(rootViewController: GroupViewController())
-        groupVC.tabBarItem = UITabBarItem(title: "로그아웃", image: UIImage(systemName: "xmark"), tag: 2)
 
         let profileVC = UINavigationController(rootViewController: ProfileViewController(todoListViewModel: todoListViewModel))
 
         profileVC.tabBarItem = UITabBarItem(title: "My", image: UIImage(named: "my"), tag: 3)
 
-        viewControllers = [todoVC, searchVC, groupVC, profileVC]
+        viewControllers = [todoVC, searchVC, profileVC]
     }
     
     override func viewWillAppear(_ animated: Bool) {
