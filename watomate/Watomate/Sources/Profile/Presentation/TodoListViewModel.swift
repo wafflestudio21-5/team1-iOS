@@ -11,7 +11,7 @@ import Combine
 
 class TodoListViewModel: ViewModelType {
     enum Input {
-        case viewDidAppear
+        case viewDidAppear(_ vc: TodoTableViewController)
     }
     
     enum Output {
@@ -41,8 +41,12 @@ class TodoListViewModel: ViewModelType {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidAppear:
-                self?.loadAllTodos()
+            case .viewDidAppear(let vc):
+                if vc.isKind(of: HomeViewController.self) {
+                    self?.loadTodos(on: Utils.YYYYMMddFormatter().string(from: Date()))
+                } else {
+                    self?.loadAllTodos()
+                }
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -90,6 +94,9 @@ class TodoListViewModel: ViewModelType {
             guard let self else { return }
             do {
                 let goals = try await todoUseCase.getTodos(on: date)
+                updateViewModels(with: goals)
+            } catch {
+                self.output.send(.loadFailed(errorMessage: error.localizedDescription))
             }
         }
     }

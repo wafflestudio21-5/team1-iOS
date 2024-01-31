@@ -47,7 +47,7 @@ class TodoTableViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        input.send(.viewDidAppear)
+        input.send(.viewDidAppear(self))
     }
     
     override func viewDidLoad() {
