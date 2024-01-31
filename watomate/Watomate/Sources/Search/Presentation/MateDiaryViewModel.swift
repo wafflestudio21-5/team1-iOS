@@ -22,6 +22,7 @@ class MateDiaryViewModel: ViewModelType {
     
     enum Output {
         case successSaveLike(emoji: String)
+        case firstComments(comments: [CommentCellViewModel])
         case updateComments(comments: [CommentCellViewModel])
     }
     
@@ -30,7 +31,7 @@ class MateDiaryViewModel: ViewModelType {
             guard let self else { return }
             switch event {
             case .viewDidLoad:
-                self.output.send(.updateComments(comments: self.comments))
+                self.output.send(.firstComments(comments: self.comments))
             case let .commentSendTapped(comment):
                 saveComment(comment: comment)
             }

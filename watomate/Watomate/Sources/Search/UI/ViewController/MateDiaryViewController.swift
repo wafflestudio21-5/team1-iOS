@@ -76,11 +76,28 @@ class MateDiaryViewController: DraggableCustomBarViewController {
                 case let .successSaveLike(emoji):
                     self.configure()
                     self.delegate?.likedWithEmoji(diaryId: self.viewModel.diaryId, user: userId, emoji: emoji)
+                case let .firstComments(comments):
+                    var snapshot = NSDiffableDataSourceSnapshot<CommentSection, CommentCellViewModel.ID>()
+                    snapshot.appendSections(CommentSection.allCases)
+                    snapshot.appendItems(comments.map{ $0.id }, toSection: .main)
+                    self.commentListDataSource.apply(snapshot, animatingDifferences: false)
                 case let .updateComments(comments):
                     var snapshot = NSDiffableDataSourceSnapshot<CommentSection, CommentCellViewModel.ID>()
                     snapshot.appendSections(CommentSection.allCases)
                     snapshot.appendItems(comments.map{ $0.id }, toSection: .main)
                     self.commentListDataSource.apply(snapshot, animatingDifferences: false)
+                    hideKeyboard()
+                }
+            }.store(in: &cancellables)
+        
+        commentTableView.publisher(for: \.contentSize)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] me in
+                guard let self else { return }
+                self.commentTableView.snp.remakeConstraints { make in
+                    make.top.equalTo(self.divisionView.snp.bottom)
+                    make.trailing.leading.bottom.equalToSuperview()
+                    make.height.equalTo(me.height + 20)
                 }
             }.store(in: &cancellables)
     }
@@ -136,7 +153,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         }
         
         diaryContainerView.snp.makeConstraints { make in
-            make.top.equalTo(userInfoView.snp.bottom).offset(25.adjusted)
+            make.top.equalTo(userInfoView.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(30.adjusted)
         }
         
@@ -336,7 +353,8 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         view.showsVerticalScrollIndicator = false
         view.addSubview(diaryStackView)
         diaryStackView.snp.makeConstraints { make in
-            make.top.trailing.leading.equalToSuperview()
+            make.top.equalToSuperview().offset(20)
+            make.trailing.leading.equalToSuperview()
             make.width.equalTo(view.snp.width)
         }
         

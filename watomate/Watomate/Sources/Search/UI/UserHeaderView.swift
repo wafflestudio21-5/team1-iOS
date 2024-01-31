@@ -23,7 +23,7 @@ class UserHeaderView: UITableViewHeaderFooterView {
     private lazy var usernameLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.medium, size: 18)
+        label.font = UIFont(name: Constants.Font.medium, size: 16)
         return label
     }()
     
@@ -47,13 +47,13 @@ class UserHeaderView: UITableViewHeaderFooterView {
         addSubview(usernameLabel)
         
         profileCircleView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(10)
-            make.width.height.equalTo(35)
+            make.top.bottom.equalToSuperview().inset(9)
+            make.width.height.equalTo(30)
             make.leading.equalToSuperview().offset(20)
         }
         
         usernameLabel.snp.makeConstraints { make in
-            make.leading.equalTo(profileCircleView.snp.trailing).offset(10)
+            make.leading.equalTo(profileCircleView.snp.trailing).offset(9)
             make.centerY.equalToSuperview()
         }
     }

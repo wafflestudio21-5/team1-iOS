@@ -30,11 +30,11 @@ class SearchTodoCell: UITableViewCell {
     
     private lazy var containerView = UIView()
     
-    private lazy var completeView = CustomSymbolView(size: 25)
+    private lazy var completeView = CustomSymbolView(size: 20)
     private lazy var titleLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.medium, size: 17)
+        label.font = UIFont(name: Constants.Font.medium, size: 15)
         return label
     }()
     
@@ -46,14 +46,14 @@ class SearchTodoCell: UITableViewCell {
         
         containerView.addSubview(completeView)
         completeView.snp.makeConstraints { make in
-            make.width.height.equalTo(25)
+            make.width.height.equalTo(20)
             make.leading.equalToSuperview().inset(20)
-            make.top.bottom.equalToSuperview().inset(10)
+            make.top.bottom.equalToSuperview().inset(9)
         }
         
         containerView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(completeView.snp.trailing).offset(20)
+            make.leading.equalTo(completeView.snp.trailing).offset(16)
             make.trailing.equalToSuperview().inset(20)
             make.centerY.equalTo(completeView)
         }
