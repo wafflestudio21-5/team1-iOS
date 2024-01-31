@@ -9,10 +9,19 @@
 import UIKit
 
 class HomeViewController: TodoTableViewController {
-    var diaryViewModel = DiaryPreviewViewModel()
+    let diaryViewModel: DiaryPreviewViewModel
     var homeViewModel = HomeViewModel()
     lazy var userID = User.shared.id
     var selectedDate: DateComponents? = nil
+    
+    init(todoListViewModel: TodoListViewModel, diaryViewModel: DiaryPreviewViewModel) {
+        self.diaryViewModel = diaryViewModel
+        super.init(todoListViewModel: todoListViewModel)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private lazy var logoImage : UIImageView = {
         var view = UIImageView()
@@ -51,9 +60,11 @@ class HomeViewController: TodoTableViewController {
         todoTableView.register(CalendarHeaderView.self, forHeaderFooterViewReuseIdentifier: CalendarHeaderView.reuseIdentifier)
         super.viewDidLoad()
         guard let userID else { return }
+        updateUserTedoori()
         getHomeUser(userID: userID)
 //        setCalendar()
     }
+    
     override func setupLayout() {
         //TODO: add following/follower info, tedoori
         logoImage.snp.makeConstraints { make in
@@ -81,7 +92,6 @@ class HomeViewController: TodoTableViewController {
     func getHomeUser(userID: Int) {
         homeViewModel.getHomeUser(userID: userID) {
             DispatchQueue.main.async { [weak self] in
-//                self?.updateUserInfo()
                 self?.updateUserTedoori()
             }
         }
@@ -114,8 +124,7 @@ class HomeViewController: TodoTableViewController {
                  self.emoji = receivedValue
                  self.updateDiaryButtonAppearance()
              }
-            diaryCreateVC.userName = homeViewModel.user?.username
-            diaryCreateVC.userProfile = homeViewModel.user?.profile_pic
+            diaryCreateVC.setupProfile()
             diaryCreateVC.hidesBottomBarWhenPushed = true //tabBar 숨기기
             navigationController?.pushViewController(diaryCreateVC, animated: false)
         }
@@ -176,8 +185,10 @@ extension HomeViewController {
             guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: CalendarHeaderView.reuseIdentifier) as? CalendarHeaderView else { return nil }
             header.contentView.backgroundColor = .systemBackground
             header.setDiaryBtnAction(target: self, action: #selector(diaryButtonTapped), for: .touchUpInside)
+            header.setupUserInfo()
             return header
         }
+        
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TodoHeaderView.reuseIdentifier) as? TodoHeaderView else { return nil }
         header.goalView.tag = section
         header.setTitle(with: todoListViewModel.getTitle(of: section))
@@ -208,8 +219,7 @@ extension HomeViewController: DiaryPreviewViewControllerDelegate {
         controller.dismiss(animated: true) {
             let diaryCreateVC = DiaryCreateViewController()
             diaryCreateVC.receivedDateString = self.diaryDateString
-            diaryCreateVC.userName = self.homeViewModel.user?.username
-            diaryCreateVC.userProfile = self.homeViewModel.user?.profile_pic
+            diaryCreateVC.setupProfile()
             diaryCreateVC.existence = true
             diaryCreateVC.completionClosure = { receivedValue in
                 self.emoji = receivedValue

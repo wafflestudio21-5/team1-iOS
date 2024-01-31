@@ -16,8 +16,9 @@ class TabBarController: UITabBarController {
         let todoRepository = TodoRepository()
         let todoUseCase = TodoUseCase(todoRepository: todoRepository)
         let todoListViewModel = TodoListViewModel(todoUseCase: todoUseCase)
+        let diaryViewModel = DiaryPreviewViewModel()
         
-        let todoVC = UINavigationController(rootViewController: HomeViewController(todoListViewModel: todoListViewModel))
+        let todoVC = UINavigationController(rootViewController: HomeViewController(todoListViewModel: todoListViewModel, diaryViewModel: diaryViewModel))
         todoVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house.fill"), tag: 0)
 
         let searchVC = UINavigationController(rootViewController: SearchViewController())
