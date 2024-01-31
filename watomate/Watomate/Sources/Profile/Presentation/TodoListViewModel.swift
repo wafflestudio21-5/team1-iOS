@@ -23,7 +23,7 @@ class TodoListViewModel: ViewModelType {
     private var cancellables = Set<AnyCancellable>()
     private let output = PassthroughSubject<Output, Never>()
     
-    private var viewModelsSubject = CurrentValueSubject<[Int: [TodoCellViewModel]], Never>([:]) //Int : section index에 해당
+    private var viewModelsSubject = CurrentValueSubject<[Int: [TodoCellViewModel]], Never>([:]) //Int는 section index
     var vms: AnyPublisher<[Int: [TodoCellViewModel]], Never> {
         return viewModelsSubject.eraseToAnyPublisher()
     }
@@ -31,8 +31,8 @@ class TodoListViewModel: ViewModelType {
     weak var delegate: (any TodoListViewModelDelegate)?
     private let todoUseCase: TodoUseCase
 
-    var sectionsForGoalId = [Int: Int]() // GoalId: Section index
-    var goalIdsForSections = [Int: Int]() // Section index: GoalId
+    var sectionsForGoalId = [Int: Int]() // [GoalId: Section index]
+    var goalIdsForSections = [Int: Int]() // [Section index: GoalId]
 
     init(todoUseCase: TodoUseCase) {
         self.todoUseCase = todoUseCase
@@ -226,18 +226,15 @@ class TodoListViewModel: ViewModelType {
 extension TodoListViewModel {
     func appendPlaceholderIfNeeded(at section: Int) -> Bool {
         guard let goal = goal(at: section) else { return false }
-//        if viewModelsSubject.value[section]?.count == 0 {
         if todoUseCase.goals[section - 1].todos.count == 0 {
             append(.placeholderItem(with: goal))
             return true
         }
-//        guard let lastItem = viewModelsSubject.value[section]?.last else { return false }
         guard let lastItem = todoUseCase.goals[section - 1].todos.last else { return false }
         if !lastItem.title.isEmpty {
             append(.placeholderItem(with: goal))
             return true
         }
-
         return false
     }
 }
@@ -299,7 +296,5 @@ protocol TodoListViewModelDelegate: AnyObject {
         at indexPath: IndexPath,
         options: ReloadOptions
     )
-//    func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateItem: Todo, at indexPath: IndexPath)
     func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel)
-//    func indexPathForDisplayedCells(_ viewModel: TodoListViewModel, )
 }

@@ -221,15 +221,12 @@ class TodoDetailViewController: SheetCustomViewController {
         detailStackView.snp.makeConstraints { make in
             make.edges.equalTo(sheetView.safeAreaLayoutGuide).inset(20)
         }
-        
         editTitleButton.snp.makeConstraints { make in
             make.height.equalTo(100)
         }
-        
         memoTextField.snp.makeConstraints { make in
             make.height.equalTo(100)
         }
-        
         reminderPicker.snp.makeConstraints { make in
             make.height.equalTo(100)
         }
@@ -297,21 +294,17 @@ class TodoDetailViewController: SheetCustomViewController {
     }
     
     @objc func handleDoTodayCellTap() {
-        print("do today tapped")
         viewModel.date = Utils.YYYYMMddFormatter().string(from: Date())
         dismiss(animated: true)
     }
     
     @objc func handleDoTomorrowCellTap() {
-        print("do tomorrow tapped")
         viewModel.date = Utils.YYYYMMddFormatter().string(from: Date(timeIntervalSinceNow: 86400))
         dismiss(animated: true)
     }
     
     @objc func handleChangeDateCellTap() {
-        // show calendar
-        print("change date tapped")
-        let vc = DatePickerViewController()
+        let vc = ChangeDateViewController(viewModel: self.viewModel)
         vc.sheetPresentationController?.detents = [.custom(resolver: { context in
             context.maximumDetentValue * 0.7
         })]
@@ -319,7 +312,6 @@ class TodoDetailViewController: SheetCustomViewController {
     }
     
     @objc func handleMoveToArchiveCellTap() {
-        print("move to archive tapped")
         viewModel.date = nil
         dismiss(animated: true)
     }

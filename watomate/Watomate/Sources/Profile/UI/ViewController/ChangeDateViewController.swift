@@ -9,8 +9,9 @@
 import UIKit
 import SnapKit
 
-class DatePickerViewController: SheetCustomViewController {
-    
+class ChangeDateViewController: SheetCustomViewController {
+    private var viewModel: TodoCellViewModel
+
     private lazy var datePickerView = {
         let pickerView = UIDatePicker()
         pickerView.datePickerMode = .date
@@ -19,7 +20,8 @@ class DatePickerViewController: SheetCustomViewController {
         return pickerView
     }()
     
-    init() {
+    init(viewModel: TodoCellViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         self.setTitle("날짜 바꾸기")
         okButtonAction(target: self, action: #selector(handleOkBtnTap))
@@ -39,7 +41,8 @@ class DatePickerViewController: SheetCustomViewController {
     }
     
     @objc func handleOkBtnTap() {
-        print(datePickerView.date)
+        let dateString = Utils.YYYYMMddFormatter().string(from: datePickerView.date)
+        viewModel.date = dateString
         dismiss(animated: true)
     }
 }

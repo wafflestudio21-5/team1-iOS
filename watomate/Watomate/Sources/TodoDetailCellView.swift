@@ -47,7 +47,7 @@ class TodoDetailCellView: UIStackView {
         super.init(frame: .init())
         self.translatesAutoresizingMaskIntoConstraints = false
         self.axis = .horizontal
-        self.spacing = 10
+        self.spacing = 16
         self.distribution = .fill
         setupLayout()
     }
