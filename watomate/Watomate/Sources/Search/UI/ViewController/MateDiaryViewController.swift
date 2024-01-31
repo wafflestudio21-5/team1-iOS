@@ -21,6 +21,8 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private var cancellables = Set<AnyCancellable>()
     
+    private var isScrollNeeded = false
+    
     init(_ viewModel: SearchDiaryCellViewModel) {
         self.viewModel = MateDiaryViewModel(diaryCellViewModel: viewModel, searchUserCase: SearchUseCase(searchRepository: SearchRepository()))
         super.init(nibName: nil, bundle: nil)
@@ -82,6 +84,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
                     snapshot.appendItems(comments.map{ $0.id }, toSection: .main)
                     self.commentListDataSource.apply(snapshot, animatingDifferences: false)
                 case let .updateComments(comments):
+                    isScrollNeeded = true
                     var snapshot = NSDiffableDataSourceSnapshot<CommentSection, CommentCellViewModel.ID>()
                     snapshot.appendSections(CommentSection.allCases)
                     snapshot.appendItems(comments.map{ $0.id }, toSection: .main)
@@ -98,6 +101,10 @@ class MateDiaryViewController: DraggableCustomBarViewController {
                     make.top.equalTo(self.divisionView.snp.bottom)
                     make.trailing.leading.bottom.equalToSuperview()
                     make.height.equalTo(me.height + 20)
+                    if self.isScrollNeeded {
+                        let bottomOffset = CGPoint(x: 0, y: self.diaryContainerView.contentSize.height - self.diaryContainerView.bounds.size.height)
+                        self.diaryContainerView.setContentOffset(bottomOffset, animated: true)
+                    }
                 }
             }.store(in: &cancellables)
     }
@@ -153,7 +160,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         }
         
         diaryContainerView.snp.makeConstraints { make in
-            make.top.equalTo(userInfoView.snp.bottom)
+            make.top.equalTo(userInfoView.snp.bottom).offset(3)
             make.leading.trailing.equalToSuperview().inset(30.adjusted)
         }
         
@@ -219,7 +226,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private lazy var emojiView = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 50)
+        label.font = UIFont.systemFont(ofSize: 47)
         return label
     }()
     
@@ -534,7 +541,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         let view = UIView()
         
         view.snp.makeConstraints { make in
-            make.height.equalTo(60)
+            make.height.equalTo(50.adjustedH)
         }
         
         return view
