@@ -17,6 +17,7 @@ class MateDiaryViewModel: ViewModelType {
     
     enum Input {
         case viewDidLoad
+        case commentSendTapped(comment: String)
     }
     
     enum Output {
@@ -30,6 +31,8 @@ class MateDiaryViewModel: ViewModelType {
             switch event {
             case .viewDidLoad:
                 self.output.send(.updateComments(comments: self.comments))
+            case let .commentSendTapped(comment):
+                saveComment(comment: comment)
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -117,6 +120,18 @@ class MateDiaryViewModel: ViewModelType {
                 }
                 likes.append(SearchLike(user: userId, emoji: emoji))
                 output.send(.successSaveLike(emoji: emoji))
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func saveComment(comment: String) {
+        Task {
+            do {
+                let commentResult = try await searchUseCase.postComment(diaryId: diaryId, userId: User.shared.id!, description: comment)
+                comments.append(CommentCellViewModel(comment: commentResult, color: color))
+                output.send(.updateComments(comments: comments))
             } catch {
                 print(error)
             }

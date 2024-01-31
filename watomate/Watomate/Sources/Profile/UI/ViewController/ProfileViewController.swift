@@ -40,7 +40,10 @@ class ProfileViewController: TodoTableViewController {
     }
     
     private func setupTopBarItems() {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(settingButtonTapped))
+        let configuration = UIImage.SymbolConfiguration(weight: .medium)
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape", withConfiguration: configuration), style: .plain, target: self, action: #selector(settingButtonTapped))
+        self.navigationItem.rightBarButtonItem?.tintColor = .label
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: usernameLabel)
         guard let username: String = User.shared.username else { return }
         usernameLabel.text = username

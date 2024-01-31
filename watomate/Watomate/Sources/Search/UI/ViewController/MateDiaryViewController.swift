@@ -333,7 +333,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private lazy var diaryContainerView = {
         let view = UIScrollView()
-        
+        view.showsVerticalScrollIndicator = false
         view.addSubview(diaryStackView)
         diaryStackView.snp.makeConstraints { make in
             make.top.trailing.leading.equalToSuperview()
@@ -436,6 +436,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         tableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.reuseIdentifier)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
+        tableView.showsVerticalScrollIndicator = false
 //        tableView.delegate = self
         
         return tableView
@@ -452,18 +453,24 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     }()
     
     private lazy var commentView = {
-        let view = UIView()
+        let view = UIStackView()
+        view.axis = .horizontal
+        view.alignment = .bottom
+        view.spacing = 12
         
-        view.addSubview(sendButton)
-        sendButton.snp.makeConstraints { make in
-            make.top.trailing.bottom.equalToSuperview()
-        }
+        view.addArrangedSubview(inputTextView)
+        view.addArrangedSubview(sendButton)
         
-        view.addSubview(inputTextView)
-        inputTextView.snp.makeConstraints { make in
-            make.trailing.equalTo(sendButton.snp.leading).offset(-12)
-            make.top.bottom.leading.equalToSuperview()
-        }
+//        view.addSubview(sendButton)
+//        sendButton.snp.makeConstraints { make in
+//            make.top.trailing.bottom.equalToSuperview()
+//        }
+//        
+//        view.addSubview(inputTextView)
+//        inputTextView.snp.makeConstraints { make in
+//            make.trailing.equalTo(sendButton.snp.leading).offset(-12)
+//            make.top.bottom.leading.equalToSuperview()
+//        }
         return view
     }()
     
@@ -475,21 +482,35 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         textView.isScrollEnabled = false
         textView.font = UIFont(name: Constants.Font.regular, size: 14)
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 24, bottom: 12, right: 24)
-        textView.textContainer.maximumNumberOfLines = 4
-        textView.textContainer.lineBreakMode = .byTruncatingHead
+//        textView.textContainer.maximumNumberOfLines = 4
+        textView.textContainer.lineBreakMode = .byCharWrapping
         textView.textColor = .label
+        textView.delegate = self
+        textView.autocorrectionType = .no
+        textView.autocapitalizationType = .none
+        
+        textView.snp.makeConstraints { make in
+            make.height.equalTo(41)
+        }
         return textView
     }()
     
     private lazy var sendButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "send_default"), for: .normal)
+        button.addTarget(self, action: #selector(sendTapped), for: .touchUpInside)
         
         button.snp.makeConstraints { make in
             make.width.height.equalTo(40)
         }
         return button
     }()
+    
+    @objc private func sendTapped() {
+        guard let comment = inputTextView.text else { return }
+        viewModel.input.send(.commentSendTapped(comment: comment))
+        inputTextView.text = nil
+    }
     
     private lazy var bottomPadding = {
         let view = UIView()
@@ -508,5 +529,23 @@ extension MateDiaryViewController: LikeEmojiViewControllerDelegate {
         viewModel.saveLike(diaryId: diaryId, userId: user, emoji: emoji)
     }
     
-    
+}
+
+extension MateDiaryViewController: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        let size = CGSize(width: inputTextView.frame.width, height: .infinity)
+           let estimatedSize = inputTextView.sizeThatFits(size)
+
+           if estimatedSize.height <= 91 { // Define maximumHeight
+               textView.isScrollEnabled = false
+               inputTextView.snp.remakeConstraints { make in
+                   make.height.equalTo(estimatedSize)
+                   make.trailing.equalTo(sendButton.snp.leading).offset(-12)
+                   make.leading.equalToSuperview()
+               }
+               view.layoutIfNeeded()
+           } else {
+               textView.isScrollEnabled = true
+           }
+    }
 }

@@ -33,6 +33,7 @@ class UserFeedViewController: UIViewController {
         tableView.estimatedRowHeight = 70
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
+        tableView.showsVerticalScrollIndicator = false 
         return tableView
     }()
 
@@ -90,7 +91,7 @@ extension UserFeedViewController: UIScrollViewDelegate {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height
         
-        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 400) {
+        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 300) {
             viewModel.input.send(.reachedEndOfScrollView)
         }
     }

@@ -33,6 +33,7 @@ class DiaryFeedViewController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 200
         tableView.delegate = self
+        tableView.showsVerticalScrollIndicator = false 
         return tableView
     }()
 
@@ -103,7 +104,7 @@ extension DiaryFeedViewController: UIScrollViewDelegate {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height
         
-        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 400) {
+        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 300) {
             viewModel.input.send(.reachedEndOfScrollView)
         }
     }

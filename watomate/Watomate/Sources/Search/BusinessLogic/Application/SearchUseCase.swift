@@ -17,36 +17,16 @@ class SearchUseCase {
     
     func getUserInfo(id: Int) async throws -> UserInfo {
         let userInfo = try await searchRepository.getUserInfo(id: id)
-        return UserInfo(id: userInfo.id, intro: userInfo.intro, username: userInfo.username, profilePic: userInfo.profilePic, followerCount: userInfo.followerCount, followingCount: userInfo.followingCount, goalsColor: [])
+        return UserInfo(id: userInfo.id, tedoori: userInfo.tedoori, goalColors: userInfo.goalColors, intro: userInfo.intro, username: userInfo.username, profilePic: userInfo.profilePic, followerCount: userInfo.followerCount, followingCount: userInfo.followingCount)
     }
     
     func getInitialUsers() async throws -> UsersPage {
         var usersPage = try await searchRepository.getInitialUsers()
-        var results = usersPage.results
-        for (index, result) in results.enumerated() {
-            let goalsDto = try await searchRepository.getUserGoals(id: result.id)
-            for goal in goalsDto {
-                if goal.visibility == "PB" && !result.goalsColor.contains(goal.color) {
-                    results[index].goalsColor.append(goal.color)
-                }
-            }
-        }
-        usersPage.results = results
         return usersPage
     }
     
     func getMoreUsers(nextUrl: String) async throws -> UsersPage {
         var usersPage = try await searchRepository.getMoreUsers(url: nextUrl)
-        var results = usersPage.results
-        for (index, result) in results.enumerated() {
-            let goalsDto = try await searchRepository.getUserGoals(id: result.id)
-            for goal in goalsDto {
-                if goal.visibility == "PB" && !result.goalsColor.contains(goal.color) {
-                    results[index].goalsColor.append(goal.color)
-                }
-            }
-        }
-        usersPage.results = results
         return usersPage
     }
     
@@ -62,16 +42,6 @@ class SearchUseCase {
     
     func searchInitialUsers(username: String) async throws -> UsersPage {
         var usersPage = try await searchRepository.searchInitialUsers(username: username)
-        var results = usersPage.results
-        for (index, result) in results.enumerated() {
-            let goalsDto = try await searchRepository.getUserGoals(id: result.id)
-            for goal in goalsDto {
-                if goal.visibility == "PB" && !result.goalsColor.contains(goal.color) {
-                    results[index].goalsColor.append(goal.color)
-                }
-            }
-        }
-        usersPage.results = results
         return usersPage
     }
     
@@ -94,7 +64,7 @@ class SearchUseCase {
         try await searchRepository.postLike(diaryId: diaryId, user: user, emoji: emoji)
     }
     
-    func postComment(diaryId: Int, userId: Int, description: String) async throws {
-        try await searchRepository.postComment(diaryId: diaryId, user: userId, description: description)
+    func postComment(diaryId: Int, userId: Int, description: String) async throws -> SearchComment {
+        return try await searchRepository.postComment(diaryId: diaryId, user: userId, description: description)
     }
 }

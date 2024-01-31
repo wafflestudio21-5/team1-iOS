@@ -26,7 +26,7 @@ class UserCellViewModel: Identifiable {
     }
     
     var color: [Color] {
-        userInfo.goalsColor.map{ Color(rawValue: $0) ?? Color.gray }
+        userInfo.goalColors.map{ Color(rawValue: $0) ?? Color.gray }
     }
     
     var profilePic: String? {

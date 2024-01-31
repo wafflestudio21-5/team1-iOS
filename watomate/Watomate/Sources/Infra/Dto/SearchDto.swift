@@ -21,6 +21,8 @@ struct UsersResponseDto: Decodable {
 
 struct UserDto: Decodable {
     let user: Int
+    let tedoori: Bool
+    let goalColors: [String]
     let intro: String?
     let username: String
     let profilePic: String?
@@ -29,12 +31,13 @@ struct UserDto: Decodable {
     
     func toDomain() -> UserInfo {
         return .init(id: user,
+                     tedoori: tedoori,
+                     goalColors: goalColors,
                      intro: intro,
                      username: username,
                      profilePic: profilePic,
                      followerCount: followerCount,
-                     followingCount: followingCount,
-                     goalsColor: [])
+                     followingCount: followingCount)
     }
     
 }
