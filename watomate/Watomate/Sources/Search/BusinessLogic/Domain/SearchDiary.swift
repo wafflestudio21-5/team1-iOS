@@ -31,6 +31,8 @@ struct SearchComment {
     let id: Int
     let createdAtIso: String
     let user: Int
+    let username: String
+    let profilePic: String?
     let description: String
     let likes: [SearchLike]
 }

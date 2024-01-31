@@ -8,15 +8,27 @@
 
 import Foundation
 
-class CommentCellViewModel {
+class CommentCellViewModel: Identifiable {
 //    private var comment: SearchComment
-//    private let id: Int
-//    private let createdAt: String
-//    private let user: Int
-//    private let description: String
-//    private let likes: [SearchLike]
-//    
-//    init(comment: SearchComment) {
+    
+    let id: Int
+    let createdAt: String
+    let user: Int
+    let username: String
+    let profilePic: String?
+    var description: String
+    var likes: [SearchLike]
+    var color: Color
+    
+    init(comment: SearchComment, color: Color) {
 //        self.comment = comment
-//    }
+        id = comment.id
+        createdAt = comment.createdAtIso
+        user = comment.user
+        username = comment.username
+        profilePic = comment.profilePic
+        description = comment.description
+        likes = comment.likes
+        self.color = color
+    }
 }

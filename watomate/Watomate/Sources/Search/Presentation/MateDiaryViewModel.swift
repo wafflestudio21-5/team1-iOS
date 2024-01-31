@@ -9,27 +9,51 @@
 import Combine
 import Foundation
 
-class MateDiaryViewModel {
+enum CommentSection: CaseIterable {
+    case main
+}
+
+class MateDiaryViewModel: ViewModelType {
+    
+    enum Input {
+        case viewDidLoad
+    }
+    
+    enum Output {
+        case successSaveLike(emoji: String)
+        case updateComments(comments: [CommentCellViewModel])
+    }
+    
+    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
+        input.sink { [weak self] event in
+            guard let self else { return }
+            switch event {
+            case .viewDidLoad:
+                self.output.send(.updateComments(comments: self.comments))
+            }
+        }.store(in: &cancellables)
+        return output.eraseToAnyPublisher()
+    }
+    
     private let diary: SearchDiary
     private var searchUseCase: SearchUseCase
     
-    private let outputSubject = PassthroughSubject<String, Never>()
-    var output: AnyPublisher<String, Never> {
-        outputSubject.eraseToAnyPublisher()
-    }
+    let input = PassthroughSubject<Input, Never>()
+    private let output = PassthroughSubject<Output, Never>()
+    private var cancellables = Set<AnyCancellable>()
     
     let id: Int
     
     var likes: [SearchLike]
     
-    var comments: [SearchComment]
+    var comments = [CommentCellViewModel]()
     
     init(diaryCellViewModel: SearchDiaryCellViewModel, searchUserCase: SearchUseCase) {
         self.searchUseCase = searchUserCase
         self.diary = diaryCellViewModel.getDiary()
         id = diary.id
         likes = diary.likes
-        comments = diary.comments
+        comments = diary.comments.map{ CommentCellViewModel(comment: $0, color: diary.color) }
     }
     
     var diaryId: Int {
@@ -80,6 +104,10 @@ class MateDiaryViewModel {
        likes.contains(where: { $0.user == User.shared.id })
     }
     
+    func commentViewModel(at indexPath: IndexPath) -> CommentCellViewModel {
+        return comments[indexPath.row]
+    }
+    
     func saveLike(diaryId: Int, userId: Int, emoji: String) {
         Task {
             do {
@@ -88,7 +116,7 @@ class MateDiaryViewModel {
                     likes.remove(at: index)
                 }
                 likes.append(SearchLike(user: userId, emoji: emoji))
-                outputSubject.send(emoji)
+                output.send(.successSaveLike(emoji: emoji))
             } catch {
                 print(error)
             }
