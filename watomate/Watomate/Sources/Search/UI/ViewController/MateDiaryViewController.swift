@@ -136,7 +136,6 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         }
     }
     
-    @MainActor
     private func configure() {
         emojiView.text = viewModel.emoji
         if let mood = viewModel.mood {
@@ -460,6 +459,17 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         view.layer.shadowColor = UIColor.label.cgColor
         return view
     }()
+    
+    private lazy var commentTableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
+        tableView.register(SearchDiaryCell.self, forCellReuseIdentifier: SearchDiaryCell.reuseIdentifier)
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 100
+//        tableView.delegate = self
+        return tableView
+    }
     
     private lazy var commentContainerView = {
         let view = UIStackView()

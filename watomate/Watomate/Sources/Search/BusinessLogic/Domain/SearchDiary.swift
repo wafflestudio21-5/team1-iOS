@@ -28,6 +28,7 @@ struct SearchLike {
 }
 
 struct SearchComment {
+    let id: Int
     let createdAtIso: String
     let user: Int
     let description: String
