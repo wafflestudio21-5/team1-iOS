@@ -122,6 +122,11 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         
     }
     
+    func setupProfile() {
+        profileName.text = User.shared.username
+        profileImage.setProfileImage()
+    }
+    
     var emoji : String? = nil
     @objc private func emojiButtonTapped() {
         let vc = EmojiViewController()
@@ -209,13 +214,12 @@ class DiaryCreateViewController: PlainCustomBarViewController{
     }()
     
     var userProfile : String?
-    private lazy var profileImage : UIImageView = {
-        var view = UIImageView()
-        let profileImageUrl = URL(string: userProfile ?? "default image url")
-        // profileImage.kf.setImage(with: profileImageUrl)
-        // kingfisher no such module error
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
+    
+    private lazy var profileImage : SymbolCircleView = {
+        let imageView = SymbolCircleView(symbolImage: UIImage(systemName: "person.fill"))
+        imageView.setBackgroundColor(.secondarySystemFill)
+        imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        return imageView
     }()
     
     var userName : String?

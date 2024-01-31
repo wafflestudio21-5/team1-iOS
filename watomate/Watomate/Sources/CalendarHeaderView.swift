@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import SnapKit
+import Kingfisher
 
 class CalendarHeaderView: UITableViewHeaderFooterView {
 
@@ -47,13 +49,16 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
         return stackView
     }()
     
-    private lazy var profileImageContainer: UIImageView = {
-        let imageView = UIImageView(image: UIImage(systemName: "gearshape"))
-        imageView.backgroundColor = .gray
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.layer.cornerRadius = ProfileImageConstant.thumbnailSize / 2.0
+    private lazy var profileImageContainer: SymbolCircleView = {
+        let imageView = SymbolCircleView(symbolImage: UIImage(systemName: "person.fill"))
+        imageView.setBackgroundColor(.secondarySystemFill)
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return imageView
+    }()
+    
+    private lazy var profileImage: UIImage = {
+        let image = UIImage()
+        return image
     }()
     
     private lazy var profileLabelStackView: UIStackView = {
@@ -76,7 +81,6 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
     
     private lazy var profileIntro: UILabel = {
         var label = UILabel()
-        label.text = "프로필에 자기소개를 입력해보세요"
         label.font = UIFont.systemFont(ofSize: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -84,7 +88,6 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
     
     lazy var diaryButton : UIButton = {
         let button = UIButton(type: .system)
-//        button.addTarget(self, action: #selector(diaryButtonTapped), for: .touchUpInside)
         button.setImage(UIImage(systemName: "face.dashed"), for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
@@ -112,15 +115,15 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
         diaryButton.addTarget(target, action: action, for: event)
     }
     
-    func updateUserInfo(with homeViewModel: HomeViewModel){
-        // let profileImageUrl = URL(string: homeViewModel.user?.profile_pic)
-        // profileImage.kf.setImage(with: profileImageUrl)
-        // kingfisher no such module error
-        profileName.text = homeViewModel.user?.username
-        profileIntro.text = homeViewModel.user?.intro
-        
-        // followingProfileName.text = "following user name"
-        // followingProfileImage.image = UIImage(named: "waffle.jpg")
+    func setupUserInfo() {
+        profileName.text = User.shared.username
+        let intro = User.shared.intro
+        if intro?.isEmpty == false {
+            profileIntro.text = intro
+        } else {
+            profileIntro.text = "프로필에 자기소개를 입력해보세요"
+        }
+        profileImageContainer.setProfileImage()
     }
     
     fileprivate func setCalendar() {
