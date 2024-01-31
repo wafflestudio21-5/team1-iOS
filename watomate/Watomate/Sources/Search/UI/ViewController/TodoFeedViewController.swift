@@ -12,7 +12,7 @@ import UIKit
 
 class TodoFeedViewController: UIViewController {
     private let viewModel: TodoFeedViewModel
-    private var todoListDataSource: UITableViewDiffableDataSource<TodoUserCellViewModel.ID, SearchTodoCellViewModel.ID>!
+    private var todoListDataSource: UITableViewDiffableDataSource<TodoSectionViewModel.ID, SearchTodoCellViewModel.ID>!
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -29,6 +29,7 @@ class TodoFeedViewController: UIViewController {
     private lazy var tableView = {
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.register(SearchTodoCell.self, forCellReuseIdentifier: SearchTodoCell.reuseIdentifier)
+        tableView.register(UserHeaderView.self, forHeaderFooterViewReuseIdentifier: UserHeaderView.reuseIdentifier)
         tableView.delegate = self
         tableView.keyboardDismissMode = .onDrag
         tableView.rowHeight = UITableView.automaticDimension
@@ -73,12 +74,10 @@ class TodoFeedViewController: UIViewController {
             .sink { [weak self] event in
                 switch event {
                 case .updateTodoList(let todoList):
-                    var snapshot = NSDiffableDataSourceSnapshot<TodoUserCellViewModel.ID, SearchTodoCellViewModel.ID>()
+                    var snapshot = NSDiffableDataSourceSnapshot<TodoSectionViewModel.ID, SearchTodoCellViewModel.ID>()
                     snapshot.appendSections(todoList.map{ $0.id })
                     for user in todoList {
-                        for todo in user.todos {
-                            snapshot.appendItems([SearchTodoCellViewModel(todo: todo).id], toSection: user.id)
-                        }
+                        snapshot.appendItems(user.todoCells.map{ $0.id }, toSection: user.id)
                     }
                     self?.todoListDataSource.apply(snapshot, animatingDifferences: true)
                 }
@@ -91,8 +90,9 @@ class TodoFeedViewController: UIViewController {
 extension TodoFeedViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let view = UserHeaderView(username: viewModel.sectionTitle(at: section))
-        return view
+        guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: UserHeaderView.reuseIdentifier) as? UserHeaderView else { fatalError() }
+        header.configure(username: viewModel.sectionUsername(at: section), profilePic: viewModel.sectionProfilePic(at: section))
+        return header
     }
     
 }

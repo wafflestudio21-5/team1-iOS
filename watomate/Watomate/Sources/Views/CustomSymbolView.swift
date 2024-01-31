@@ -77,13 +77,20 @@ class CustomSymbolView: UIView {
             make.bottom.leading.equalToSuperview()
             make.top.trailing.equalToSuperview().inset(circleInset)
         }
+        
+        containerView.addSubview(centerCircle)
+        centerCircle.snp.makeConstraints { make in
+            make.width.height.equalTo(size/1.3)
+            make.center.equalToSuperview()
+        }
     }
     
     private func setupCirclesColor() {
         for circle in [circle1, circle2, circle3, circle4] {
             circle.setBackgroundColor(Color.gray.uiColor)
-            circle.alpha = 1
+            circle.alpha = 0.9
         }
+        centerCircle.setBackgroundColor(.clear)
     }
     
     func setColor(color: [Color]) {
@@ -103,31 +110,31 @@ class CustomSymbolView: UIView {
             circle3.backgroundColor = color[0].uiColor
             circle4.backgroundColor = color[1].uiColor
         } else if color.count == 1{
-            circle1.backgroundColor = color[0].uiColor
-            circle2.backgroundColor = color[0].uiColor
-            circle3.backgroundColor = color[0].uiColor
-            circle4.backgroundColor = color[0].uiColor
+            for circle in [circle1, circle2, circle3, circle4] {
+                circle.backgroundColor = color[0].uiColor
+                circle.alpha = 1
+            }
         } else {
-            circle1.backgroundColor = Color.gray.uiColor
-            circle2.backgroundColor = Color.gray.uiColor
-            circle3.backgroundColor = Color.gray.uiColor
-            circle4.backgroundColor = Color.gray.uiColor
+            for circle in [circle1, circle2, circle3, circle4] {
+                circle.backgroundColor = Color.gray.uiColor
+                circle.alpha = 1
+            }
         }
     }
     
     func addCenterCircle(image: UIImage?) {
-        containerView.addSubview(centerCircle)
-        centerCircle.snp.makeConstraints { make in
-            make.width.height.equalTo(size/1.3)
-            make.center.equalToSuperview()
-        }
         
         centerCircle.setSymbol(image)
     }
     
     func addDefaultImage() {
         addCenterCircle(image: UIImage(systemName: "person.fill"))
-        centerCircle.setBackgroundColor(Color.gray.uiColor)
+        centerCircle.setDefault()
+    }
+    
+    func addCenterCircle(url: String) { 
+        addCenterCircle(image: nil)
+        centerCircle.setImage(url)
     }
     
     func addNumber(numberString: String) {
@@ -148,7 +155,12 @@ class CustomSymbolView: UIView {
     }
     
     func addCheckMark() {
-        addCenterCircle(image: UIImage(systemName: "checkmark", withConfiguration: UIImage.SymbolConfiguration(weight: .bold)))
+        addCenterCircle(image: UIImage(systemName: "checkmark", withConfiguration: UIImage.SymbolConfiguration(weight: .black)))
+    }
+    
+    func reset() {
+        setupCirclesColor()
+        centerCircle.reset()
     }
 
     func removeCheckMark() {

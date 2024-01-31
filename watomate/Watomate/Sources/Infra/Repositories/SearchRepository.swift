@@ -20,6 +20,7 @@ protocol SearchRepositoryProtocol {
     func getMoreTodo(url: String) async throws -> TodoPage
     func searchInitialUsers(username: String) async throws -> UsersPage
     func searchInitialTodo(title: String) async throws -> TodoPage
+    func postLike(diaryId: Int, user: Int, emoji: String) async throws
 }
 
 class SearchRepository: SearchRepositoryProtocol {
@@ -60,11 +61,12 @@ class SearchRepository: SearchRepositoryProtocol {
         var diaries = [SearchDiary]()
         for diaryDto in dto.results {
             let user = try await getUserInfo(id: diaryDto.createdBy)
-            diaries.append(SearchDiary(user: user,
+            diaries.append(SearchDiary(id: diaryDto.id,
+                                       user: user,
                                  description: diaryDto.description,
-                                 visibility: diaryDto.visibility,
+                                       visibility: Visibility(rawValue: diaryDto.visibility) ?? .PR ,
                                  mood: diaryDto.mood,
-                                 color: diaryDto.color,
+                                       color: Color(rawValue: diaryDto.color) ?? Color.system,
                                  emoji: diaryDto.emoji,
                                  image: diaryDto.image,
                                  date: diaryDto.date,
@@ -80,11 +82,12 @@ class SearchRepository: SearchRepositoryProtocol {
         var diaries = [SearchDiary]()
         for diaryDto in dto.results {
             let user = try await getUserInfo(id: diaryDto.createdBy)
-            diaries.append(SearchDiary(user: user,
+            diaries.append(SearchDiary(id: diaryDto.id, 
+                                       user: user,
                                  description: diaryDto.description,
-                                 visibility: diaryDto.visibility,
+                                       visibility: Visibility(rawValue: diaryDto.visibility) ?? .PR,
                                  mood: diaryDto.mood,
-                                 color: diaryDto.color,
+                                 color: Color(rawValue: diaryDto.color) ?? Color.system,
                                  emoji: diaryDto.emoji,
                                  image: diaryDto.image,
                                  date: diaryDto.date,
@@ -115,5 +118,9 @@ class SearchRepository: SearchRepositoryProtocol {
         let dto = try await session.request(SearchRouter.searchTodo(title: title))
             .serializingDecodable(TodoFeedResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
+    }
+    
+    func postLike(diaryId: Int, user: Int, emoji: String) async throws {
+        let dto = try await session.request(SearchRouter.likeDiary(diaryId: diaryId, user: user, emoji: emoji)).serializingDecodable(SearchLikeDto.self, decoder: decoder).handlingError()
     }
 }

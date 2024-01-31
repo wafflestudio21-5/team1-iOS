@@ -43,16 +43,17 @@ enum Constants {
     enum SearchDiary {
         static let containerHorizontalInset = 20.0.adjusted
         static let containerVerticalInset = 10.0.adjusted
-        static let contentsInset = 15.0.adjusted
-        static let offset = 11.0.adjusted
+        static let contentsInset = 16.0.adjusted
+        static let offset = 13.0.adjusted
         static let headerViewHeight = 40.0.adjusted
         static let footerViewHeight = 25.0.adjusted
     }
     
     enum SearchUser {
-        static let contentsInset = 15.0.adjusted
+        static let contentsInset = 20.0.adjusted
         static let offset = 20.0.adjusted
-        static let profileHeight = 45.adjusted
+        static let spacing = 15.0.adjusted
+        static let profileHeight = 50.adjusted
     }
 }
 

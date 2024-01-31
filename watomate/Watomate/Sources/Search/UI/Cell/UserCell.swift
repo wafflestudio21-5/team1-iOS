@@ -24,6 +24,12 @@ class UserCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        profileView.reset()
+        usernameLabel.text = nil
+        introLabel.text = nil 
+    }
+    
     private lazy var profileView = CustomSymbolView(size: Constants.SearchUser.profileHeight)
     
     private lazy var usernameLabel = {
@@ -56,7 +62,7 @@ class UserCell: UITableViewCell {
         
         addSubview(introLabel)
         introLabel.snp.makeConstraints { make in
-            make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.offset)
+            make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.spacing)
             make.top.equalTo(usernameLabel.snp.bottom).offset(5.adjusted)
             make.trailing.bottom.equalToSuperview().inset(Constants.SearchUser.contentsInset)
         }
@@ -68,6 +74,10 @@ class UserCell: UITableViewCell {
         usernameLabel.text = viewModel.username
         introLabel.text = viewModel.intro
         profileView.setColor(color: viewModel.color)
-        profileView.addDefaultImage()
+        if let profilePic = viewModel.profilePic {
+            profileView.addCenterCircle(url: profilePic)
+        } else {
+            profileView.addDefaultImage()
+        }
     }
 }

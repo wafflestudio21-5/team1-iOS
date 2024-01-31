@@ -51,6 +51,7 @@ struct DiaryFeedResponseDto: Decodable {
     let results: [DiaryDto]
     
     struct DiaryDto: Decodable {
+        let id: Int 
         let createdBy: Int
         let description: String
         let visibility: String

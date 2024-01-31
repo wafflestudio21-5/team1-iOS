@@ -13,11 +13,13 @@ class SymbolCircleView: UIImageView {
     private var symbolImage: UIImage?
     private var borderColor: UIColor? = nil
     
+    // 심볼 기본 컬러: 화이트
     private lazy var symbolImageView = {
         let imageView = UIImageView()
         imageView.image = symbolImage
         imageView.backgroundColor = .clear
         imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = .white
         return imageView
     }()
 
@@ -73,10 +75,28 @@ class SymbolCircleView: UIImageView {
         symbolImageView.image = nil
     }
     
+    func setImage(_ url: String) {
+        symbolImageView.image = nil
+        kf.setImage(with: URL(string: url)!)
+    }
+    
     func setProfileImage() {
         symbolImageView.image = nil
         guard let imageUrl = User.shared.profilePic else { return }
         kf.setImage(with: URL(string: imageUrl)!)
+    }
+    
+    func setDefault() {
+        setSymbol(UIImage(systemName: "person.fill"))
+        setBackgroundColor(.systemGray5)
+        setSymbolColor(.white)
+    }
+    
+    func reset() {
+        backgroundColor = .clear
+        symbolImageView.image = nil
+        symbolImageView.tintColor = .white
+        image = nil
     }
     
 }
