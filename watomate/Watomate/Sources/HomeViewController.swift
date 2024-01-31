@@ -37,11 +37,18 @@ class HomeViewController: TodoTableViewController {
         return button
     }()
     
-    private lazy var showmoreButton : UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"))
-        // button.addTarget(self, action: #selector(notificationButtonTapped), for: .touchUpInside)
-        return button
+    @objc func showmoreButtonTapped() {
+        let goalManageVC = GoalManageViewController()
+        navigationController?.pushViewController(goalManageVC, animated: false)
+   }
+    
+    private lazy var showmoreButton: UIBarButtonItem = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
+        button.addTarget(self, action: #selector(showmoreButtonTapped), for: .touchUpInside)
+        return UIBarButtonItem(customView: button)
     }()
+
     
     private lazy var followingStackView: UIStackView = {
         let stackView = UIStackView()
