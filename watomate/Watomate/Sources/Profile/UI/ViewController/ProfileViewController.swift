@@ -31,6 +31,8 @@ class ProfileViewController: TodoTableViewController {
     override func viewDidLoad() {
         todoTableView.register(ProfileHeaderView.self, forHeaderFooterViewReuseIdentifier: ProfileHeaderView.reuseIdentifier)
         super.viewDidLoad()
+        
+        setLeftButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,10 +41,19 @@ class ProfileViewController: TodoTableViewController {
         setupTopBarItems()
     }
     
-    private func setupTopBarItems() {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape"), style: .plain, target: self, action: #selector(settingButtonTapped))
+    private func setLeftButton() {
+        let configuration = UIImage.SymbolConfiguration(weight: .medium)
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "gearshape", withConfiguration: configuration), style: .plain, target: self, action: #selector(settingButtonTapped))
+        self.navigationItem.rightBarButtonItem?.tintColor = .label
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: usernameLabel)
+    }
+    
+    private func setupTopBarItems() {
         guard let username: String = User.shared.username else { return }
+        if let headerView = todoTableView.headerView(forSection: 0) as? ProfileHeaderView {
+            headerView.setProfileImage(with: nil)
+        }
         usernameLabel.text = username
     }
     
@@ -76,7 +87,6 @@ class ProfileViewController: TodoTableViewController {
     
     @objc private func profileImageTapped(_ sender: UITapGestureRecognizer) {
         let viewController = ProfileEditViewController(viewModel: ProfileEditViewModel(userUseCase: UserUseCase(userRepository: UserRepository(), userDefaultsRepository: UserDefaultsRepository())))
-        viewController.delegate = self 
         navigationController?.pushViewController(viewController, animated: true)
     }
     
@@ -112,15 +122,5 @@ extension ProfileViewController: TodoListViewModelDelegate {
         let vc = TodoDetailViewController(viewModel: cellViewModel)
         vc.delegate = self
         present(vc, animated: true)
-    }
-}
-
-extension ProfileViewController: ProfileEditViewDelegate {
-    func showProfileImage(_ image: UIImage?) {
-        if let headerView = todoTableView.headerView(forSection: 0) as? ProfileHeaderView {
-            headerView.setProfileImage(with: image)
-//            headerView.setNeedsLayout()
-//            headerView.layoutIfNeeded()
-        }
     }
 }

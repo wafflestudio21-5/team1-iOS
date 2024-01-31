@@ -12,6 +12,7 @@ import UIKit
 
 protocol MateDiaryViewControllerDelegate: AnyObject {
     func likedWithEmoji(diaryId: Int, user: Int, emoji: String)
+    func addComment(diaryId: Int, comments: [CommentCellViewModel])
 }
 
 class MateDiaryViewController: DraggableCustomBarViewController {
@@ -21,7 +22,10 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private var cancellables = Set<AnyCancellable>()
     
+    private var isScrollNeeded = false
+    
     init(_ viewModel: SearchDiaryCellViewModel) {
+        print(viewModel.comments)
         self.viewModel = MateDiaryViewModel(diaryCellViewModel: viewModel, searchUserCase: SearchUseCase(searchRepository: SearchRepository()))
         super.init(nibName: nil, bundle: nil)
     }
@@ -74,15 +78,43 @@ class MateDiaryViewController: DraggableCustomBarViewController {
                 guard let self else { return }
                 switch event {
                 case let .successSaveLike(emoji):
-                    self.configure()
-                    self.delegate?.likedWithEmoji(diaryId: self.viewModel.diaryId, user: userId, emoji: emoji)
+                    configure()
+                    delegate?.likedWithEmoji(diaryId: self.viewModel.diaryId, user: userId, emoji: emoji)
+                case let .firstComments(comments):
+                    showComments(comments: comments)
                 case let .updateComments(comments):
-                    var snapshot = NSDiffableDataSourceSnapshot<CommentSection, CommentCellViewModel.ID>()
-                    snapshot.appendSections(CommentSection.allCases)
-                    snapshot.appendItems(comments.map{ $0.id }, toSection: .main)
-                    self.commentListDataSource.apply(snapshot, animatingDifferences: false)
+                    isScrollNeeded = true
+                    showComments(comments: comments)
+                    hideKeyboard()
+                    delegate?.addComment(diaryId: viewModel.id, comments: comments)
                 }
             }.store(in: &cancellables)
+        
+        commentTableView.publisher(for: \.contentSize)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] me in
+                guard let self else { return }
+                self.commentTableView.snp.remakeConstraints { make in
+                    make.top.equalTo(self.divisionView.snp.bottom)
+                    make.trailing.leading.bottom.equalToSuperview()
+                    make.height.equalTo(me.height + 20)
+                    if self.isScrollNeeded {
+                        let isNearBottom = self.diaryContainerView.contentOffset.y >= (self.diaryContainerView.contentSize.height - self.diaryContainerView.bounds.size.height - 100) // 100은 여백을 위한 임의의 값
+                        if !isNearBottom {
+                            let bottomOffset = CGPoint(x: 0, y: self.diaryContainerView.contentSize.height - self.diaryContainerView.bounds.size.height)
+                            self.diaryContainerView.setContentOffset(bottomOffset, animated: true)
+                        }
+                        
+                    }
+                }
+            }.store(in: &cancellables)
+    }
+    
+    private func showComments(comments: [CommentCellViewModel]) {
+        var snapshot = NSDiffableDataSourceSnapshot<CommentSection, CommentCellViewModel.ID>()
+        snapshot.appendSections(CommentSection.allCases)
+        snapshot.appendItems(comments.map{ $0.id }, toSection: .main)
+        self.commentListDataSource.apply(snapshot, animatingDifferences: false)
     }
     
     private func setupColor() {
@@ -136,7 +168,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         }
         
         diaryContainerView.snp.makeConstraints { make in
-            make.top.equalTo(userInfoView.snp.bottom).offset(25.adjusted)
+            make.top.equalTo(userInfoView.snp.bottom).offset(3)
             make.leading.trailing.equalToSuperview().inset(30.adjusted)
         }
         
@@ -202,7 +234,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private lazy var emojiView = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 50)
+        label.font = UIFont.systemFont(ofSize: 47)
         return label
     }()
     
@@ -333,10 +365,11 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private lazy var diaryContainerView = {
         let view = UIScrollView()
-        
+        view.showsVerticalScrollIndicator = false
         view.addSubview(diaryStackView)
         diaryStackView.snp.makeConstraints { make in
-            make.top.trailing.leading.equalToSuperview()
+            make.top.equalToSuperview().offset(20)
+            make.trailing.leading.equalToSuperview()
             make.width.equalTo(view.snp.width)
         }
         
@@ -436,6 +469,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         tableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.reuseIdentifier)
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
+        tableView.showsVerticalScrollIndicator = false
 //        tableView.delegate = self
         
         return tableView
@@ -452,18 +486,24 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     }()
     
     private lazy var commentView = {
-        let view = UIView()
+        let view = UIStackView()
+        view.axis = .horizontal
+        view.alignment = .bottom
+        view.spacing = 12
         
-        view.addSubview(sendButton)
-        sendButton.snp.makeConstraints { make in
-            make.top.trailing.bottom.equalToSuperview()
-        }
+        view.addArrangedSubview(inputTextView)
+        view.addArrangedSubview(sendButton)
         
-        view.addSubview(inputTextView)
-        inputTextView.snp.makeConstraints { make in
-            make.trailing.equalTo(sendButton.snp.leading).offset(-12)
-            make.top.bottom.leading.equalToSuperview()
-        }
+//        view.addSubview(sendButton)
+//        sendButton.snp.makeConstraints { make in
+//            make.top.trailing.bottom.equalToSuperview()
+//        }
+//        
+//        view.addSubview(inputTextView)
+//        inputTextView.snp.makeConstraints { make in
+//            make.trailing.equalTo(sendButton.snp.leading).offset(-12)
+//            make.top.bottom.leading.equalToSuperview()
+//        }
         return view
     }()
     
@@ -475,15 +515,23 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         textView.isScrollEnabled = false
         textView.font = UIFont(name: Constants.Font.regular, size: 14)
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 24, bottom: 12, right: 24)
-        textView.textContainer.maximumNumberOfLines = 4
-        textView.textContainer.lineBreakMode = .byTruncatingHead
+//        textView.textContainer.maximumNumberOfLines = 4
+        textView.textContainer.lineBreakMode = .byCharWrapping
         textView.textColor = .label
+        textView.delegate = self
+        textView.autocorrectionType = .no
+        textView.autocapitalizationType = .none
+        
+        textView.snp.makeConstraints { make in
+            make.height.equalTo(41)
+        }
         return textView
     }()
     
     private lazy var sendButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "send_default"), for: .normal)
+        button.addTarget(self, action: #selector(sendTapped), for: .touchUpInside)
         
         button.snp.makeConstraints { make in
             make.width.height.equalTo(40)
@@ -491,11 +539,17 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         return button
     }()
     
+    @objc private func sendTapped() {
+        guard let comment = inputTextView.text else { return }
+        viewModel.input.send(.commentSendTapped(comment: comment))
+        inputTextView.text = nil
+    }
+    
     private lazy var bottomPadding = {
         let view = UIView()
         
         view.snp.makeConstraints { make in
-            make.height.equalTo(60)
+            make.height.equalTo(50.adjustedH)
         }
         
         return view
@@ -508,5 +562,23 @@ extension MateDiaryViewController: LikeEmojiViewControllerDelegate {
         viewModel.saveLike(diaryId: diaryId, userId: user, emoji: emoji)
     }
     
-    
+}
+
+extension MateDiaryViewController: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        let size = CGSize(width: inputTextView.frame.width, height: .infinity)
+           let estimatedSize = inputTextView.sizeThatFits(size)
+
+           if estimatedSize.height <= 91 { // Define maximumHeight
+               textView.isScrollEnabled = false
+               inputTextView.snp.remakeConstraints { make in
+                   make.height.equalTo(estimatedSize)
+                   make.trailing.equalTo(sendButton.snp.leading).offset(-12)
+                   make.leading.equalToSuperview()
+               }
+               view.layoutIfNeeded()
+           } else {
+               textView.isScrollEnabled = true
+           }
+    }
 }

@@ -33,6 +33,7 @@ class DiaryFeedViewController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 200
         tableView.delegate = self
+        tableView.showsVerticalScrollIndicator = false 
         return tableView
     }()
 
@@ -87,12 +88,6 @@ extension DiaryFeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = MateDiaryViewController(viewModel.viewModel(at: indexPath))
         vc.delegate = self
-        
-        if let sheet = vc.sheetPresentationController {
-            sheet.detents = [.custom(resolver: { context in
-                return UIScreen.main.bounds.height
-            })]
-        }
         present(vc, animated: true)
         
     }
@@ -132,6 +127,10 @@ extension DiaryFeedViewController: LikeEmojiViewControllerDelegate {
 }
 
 extension DiaryFeedViewController: MateDiaryViewControllerDelegate {
+    func addComment(diaryId: Int, comments: [CommentCellViewModel]) {
+        viewModel.input.send(.updateComment(diaryId: diaryId, comments: comments))
+    }
+    
     func likedWithEmoji(diaryId: Int, user: Int, emoji: String) {
         viewModel.input.send(.likeAppended(diaryId: diaryId, userId: user, emoji: emoji))
     }

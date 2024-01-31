@@ -10,10 +10,11 @@ import Foundation
 
 struct UserInfo {
     let id: Int
+    let tedoori: Bool
+    let goalColors: [String]
     let intro: String?
     let username: String
     let profilePic: String?
     let followerCount: Int?
     let followingCount: Int? 
-    var goalsColor: [String]
 }

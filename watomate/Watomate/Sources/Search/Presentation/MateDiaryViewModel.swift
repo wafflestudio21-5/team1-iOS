@@ -17,10 +17,12 @@ class MateDiaryViewModel: ViewModelType {
     
     enum Input {
         case viewDidLoad
+        case commentSendTapped(comment: String)
     }
     
     enum Output {
         case successSaveLike(emoji: String)
+        case firstComments(comments: [CommentCellViewModel])
         case updateComments(comments: [CommentCellViewModel])
     }
     
@@ -29,13 +31,15 @@ class MateDiaryViewModel: ViewModelType {
             guard let self else { return }
             switch event {
             case .viewDidLoad:
-                self.output.send(.updateComments(comments: self.comments))
+                self.output.send(.firstComments(comments: self.comments))
+            case let .commentSendTapped(comment):
+                saveComment(comment: comment)
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
     }
     
-    private let diary: SearchDiary
+    private let diary: SearchDiaryCellViewModel
     private var searchUseCase: SearchUseCase
     
     let input = PassthroughSubject<Input, Never>()
@@ -50,7 +54,7 @@ class MateDiaryViewModel: ViewModelType {
     
     init(diaryCellViewModel: SearchDiaryCellViewModel, searchUserCase: SearchUseCase) {
         self.searchUseCase = searchUserCase
-        self.diary = diaryCellViewModel.getDiary()
+        self.diary = diaryCellViewModel
         id = diary.id
         likes = diary.likes
         comments = diary.comments.map{ CommentCellViewModel(comment: $0, color: diary.color) }
@@ -61,15 +65,15 @@ class MateDiaryViewModel: ViewModelType {
     }
     
     var userId: Int {
-        diary.user.id
+        diary.userId
     }
     
     var username: String {
-        diary.user.username
+        diary.username
     }
     
     var profilePic: String? {
-        diary.user.profilePic
+        diary.profilePic
     }
     
     var description: String {
@@ -117,6 +121,18 @@ class MateDiaryViewModel: ViewModelType {
                 }
                 likes.append(SearchLike(user: userId, emoji: emoji))
                 output.send(.successSaveLike(emoji: emoji))
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func saveComment(comment: String) {
+        Task {
+            do {
+                let commentResult = try await searchUseCase.postComment(diaryId: diaryId, userId: User.shared.id!, description: comment)
+                comments.append(CommentCellViewModel(comment: commentResult, color: color))
+                output.send(.updateComments(comments: comments))
             } catch {
                 print(error)
             }

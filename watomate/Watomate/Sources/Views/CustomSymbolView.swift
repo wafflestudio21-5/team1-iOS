@@ -80,7 +80,7 @@ class CustomSymbolView: UIView {
         
         containerView.addSubview(centerCircle)
         centerCircle.snp.makeConstraints { make in
-            make.width.height.equalTo(size/1.3)
+            make.width.height.equalTo(size/1.1)
             make.center.equalToSuperview()
         }
     }
@@ -88,9 +88,15 @@ class CustomSymbolView: UIView {
     private func setupCirclesColor() {
         for circle in [circle1, circle2, circle3, circle4] {
             circle.setBackgroundColor(Color.gray.uiColor)
-            circle.alpha = 0.9
+            circle.alpha = 1
         }
         centerCircle.setBackgroundColor(.clear)
+    }
+    
+    func makeTransparent() {
+        for circle in [circle1, circle2, circle3, circle4] {
+            circle.alpha = 0.75
+        }
     }
     
     func setColor(color: [Color]) {
@@ -112,12 +118,10 @@ class CustomSymbolView: UIView {
         } else if color.count == 1{
             for circle in [circle1, circle2, circle3, circle4] {
                 circle.backgroundColor = color[0].uiColor
-                circle.alpha = 1
             }
         } else {
             for circle in [circle1, circle2, circle3, circle4] {
                 circle.backgroundColor = Color.gray.uiColor
-                circle.alpha = 1
             }
         }
     }
@@ -155,7 +159,7 @@ class CustomSymbolView: UIView {
     }
     
     func addCheckMark() {
-        addCenterCircle(image: UIImage(systemName: "checkmark", withConfiguration: UIImage.SymbolConfiguration(weight: .black)))
+        addCenterCircle(image: UIImage(systemName: "checkmark", withConfiguration: UIImage.SymbolConfiguration(weight: .heavy)))
     }
     
     func reset() {
@@ -165,6 +169,13 @@ class CustomSymbolView: UIView {
 
     func removeCheckMark() {
         addCenterCircle(image: nil)
+    }
+    
+    func setCenterCircleSmall() {
+        centerCircle.snp.remakeConstraints { make in
+            make.width.height.equalTo(size/1.4)
+            make.center.equalToSuperview()
+        }
     }
 }
 

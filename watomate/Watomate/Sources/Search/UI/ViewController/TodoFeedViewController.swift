@@ -36,6 +36,7 @@ class TodoFeedViewController: UIViewController {
         tableView.estimatedRowHeight = 80
         tableView.separatorStyle = .none
         tableView.backgroundColor = .systemBackground
+        tableView.showsVerticalScrollIndicator = false 
         return tableView
     }()
 
