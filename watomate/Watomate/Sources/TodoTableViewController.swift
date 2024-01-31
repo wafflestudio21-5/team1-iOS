@@ -127,7 +127,7 @@ class TodoTableViewController: UIViewController {
         if viewModels.count == 0 {
             return
         }
-        for i in 0...viewModels.count - 1 {
+        for i in 0..<viewModels.count {
             guard let cellVMs = viewModels[i + 1] else { return }
             snapshot.appendItems(cellVMs, toSection: i + 1)
         }

@@ -39,7 +39,6 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
     
     private lazy var statusView: UIStackView = {
         var stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.spacing = 14
         stackView.alignment = .center
@@ -63,7 +62,6 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
     
     private lazy var profileLabelStackView: UIStackView = {
         let stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.spacing = 4
         stackView.addArrangedSubview(profileName)
@@ -75,21 +73,18 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
     private lazy var profileName: UILabel = {
         var label = UILabel()
         label.text = "test username"
-        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var profileIntro: UILabel = {
         var label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
-        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     lazy var diaryButton : UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "face.dashed"), for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return button
     }()
@@ -98,7 +93,6 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
         var stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 10
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.addArrangedSubview(statusView)
         stackView.addArrangedSubview(calendarView)
         return stackView
@@ -106,7 +100,6 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
     
     lazy var calendarView: UICalendarView = {
         var view = UICalendarView()
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.wantsDateDecorations = true
         return view
     }()

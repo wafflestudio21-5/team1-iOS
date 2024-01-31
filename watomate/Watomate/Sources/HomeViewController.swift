@@ -91,7 +91,7 @@ class HomeViewController: TodoTableViewController {
     
     func getHomeUser(userID: Int) {
         homeViewModel.getHomeUser(userID: userID) {
-            DispatchQueue.main.async { [weak self] in
+            Task {@MainActor [weak self] in
                 self?.updateUserTedoori()
             }
         }
