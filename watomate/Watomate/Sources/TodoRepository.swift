@@ -29,6 +29,14 @@ class TodoRepository: TodoRepositoryProtocol {
         return response
     }
     
+    func getTodos(on date: String) async throws -> GoalsResponseDto {
+        let response = try await session
+            .request(TodoRouter.getTodos(userId: User.shared.id!, date: date))
+            .serializingDecodable(GoalsResponseDto.self)
+            .handlingError()
+        return response
+    }
+    
     func addTodo(goalId: Int, todo: Todo) async throws -> TodoDto {
         let response = try await session
             .request(TodoRouter.addTodo(userId: User.shared.id!, goalId: goalId, todo: todo))

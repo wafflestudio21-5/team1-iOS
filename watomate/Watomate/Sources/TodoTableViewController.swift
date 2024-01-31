@@ -42,14 +42,12 @@ class TodoTableViewController: UIViewController {
         tableView.keyboardDismissMode = .interactive
         tableView.separatorStyle = .none
         tableView.backgroundColor = .systemBackground
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleEmptyTableViewTap(_:)))
-        tableView.addGestureRecognizer(tapGesture)
         return tableView
     }()
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        input.send(.viewDidAppear)
+        input.send(.viewDidAppear(self))
     }
     
     override func viewDidLoad() {
@@ -133,12 +131,6 @@ class TodoTableViewController: UIViewController {
         }
         todoTableView.reloadData()
         self.dataSource.apply(snapshot, animatingDifferences: false)
-    }
-    
-    @objc private func handleEmptyTableViewTap(_ gesture: UITapGestureRecognizer) {
-        let location = gesture.location(in: todoTableView)
-        if location.y > todoTableView.contentSize.height {
-        }
     }
 }
 

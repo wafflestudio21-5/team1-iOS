@@ -11,7 +11,7 @@ import Combine
 
 class TodoListViewModel: ViewModelType {
     enum Input {
-        case viewDidAppear
+        case viewDidAppear(_ vc: TodoTableViewController)
     }
     
     enum Output {
@@ -41,47 +41,60 @@ class TodoListViewModel: ViewModelType {
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
         input.sink { [weak self] event in
             switch event {
-            case .viewDidAppear:
-                self?.loadTodos()
+            case .viewDidAppear(let vc):
+                if vc.isKind(of: HomeViewController.self) {
+                    self?.loadTodos(on: Utils.YYYYMMddFormatter().string(from: Date()))
+                } else {
+                    self?.loadAllTodos()
+                }
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
     }
     
-    func loadTodos() {
+    func updateViewModels(with goals: [Goal]) {
+        sectionsForGoalId = [:]
+        goalIdsForSections = [:]
+        var curVMs = viewModelsSubject.value
+        var cellVM: TodoCellViewModel
+        var cellVMs: [TodoCellViewModel]
+        var goal: Goal
+        var section: Int
+        for i in 0...goals.count - 1 {
+            section = i + 1
+            goal = goals[i]
+            sectionsForGoalId[goal.id] = sectionsForGoalId.count + 1
+            goalIdsForSections[sectionsForGoalId.count] = goal.id
+            cellVMs = []
+            for todo in goal.todos {
+                cellVM = TodoCellViewModel(todo: todo)
+                cellVM.delegate = self
+                cellVMs.append(cellVM)
+            }
+            curVMs[section] = cellVMs
+        }
+        viewModelsSubject.send(curVMs)
+    }
+    
+    func loadAllTodos() {
         guard !isCalling else { return }
         Task { [weak self] in
             guard let self else { return }
             do {
-                var curVMs = viewModelsSubject.value
                 let goals = try await todoUseCase.getAllTodos()
-//                let goals = try await todoUseCase.getAllTodos().map { originalGoal in
-//                    var goal = originalGoal
-//                    goal.todos = goal.todos.filter { todo in
-//                        todo.date == nil
-//                    }
-//                    return goal
-//                }
-                sectionsForGoalId = [:]
-                goalIdsForSections = [:]
-                var cellVM: TodoCellViewModel
-                var cellVMs: [TodoCellViewModel]
-                var goal: Goal
-                var section: Int
-                for i in 0...goals.count - 1 {
-                    section = i + 1
-                    goal = goals[i]
-                    sectionsForGoalId[goal.id] = sectionsForGoalId.count + 1
-                    goalIdsForSections[sectionsForGoalId.count] = goal.id
-                    cellVMs = []
-                    for todo in goal.todos {
-                        cellVM = TodoCellViewModel(todo: todo)
-                        cellVM.delegate = self
-                        cellVMs.append(cellVM)
-                    }
-                    curVMs[section] = cellVMs
-                }
-                viewModelsSubject.send(curVMs)
+                updateViewModels(with: goals)
+            } catch {
+                self.output.send(.loadFailed(errorMessage: error.localizedDescription))
+            }
+        }
+    }
+    
+    func loadTodos(on date: String) {
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let goals = try await todoUseCase.getTodos(on: date)
+                updateViewModels(with: goals)
             } catch {
                 self.output.send(.loadFailed(errorMessage: error.localizedDescription))
             }

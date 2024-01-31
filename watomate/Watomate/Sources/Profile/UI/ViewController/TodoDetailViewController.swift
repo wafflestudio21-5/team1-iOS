@@ -127,6 +127,18 @@ class TodoDetailViewController: SheetCustomViewController {
         return pickerView
     }()
     
+    private lazy var verificationCell = {
+        let cellView = TodoDetailCellView()
+        cellView.setTitle("사진 인증")
+        cellView.setIcon(UIImage(systemName: "photo.fill")!)
+        cellView.setIconBackgroundColor(.systemGreen)
+        cellView.isHidden = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleVerificationCellTap))
+        cellView.addGestureRecognizer(tapGesture)
+        cellView.icon.addTarget(self, action: #selector(handleVerificationCellTap), for: .touchUpInside)
+        return cellView
+    }()
+    
     private lazy var doTodayCell = {
         let cellView = TodoDetailCellView()
         cellView.setTitle("오늘하기")
@@ -200,6 +212,7 @@ class TodoDetailViewController: SheetCustomViewController {
         cellStackView.addArrangedSubview(memoTextField)
         cellStackView.addArrangedSubview(reminderCell)
         cellStackView.addArrangedSubview(reminderPicker)
+        cellStackView.addArrangedSubview(verificationCell)
         cellStackView.addArrangedSubview(doTodayCell)
         cellStackView.addArrangedSubview(doTomorrowCell)
         cellStackView.addArrangedSubview(changeDateCell)
@@ -228,6 +241,7 @@ class TodoDetailViewController: SheetCustomViewController {
             memoTextField.isHidden = false
             memoTextField.text = viewModel.memo
         }
+        verificationCell.isHidden = !viewModel.isCompleted
         editTitleButton.addTarget(self, action: #selector(handleEditBtnTap), for: .touchUpInside)
         deleteTodoButton.addTarget(self, action: #selector(handleDeleteBtnTap), for: .touchUpInside)
     }
@@ -276,6 +290,10 @@ class TodoDetailViewController: SheetCustomViewController {
     @objc func handleReminderDeleteBtnTap() {
         viewModel.reminder = nil
         dismiss(animated: true)
+    }
+    
+    @objc func handleVerificationCellTap() {
+        //사진 인증 셀 터치 이벤트 처리
     }
     
     @objc func handleDoTodayCellTap() {
