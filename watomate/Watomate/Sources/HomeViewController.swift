@@ -26,7 +26,7 @@ class HomeViewController: TodoTableViewController {
     
     private lazy var logoImage : UIImageView = {
         var view = UIImageView()
-        view.image = UIImage(systemName: "gearshape") // 추후 최종 로고 이미지로 변경
+        view.image = UIImage(named: "logo") // 추후 최종 로고 이미지로 변경
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
