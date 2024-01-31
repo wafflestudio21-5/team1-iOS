@@ -19,7 +19,12 @@ class TabBarController: UITabBarController {
         tabBar.layer.borderColor = UIColor.clear.cgColor
         tabBar.clipsToBounds = true 
         
-        let todoVC = UINavigationController(rootViewController: ToDoViewController())
+        let todoRepository = TodoRepository()
+        let todoUseCase = TodoUseCase(todoRepository: todoRepository)
+        let todoListViewModel = TodoListViewModel(todoUseCase: todoUseCase)
+        let diaryViewModel = DiaryPreviewViewModel()
+        
+        let todoVC = UINavigationController(rootViewController: HomeViewController(todoListViewModel: todoListViewModel, diaryViewModel: diaryViewModel))
         todoVC.tabBarItem = UITabBarItem(title: "피드", image: UIImage(named: "home"), tag: 0)
 
         let searchVC = UINavigationController(rootViewController: SearchViewController())
@@ -29,9 +34,6 @@ class TabBarController: UITabBarController {
         let groupVC = UINavigationController(rootViewController: GroupViewController())
         groupVC.tabBarItem = UITabBarItem(title: "로그아웃", image: UIImage(systemName: "xmark"), tag: 2)
 
-        let todoRepository = TodoRepository()
-        let todoUseCase = TodoUseCase(todoRepository: todoRepository)
-        let todoListViewModel = TodoListViewModel(todoUseCase: todoUseCase)
         let profileVC = UINavigationController(rootViewController: ProfileViewController(todoListViewModel: todoListViewModel))
 
         profileVC.tabBarItem = UITabBarItem(title: "My", image: UIImage(named: "my"), tag: 3)
