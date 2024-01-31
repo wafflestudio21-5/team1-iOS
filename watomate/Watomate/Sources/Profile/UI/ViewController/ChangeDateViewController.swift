@@ -33,6 +33,8 @@ class ChangeDateViewController: SheetCustomViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let date = getInitialDate()
+        datePickerView.setDate(date, animated: false)
         sheetView.addSubview(datePickerView)
         
         datePickerView.snp.makeConstraints { make in
@@ -40,9 +42,19 @@ class ChangeDateViewController: SheetCustomViewController {
         }
     }
     
+    func getInitialDate() -> Date {
+        let dateString: String = {
+            guard let date = viewModel.date else { return Utils.YYYYMMddFormatter().string(from: Date())}
+            return date
+        }()
+        return Utils.YYYYMMddFormatter().date(from: dateString)!
+    }
+    
     @objc func handleOkBtnTap() {
         let dateString = Utils.YYYYMMddFormatter().string(from: datePickerView.date)
-        viewModel.date = dateString
+        if viewModel.date != dateString {
+            viewModel.date = dateString
+        }
         dismiss(animated: true)
     }
 }
