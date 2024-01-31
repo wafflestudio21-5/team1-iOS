@@ -19,20 +19,6 @@ class TodoDetailViewController: SheetCustomViewController {
     private var viewModel: TodoCellViewModel
     var delegate: TodoDetailViewDelegate?
     
-    private let dateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "YYYY-MM-DD"
-        formatter.timeZone = .init(identifier: "Asia/Seoul")
-        return formatter
-    }()
-    
-    private let timeFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "a H:mm"
-        formatter.timeZone = .init(identifier: "Asia/Seoul")
-        return formatter
-    }()
-    
     init(viewModel: TodoCellViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -273,39 +259,34 @@ class TodoDetailViewController: SheetCustomViewController {
     }
     
     @objc func handleReminderCellTap() {
-        print("reminder tapped")
+        if let reminder = viewModel.reminder,
+           let date = Utils.HHmmssFormatter().date(from: reminder) {
+            reminderPicker.date = date
+        }
         reminderPicker.isHidden = false
         reminderCell.showDeleteBtn()
         reminderCell.showDoneBtn()
-        print(timeFormatter.string(from: reminderPicker.date))
     }
     
     @objc func handleReminderDoneBtnTap() {
-        print(timeFormatter.string(from: reminderPicker.date))
-//        viewModel.date = datePicker.date.toString()
-//        delegate?.didEndEditingReminder()
-//        dismiss(animated: true)
+        viewModel.reminder = Utils.HHmmssFormatter().string(from: reminderPicker.date)
+        dismiss(animated: true)
     }
     
     @objc func handleReminderDeleteBtnTap() {
-        print("delete button tapped")
         viewModel.reminder = nil
-//        dismiss(animated: true)
+        dismiss(animated: true)
     }
     
     @objc func handleDoTodayCellTap() {
         print("do today tapped")
-        viewModel.date = dateFormatter.string(from: Date())
+        viewModel.date = Utils.YYYYMMddFormatter().string(from: Date())
         dismiss(animated: true)
     }
     
     @objc func handleDoTomorrowCellTap() {
         print("do tomorrow tapped")
-        // set date to tomorrow
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "YYYY-MM-DD"
-//        dateFormatter.timeZone = .init(identifier: "Asia/Seoul")
-        viewModel.date = dateFormatter.string(from: Date(timeIntervalSinceNow: 86400))
+        viewModel.date = Utils.YYYYMMddFormatter().string(from: Date(timeIntervalSinceNow: 86400))
         dismiss(animated: true)
     }
     

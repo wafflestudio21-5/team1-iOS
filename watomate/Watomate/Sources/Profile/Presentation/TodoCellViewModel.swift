@@ -94,6 +94,10 @@ class TodoCellViewModel: ViewModelType, Hashable {
         }
     }
     
+    var reminderIso: String? {
+        get { todo.reminderIso }
+    }
+    
     var date: String? {
         get { todo.date }
         set {

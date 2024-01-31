@@ -56,7 +56,7 @@ enum TodoRouter: Router {
         case let .updateTodo(_, _, todo):
             return ["title": todo.title,
                     "description": todo.description ?? "",
-                    "reminder_iso": todo.reminder,
+                    "reminder": todo.reminder,
                     "date": todo.date,
                     "is_completed": todo.isCompleted
                     ]
