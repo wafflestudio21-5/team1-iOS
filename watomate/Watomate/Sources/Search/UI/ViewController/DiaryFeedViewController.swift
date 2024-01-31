@@ -88,12 +88,6 @@ extension DiaryFeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = MateDiaryViewController(viewModel.viewModel(at: indexPath))
         vc.delegate = self
-        
-        if let sheet = vc.sheetPresentationController {
-            sheet.detents = [.custom(resolver: { context in
-                return UIScreen.main.bounds.height
-            })]
-        }
         present(vc, animated: true)
         
     }
@@ -104,7 +98,7 @@ extension DiaryFeedViewController: UIScrollViewDelegate {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height
         
-        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 300) {
+        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 400) {
             viewModel.input.send(.reachedEndOfScrollView)
         }
     }

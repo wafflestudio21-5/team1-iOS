@@ -25,6 +25,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     private var isScrollNeeded = false
     
     init(_ viewModel: SearchDiaryCellViewModel) {
+        print(viewModel.comments)
         self.viewModel = MateDiaryViewModel(diaryCellViewModel: viewModel, searchUserCase: SearchUseCase(searchRepository: SearchRepository()))
         super.init(nibName: nil, bundle: nil)
     }
@@ -77,20 +78,15 @@ class MateDiaryViewController: DraggableCustomBarViewController {
                 guard let self else { return }
                 switch event {
                 case let .successSaveLike(emoji):
-                    self.configure()
-                    self.delegate?.likedWithEmoji(diaryId: self.viewModel.diaryId, user: userId, emoji: emoji)
+                    configure()
+                    delegate?.likedWithEmoji(diaryId: self.viewModel.diaryId, user: userId, emoji: emoji)
                 case let .firstComments(comments):
-                    var snapshot = NSDiffableDataSourceSnapshot<CommentSection, CommentCellViewModel.ID>()
-                    snapshot.appendSections(CommentSection.allCases)
-                    snapshot.appendItems(comments.map{ $0.id }, toSection: .main)
-                    self.commentListDataSource.apply(snapshot, animatingDifferences: false)
+                    showComments(comments: comments)
                 case let .updateComments(comments):
                     isScrollNeeded = true
-                    var snapshot = NSDiffableDataSourceSnapshot<CommentSection, CommentCellViewModel.ID>()
-                    snapshot.appendSections(CommentSection.allCases)
-                    snapshot.appendItems(comments.map{ $0.id }, toSection: .main)
-                    self.commentListDataSource.apply(snapshot, animatingDifferences: false)
+                    showComments(comments: comments)
                     hideKeyboard()
+                    delegate?.addComment(diaryId: viewModel.id, comments: comments)
                 }
             }.store(in: &cancellables)
         
@@ -103,11 +99,22 @@ class MateDiaryViewController: DraggableCustomBarViewController {
                     make.trailing.leading.bottom.equalToSuperview()
                     make.height.equalTo(me.height + 20)
                     if self.isScrollNeeded {
-                        let bottomOffset = CGPoint(x: 0, y: self.diaryContainerView.contentSize.height - self.diaryContainerView.bounds.size.height)
-                        self.diaryContainerView.setContentOffset(bottomOffset, animated: true)
+                        let isNearBottom = self.diaryContainerView.contentOffset.y >= (self.diaryContainerView.contentSize.height - self.diaryContainerView.bounds.size.height - 100) // 100은 여백을 위한 임의의 값
+                        if !isNearBottom {
+                            let bottomOffset = CGPoint(x: 0, y: self.diaryContainerView.contentSize.height - self.diaryContainerView.bounds.size.height)
+                            self.diaryContainerView.setContentOffset(bottomOffset, animated: true)
+                        }
+                        
                     }
                 }
             }.store(in: &cancellables)
+    }
+    
+    private func showComments(comments: [CommentCellViewModel]) {
+        var snapshot = NSDiffableDataSourceSnapshot<CommentSection, CommentCellViewModel.ID>()
+        snapshot.appendSections(CommentSection.allCases)
+        snapshot.appendItems(comments.map{ $0.id }, toSection: .main)
+        self.commentListDataSource.apply(snapshot, animatingDifferences: false)
     }
     
     private func setupColor() {

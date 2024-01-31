@@ -39,7 +39,7 @@ class MateDiaryViewModel: ViewModelType {
         return output.eraseToAnyPublisher()
     }
     
-    private let diary: SearchDiary
+    private let diary: SearchDiaryCellViewModel
     private var searchUseCase: SearchUseCase
     
     let input = PassthroughSubject<Input, Never>()
@@ -54,7 +54,7 @@ class MateDiaryViewModel: ViewModelType {
     
     init(diaryCellViewModel: SearchDiaryCellViewModel, searchUserCase: SearchUseCase) {
         self.searchUseCase = searchUserCase
-        self.diary = diaryCellViewModel.getDiary()
+        self.diary = diaryCellViewModel
         id = diary.id
         likes = diary.likes
         comments = diary.comments.map{ CommentCellViewModel(comment: $0, color: diary.color) }
@@ -65,15 +65,15 @@ class MateDiaryViewModel: ViewModelType {
     }
     
     var userId: Int {
-        diary.user.id
+        diary.userId
     }
     
     var username: String {
-        diary.user.username
+        diary.username
     }
     
     var profilePic: String? {
-        diary.user.profilePic
+        diary.profilePic
     }
     
     var description: String {
