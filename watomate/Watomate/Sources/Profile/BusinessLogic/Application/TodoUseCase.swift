@@ -23,6 +23,13 @@ class TodoUseCase {
         return goals
     }
     
+    func getTodos(on date: String) async throws -> [Goal] {
+        let goalsDto = try await todoRepository.getTodos(on: date)
+        let goals = goalsDto.map { $0.toDomain() }
+        self.goals = goals
+        return goals
+    }
+    
     func addTodo(_ goalId: Int, _ todo: Todo) async throws -> Todo {
         let todoDto = try await todoRepository.addTodo(goalId: goalId, todo: todo)
         let todo = todoDto.toDomain()
