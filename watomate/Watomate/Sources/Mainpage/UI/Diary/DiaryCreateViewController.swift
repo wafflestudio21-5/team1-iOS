@@ -39,7 +39,6 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         navigationController?.popViewController(animated: true)
     }
 
-
     func getDiary(userID: Int, date: String) {
         viewModel.getDiary(userID: userID, date: date) {
             DispatchQueue.main.async { [weak self] in
@@ -89,37 +88,40 @@ class DiaryCreateViewController: PlainCustomBarViewController{
     }
     
     private func setupLayout(){
-        contentView.addSubview(emojiView)
+        contentView.addSubview(diaryStackView)
+        diaryStackView.snp.makeConstraints { make in
+            make.edges.equalTo(contentView.safeAreaLayoutGuide).inset(16)
+        }
         emojiView.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.centerX.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.15)
-         }
-        contentView.addSubview(moodView)
+            make.height.equalTo(40)
+        }
         moodView.snp.makeConstraints { make in
-            make.top.equalTo(emojiView.snp.bottom).inset(36)
-            make.centerX.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.05)
-         }
-        
-        contentView.addSubview(profileView)
-        profileView.snp.makeConstraints { make in
-            make.top.equalTo(moodView.snp.bottom).offset(20)
-            make.leading.trailing.equalToSuperview().inset(8)
-            make.height.equalToSuperview().multipliedBy(0.08)
-         }
-        contentView.addSubview(diaryTextField)
+            make.height.equalTo(40)
+        }
+        profileImage.snp.makeConstraints { make in
+            make.height.width.equalTo(60)
+        }
+        infoStackView.snp.makeConstraints { make in
+            make.height.equalTo(60)
+        }
+        nameDateStackView.snp.makeConstraints { make in
+            make.height.equalTo(50)
+        }
+        visibilityButton.snp.makeConstraints { make in
+            make.width.equalTo(90)
+        }
         diaryTextField.snp.makeConstraints { make in
-            make.top.equalTo(profileView.snp.bottom).offset(24)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.height.equalToSuperview().multipliedBy(0.6)
-         }
-        contentView.addSubview(diaryMenuView)
+            make.height.equalTo(200)
+        }
         diaryMenuView.snp.makeConstraints { make in
-            make.top.equalTo(diaryTextField.snp.bottom)
-            make.leading.trailing.bottom.equalToSuperview()
-         }
-        
+            make.height.equalTo(40)
+        }
+        backgroundColorButton.snp.makeConstraints { make in
+            make.height.width.equalTo(40)
+        }
+        moodButton.snp.makeConstraints { make in
+            make.height.width.equalTo(40)
+        }
     }
     
     func setupProfile() {
@@ -147,6 +149,19 @@ class DiaryCreateViewController: PlainCustomBarViewController{
             emojiView.titleLabel?.font = UIFont.systemFont(ofSize: 36)
         }
     }
+    
+    private lazy var diaryStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        stackView.distribution = .fill
+        stackView.addArrangedSubview(emojiView)
+        stackView.addArrangedSubview(moodView)
+        stackView.addArrangedSubview(infoStackView)
+        stackView.addArrangedSubview(diaryTextField)
+        stackView.addArrangedSubview(diaryMenuView)
+        return stackView
+    }()
     
     private lazy var emojiView: UIButton = {
         let button = UIButton(type: .system)
@@ -180,46 +195,38 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         var label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 24)
+        label.textAlignment = .center
         label.contentMode = .top
         return label
     }()
     
-    private lazy var profileView: UIView = {
-        var view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(profileImage)
-        view.addSubview(profileName)
-        view.addSubview(profileDate)
-        view.addSubview(visibilityButton)
-        profileImage.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview() //추후 프로필 이미지 사이즈에 따라 변형
-            make.leading.equalToSuperview()
-            make.width.equalTo(view.snp.height)
-         }
-        profileName.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(8)
-            make.leading.equalTo(profileImage.snp.trailing).offset(4)
-         }
-        profileDate.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(8)
-            make.top.equalTo(profileName.snp.bottom)
-            make.leading.equalTo(profileImage.snp.trailing).offset(4)
-         }
-        visibilityButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(8)
-            make.leading.equalTo(profileDate.snp.trailing).offset(16)
-            make.width.equalToSuperview().multipliedBy(0.2)
-         }
-        return view
-    }()
-    
     var userProfile : String?
+    
+    private lazy var infoStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 10
+        stackView.alignment = .center
+        stackView.addArrangedSubview(profileImage)
+        stackView.addArrangedSubview(nameDateStackView)
+        return stackView
+    }()
     
     private lazy var profileImage : SymbolCircleView = {
         let imageView = SymbolCircleView(symbolImage: UIImage(systemName: "person.fill"))
         imageView.setBackgroundColor(.secondarySystemFill)
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return imageView
+    }()
+    
+    private lazy var nameDateStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 2
+        stackView.alignment = .leading
+        stackView.addArrangedSubview(profileName)
+        stackView.addArrangedSubview(dateVisibilityStackView)
+        return stackView
     }()
     
     var userName : String?
@@ -233,6 +240,17 @@ class DiaryCreateViewController: PlainCustomBarViewController{
     }()
     
     var receivedDateString: String?
+    
+    private lazy var dateVisibilityStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 10
+        stackView.alignment = .center
+        stackView.addArrangedSubview(profileDate)
+        stackView.addArrangedSubview(visibilityButton)
+        return stackView
+    }()
+    
     lazy var profileDate: UILabel = {
         var label = UILabel()
         label.text = receivedDateString
@@ -240,6 +258,31 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         label.font = UIFont.systemFont(ofSize: 14)
         
         return label
+    }()
+    
+    private lazy var visibilityButton : UIButton = {
+        let button = UIButton(type: .system)
+        button.addTarget(self, action: #selector(visibilityButtonTapped), for: .touchUpInside)
+        button.backgroundColor = .systemGray4
+        button.setTitle("공개 설정", for: .normal)
+        button.setTitleColor(.black, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 12)
+        button.titleEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.layer.cornerRadius = 10
+        return button
+    }()
+
+    
+    lazy var diaryTextField: UITextField = {
+        var view = UITextField()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.placeholder = "오늘은 어떤 하루였나요?" // 00님의 오늘은 어떤 하루였나요? <- 00에 이름
+        view.contentVerticalAlignment = .top
+        view.autocorrectionType = .no
+        view.spellCheckingType = .no
+        view.setContentHuggingPriority(.defaultLow, for: .vertical)
+        return view
     }()
     
     var diaryVisibility: DiaryVisibility? = nil
@@ -265,30 +308,6 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         }
     }
     
-    private lazy var visibilityButton : UIButton = {
-        let button = UIButton(type: .system)
-        button.addTarget(self, action: #selector(visibilityButtonTapped), for: .touchUpInside)
-        button.backgroundColor = .systemGray4
-        button.setTitle("공개 설정", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 12)
-        button.titleEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.layer.cornerRadius = 10
-        return button
-    }()
-
-    
-    lazy var diaryTextField: UITextField = {
-        var view = UITextField()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.placeholder = "오늘은 어떤 하루였나요?" // 00님의 오늘은 어떤 하루였나요? <- 00에 이름
-        view.contentVerticalAlignment = .top
-        view.autocorrectionType = .no
-        view.spellCheckingType = .no
-        return view
-    }()
-    
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return !(touch.view is UITableView)
     }
@@ -300,21 +319,17 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         }
     }
     
-    private lazy var diaryMenuView: UIView = {
-        var view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(backgroundColorButton)
-        backgroundColorButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(8)
-            make.leading.equalToSuperview().offset(16)
-         }
-        view.addSubview(moodButton)
-        moodButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(8)
-            make.leading.equalTo(backgroundColorButton.snp.trailing).offset(8)
-         }
-        return view
-        
+    private lazy var diaryMenuView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.spacing = 10
+        stackView.addArrangedSubview(backgroundColorButton)
+        stackView.addArrangedSubview(moodButton)
+        let emptyView = UIView()
+        emptyView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        stackView.addArrangedSubview(emptyView)
+        return stackView
     }()
     
     private lazy var backgroundColorButton: UIButton = {
@@ -355,7 +370,6 @@ class DiaryCreateViewController: PlainCustomBarViewController{
             contentView.backgroundColor = .systemBackground
         } else {
             setBackgroundColor(UIColor(named: backgroundColor ?? "system") ?? .systemBackground)
-            diaryMenuView.backgroundColor = .systemBackground
         }
     }
 

@@ -41,7 +41,7 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
         var stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
-        stackView.spacing = 10
+        stackView.spacing = 14
         stackView.alignment = .center
         stackView.addArrangedSubview(profileImageContainer)
         stackView.addArrangedSubview(profileLabelStackView)
