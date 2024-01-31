@@ -17,6 +17,7 @@ class HomeViewController: TodoTableViewController {
     init(todoListViewModel: TodoListViewModel, diaryViewModel: DiaryPreviewViewModel) {
         self.diaryViewModel = diaryViewModel
         super.init(todoListViewModel: todoListViewModel)
+        self.todoListViewModel.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -37,7 +38,7 @@ class HomeViewController: TodoTableViewController {
     }()
     
     private lazy var showmoreButton : UIBarButtonItem = {
-        let button = UIBarButtonItem(systemItem: .action)
+        let button = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"))
         // button.addTarget(self, action: #selector(notificationButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -62,7 +63,6 @@ class HomeViewController: TodoTableViewController {
         guard let userID else { return }
         updateUserTedoori()
         getHomeUser(userID: userID)
-//        setCalendar()
     }
     
     override func setupLayout() {
@@ -79,7 +79,7 @@ class HomeViewController: TodoTableViewController {
         
         view.addSubview(todoTableView)
         todoTableView.snp.makeConstraints { make in
-            make.top.equalTo(followingStackView.snp.bottom).offset(10)
+            make.top.equalTo(followingStackView.snp.bottom)
             make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
@@ -151,13 +151,12 @@ class HomeViewController: TodoTableViewController {
         }
     }
     
-    
-
-    
     private func reloadCalendarView(date: Date?) {
-       if date == nil { return }
-       let calendar = Calendar.current
-//       calendarView.reloadDecorations(forDateComponents: [calendar.dateComponents([.day, .month, .year], from: date!)], animated: true)
+        if date == nil { return }
+        let calendar = Calendar.current
+        let headerView = tableView(todoTableView, viewForHeaderInSection: 0) as! CalendarHeaderView
+        let calendarView = headerView.calendarView
+        calendarView.reloadDecorations(forDateComponents: [calendar.dateComponents([.day, .month, .year], from: date!)], animated: true)
     }
     
     private func getStringToDate(strDate: String) -> Date {
@@ -186,6 +185,10 @@ extension HomeViewController {
             header.contentView.backgroundColor = .systemBackground
             header.setDiaryBtnAction(target: self, action: #selector(diaryButtonTapped), for: .touchUpInside)
             header.setupUserInfo()
+            header.calendarView.delegate = self
+            let dateSelection = UICalendarSelectionSingleDate(delegate: self)
+            header.calendarView.selectionBehavior = dateSelection
+            header.calendarView.fontDesign = .rounded
             return header
         }
         
@@ -209,7 +212,93 @@ extension HomeViewController {
     }
 }
 
+extension HomeViewController: TodoListViewModelDelegate {
+    
+    func todoListViewModel(_ viewModel: TodoListViewModel, didInsertCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath) {
+        Task { @MainActor in
+            if let cell = todoTableView.cellForRow(at: indexPath) as? TodoCell {
+                cell.titleBecomeFirstResponder()
+                todoTableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+            }
+    //        updateUnavailableView()
+        }
+    }
 
+    func todoListViewModel(_ viewModel: TodoListViewModel, didRemoveCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath, options: ReloadOptions) {
+        if options.contains(.reload) {
+            let animated = options.contains(.animated)
+            todoTableView.deleteRows(at: [indexPath], with: animated ? .automatic : .none)
+        }
+//        updateUnavailableView()
+    }
+    
+    func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel) {
+        let vc = TodoDetailViewController(viewModel: cellViewModel)
+        vc.delegate = self
+        present(vc, animated: true)
+    }
+}
+
+extension HomeViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate {
+    func getDiary(userID: Int, date: String) {
+        emoji = "no emoji"
+        updateDiaryButtonAppearance()
+        diaryViewModel.getDiary(userID: userID, date: date) {
+            DispatchQueue.main.async { [weak self] in
+                if let emoji = self?.diaryViewModel.diary?.emoji {
+                    self?.emoji = emoji
+                    self?.updateDiaryButtonAppearance()
+                }
+            }
+        }
+    }
+    
+    func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
+        selection.setSelected(dateComponents, animated: true)
+        selectedDate = dateComponents
+        if let selectedDate = dateComponents?.date {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            diaryDateString = dateFormatter.string(from: selectedDate)
+            guard let userID else { return }
+            getDiary(userID: userID, date: diaryDateString)
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            diaryDateString = dateFormatter.string(from: Date())
+            guard let userID else { return }
+            getDiary(userID: userID, date: diaryDateString)
+        }
+        reloadCalendarView(date: Calendar.current.date(from: dateComponents!))
+        
+    }
+    
+    // 캘린더에 todo 띄우기
+    func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -> UICalendarView.Decoration? {
+        
+        let date = dateComponents.date!
+        if dateComponents == selectedDate {
+            // 서버 연동 후 날짜별로 맞는 emoji 가져오기
+            return nil
+        } else {
+            if dummy_days.keys.contains(date),
+               let data = dummy_days[date],
+               let numericValue = data.first as? Int,
+               let colorString = data.last as? String {
+                return .customView {
+                    let systemName = "\(numericValue).circle"
+                    let imageView = UIImageView(image: UIImage(systemName: systemName))
+                    imageView.tintColor = UIColor(named: colorString)
+                    return imageView
+                }
+            } else {
+                return nil
+            }
+        }
+        
+    }
+    
+}
 
 
 

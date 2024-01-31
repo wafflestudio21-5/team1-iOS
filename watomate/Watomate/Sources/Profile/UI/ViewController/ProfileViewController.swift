@@ -19,6 +19,15 @@ class ProfileViewController: TodoTableViewController {
         return label
     }()
     
+    override init(todoListViewModel: TodoListViewModel) {
+        super.init(todoListViewModel: todoListViewModel)
+        self.todoListViewModel.delegate = self
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         todoTableView.register(ProfileHeaderView.self, forHeaderFooterViewReuseIdentifier: ProfileHeaderView.reuseIdentifier)
         super.viewDidLoad()
@@ -76,6 +85,33 @@ class ProfileViewController: TodoTableViewController {
             return 131.6667
         }
         return 60
+    }
+}
+
+extension ProfileViewController: TodoListViewModelDelegate {
+    
+    func todoListViewModel(_ viewModel: TodoListViewModel, didInsertCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath) {
+        Task { @MainActor in
+            if let cell = todoTableView.cellForRow(at: indexPath) as? TodoCell {
+                cell.titleBecomeFirstResponder()
+                todoTableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+            }
+    //        updateUnavailableView()
+        }
+    }
+
+    func todoListViewModel(_ viewModel: TodoListViewModel, didRemoveCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath, options: ReloadOptions) {
+        if options.contains(.reload) {
+            let animated = options.contains(.animated)
+            todoTableView.deleteRows(at: [indexPath], with: animated ? .automatic : .none)
+        }
+//        updateUnavailableView()
+    }
+    
+    func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel) {
+        let vc = TodoDetailViewController(viewModel: cellViewModel)
+        vc.delegate = self
+        present(vc, animated: true)
     }
 }
 

@@ -27,7 +27,6 @@ class TodoTableViewController: UIViewController {
     init(todoListViewModel: TodoListViewModel) {
         self.todoListViewModel = todoListViewModel
         super.init(nibName: nil, bundle: nil)
-        self.todoListViewModel.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -184,33 +183,6 @@ extension TodoTableViewController: UITableViewDelegate {
         let view = UIView()
         view.backgroundColor = .systemBackground
         return view
-    }
-}
-
-extension TodoTableViewController: TodoListViewModelDelegate {
-    
-    func todoListViewModel(_ viewModel: TodoListViewModel, didInsertCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath) {
-        Task { @MainActor in
-            if let cell = todoTableView.cellForRow(at: indexPath) as? TodoCell {
-                cell.titleBecomeFirstResponder()
-                todoTableView.scrollToRow(at: indexPath, at: .middle, animated: true)
-            }
-    //        updateUnavailableView()
-        }
-    }
-
-    func todoListViewModel(_ viewModel: TodoListViewModel, didRemoveCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath, options: ReloadOptions) {
-        if options.contains(.reload) {
-            let animated = options.contains(.animated)
-            todoTableView.deleteRows(at: [indexPath], with: animated ? .automatic : .none)
-        }
-//        updateUnavailableView()
-    }
-    
-    func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel) {
-        let vc = TodoDetailViewController(viewModel: cellViewModel)
-        vc.delegate = self
-        present(vc, animated: true)
     }
 }
 

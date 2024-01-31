@@ -104,7 +104,7 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
         return stackView
     }()
     
-    private lazy var calendarView: UICalendarView = {
+    lazy var calendarView: UICalendarView = {
         var view = UICalendarView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.wantsDateDecorations = true
@@ -124,13 +124,5 @@ class CalendarHeaderView: UITableViewHeaderFooterView {
             profileIntro.text = "프로필에 자기소개를 입력해보세요"
         }
         profileImageContainer.setProfileImage()
-    }
-    
-    fileprivate func setCalendar() {
-//        calendarView.delegate = self
-//
-//        let dateSelection = UICalendarSelectionSingleDate(delegate: self)
-//        calendarView.selectionBehavior = dateSelection
-        calendarView.fontDesign = .rounded
     }
 }
