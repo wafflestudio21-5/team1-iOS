@@ -19,7 +19,7 @@ struct UsersResponseDto: Decodable {
     
 }
 
-struct UserDto: Decodable {
+struct UserInfoDto: Decodable {
     let user: Int
     let intro: String?
     let username: String
@@ -29,12 +29,35 @@ struct UserDto: Decodable {
     
     func toDomain() -> UserInfo {
         return .init(id: user,
+                     tedoori: false,
+                     goalColors: [],
                      intro: intro,
                      username: username,
                      profilePic: profilePic,
                      followerCount: followerCount,
-                     followingCount: followingCount,
-                     goalsColor: [])
+                     followingCount: followingCount)
+    }
+}
+
+struct UserDto: Decodable {
+    let user: Int
+    let tedoori: Bool
+    let goalColors: [String]
+    let intro: String?
+    let username: String
+    let profilePic: String?
+    let followerCount: Int
+    let followingCount: Int
+    
+    func toDomain() -> UserInfo {
+        return .init(id: user,
+                     tedoori: tedoori,
+                     goalColors: goalColors,
+                     intro: intro,
+                     username: username,
+                     profilePic: profilePic,
+                     followerCount: followerCount,
+                     followingCount: followingCount)
     }
     
 }
@@ -75,14 +98,20 @@ struct SearchLikeDto: Decodable {
 }
 
 struct CommentDto: Decodable {
+    let id: Int
     let createdAtIso: String
     let user: Int
+    let username: String
+    let profilePic: String?
     let description: String
     let likes: [SearchLikeDto]
     
     func toDomain() -> SearchComment {
-        return .init(createdAtIso: createdAtIso,
+        return .init(id: id,
+                     createdAtIso: createdAtIso,
                      user: user,
+                     username: username,
+                     profilePic: profilePic,
                      description: description,
                      likes: likes.map{ $0.toDomain() })
     }

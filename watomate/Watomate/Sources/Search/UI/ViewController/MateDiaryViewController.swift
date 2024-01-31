@@ -12,15 +12,20 @@ import UIKit
 
 protocol MateDiaryViewControllerDelegate: AnyObject {
     func likedWithEmoji(diaryId: Int, user: Int, emoji: String)
+    func addComment(diaryId: Int, comments: [CommentCellViewModel])
 }
 
 class MateDiaryViewController: DraggableCustomBarViewController {
     var delegate: MateDiaryViewControllerDelegate?
     private let viewModel: MateDiaryViewModel
+    private var commentListDataSource: UITableViewDiffableDataSource<CommentSection, CommentCellViewModel.ID>!
     
     private var cancellables = Set<AnyCancellable>()
     
+    private var isScrollNeeded = false
+    
     init(_ viewModel: SearchDiaryCellViewModel) {
+        print(viewModel.comments)
         self.viewModel = MateDiaryViewModel(diaryCellViewModel: viewModel, searchUserCase: SearchUseCase(searchRepository: SearchRepository()))
         super.init(nibName: nil, bundle: nil)
     }
@@ -37,6 +42,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        configureCommentDataSource()
         setupNavigationBar()
         setupLayout()
         configure()
@@ -47,19 +53,68 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
         contentView.addGestureRecognizer(tap)
+        viewModel.input.send(.viewDidLoad)
         
     }
     
+    private func configureCommentDataSource() {
+        commentListDataSource = UITableViewDiffableDataSource(tableView: commentTableView) { [weak self] tableView, indexPath, itemIdentifier in
+            guard let self else { fatalError() }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: CommentCell.reuseIdentifier, for: indexPath) as? CommentCell else { fatalError() }
+//            cell.delegate = self
+
+            cell.configure(with: viewModel.commentViewModel(at: indexPath))
+            self.divisionView.isHidden = false 
+            return cell
+        }
+    }
+    
     private func bindViewModel() {
-        viewModel.output
+        let output = viewModel.transform(input: viewModel.input.eraseToAnyPublisher())
+        
+            output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                guard let userId = User.shared.id else { return }
+                guard let self else { return }
+                switch event {
+                case let .successSaveLike(emoji):
+                    configure()
+                    delegate?.likedWithEmoji(diaryId: self.viewModel.diaryId, user: userId, emoji: emoji)
+                case let .firstComments(comments):
+                    showComments(comments: comments)
+                case let .updateComments(comments):
+                    isScrollNeeded = true
+                    showComments(comments: comments)
+                    hideKeyboard()
+                    delegate?.addComment(diaryId: viewModel.id, comments: comments)
+                }
+            }.store(in: &cancellables)
+        
+        commentTableView.publisher(for: \.contentSize)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] emoji in
-            guard let userId = User.shared.id else { return }
-            guard let self else { return }
-            self.configure()
-            self.likeCircleView.setSymbolColor(UIColor(red: 253.0/255.0, green: 93.0/255.0, blue: 93.0/255.0, alpha: 1))
-            self.delegate?.likedWithEmoji(diaryId: self.viewModel.diaryId, user: userId, emoji: emoji)
-        }.store(in: &cancellables)
+            .sink { [weak self] me in
+                guard let self else { return }
+                self.commentTableView.snp.remakeConstraints { make in
+                    make.top.equalTo(self.divisionView.snp.bottom)
+                    make.trailing.leading.bottom.equalToSuperview()
+                    make.height.equalTo(me.height + 20)
+                    if self.isScrollNeeded {
+                        let isNearBottom = self.diaryContainerView.contentOffset.y >= (self.diaryContainerView.contentSize.height - self.diaryContainerView.bounds.size.height - 100) // 100은 여백을 위한 임의의 값
+                        if !isNearBottom {
+                            let bottomOffset = CGPoint(x: 0, y: self.diaryContainerView.contentSize.height - self.diaryContainerView.bounds.size.height)
+                            self.diaryContainerView.setContentOffset(bottomOffset, animated: true)
+                        }
+                        
+                    }
+                }
+            }.store(in: &cancellables)
+    }
+    
+    private func showComments(comments: [CommentCellViewModel]) {
+        var snapshot = NSDiffableDataSourceSnapshot<CommentSection, CommentCellViewModel.ID>()
+        snapshot.appendSections(CommentSection.allCases)
+        snapshot.appendItems(comments.map{ $0.id }, toSection: .main)
+        self.commentListDataSource.apply(snapshot, animatingDifferences: false)
     }
     
     private func setupColor() {
@@ -76,12 +131,6 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         visibilityLabel.textColor = viewModel.color.label
         diaryContents.textColor = viewModel.color.label
         
-        likeCircleView.setBackgroundColor(viewModel.color.heartBackground)
-        if viewModel.isLiked {
-            likeCircleView.setSymbolColor(UIColor(red: 253.0/255.0, green: 93.0/255.0, blue: 93.0/255.0, alpha: 1))
-        } else {
-            likeCircleView.setSymbolColor(viewModel.color.heartSymbol)
-        }
     }
     
     @objc func hideKeyboard() {
@@ -119,7 +168,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         }
         
         diaryContainerView.snp.makeConstraints { make in
-            make.top.equalTo(userInfoView.snp.bottom).offset(25.adjusted)
+            make.top.equalTo(userInfoView.snp.bottom).offset(3)
             make.leading.trailing.equalToSuperview().inset(30.adjusted)
         }
         
@@ -136,7 +185,6 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         }
     }
     
-    @MainActor
     private func configure() {
         emojiView.text = viewModel.emoji
         if let mood = viewModel.mood {
@@ -168,23 +216,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
             visibilityLabel.text = "팔로워 공개"
         }
         
-        let likeCount = viewModel.likes.count
-        switch likeCount {
-        case 0:
-            break
-        case 1:
-            emojiLabel1.isHidden = false
-            emojiLabel1.text = viewModel.likes[0].emoji
-            emojiCountLabel.isHidden = false
-            emojiCountLabel.text = "1"
-        default:
-            emojiLabel1.isHidden = false
-            emojiLabel1.text = viewModel.likes[likeCount - 1].emoji
-            emojiLabel2.isHidden = false
-            emojiLabel2.text = viewModel.likes[likeCount - 2].emoji
-            emojiCountLabel.isHidden = false
-            emojiCountLabel.text = String(likeCount)
-        }
+        footerView.configure(likes: viewModel.likes, color: viewModel.color, userId: User.shared.id!)
         
     }
     
@@ -202,7 +234,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private lazy var emojiView = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 50)
+        label.font = UIFont.systemFont(ofSize: 47)
         return label
     }()
     
@@ -333,11 +365,26 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     private lazy var diaryContainerView = {
         let view = UIScrollView()
-        
+        view.showsVerticalScrollIndicator = false
         view.addSubview(diaryStackView)
         diaryStackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalToSuperview().offset(20)
+            make.trailing.leading.equalToSuperview()
             make.width.equalTo(view.snp.width)
+        }
+        
+        view.addSubview(divisionView)
+        divisionView.snp.makeConstraints { make in
+            make.top.equalTo(diaryStackView.snp.bottom).offset(12.adjustedH)
+            make.leading.trailing.equalToSuperview().inset(-10)
+            make.height.equalTo(3)
+        }
+        
+        view.addSubview(commentTableView)
+        commentTableView.snp.makeConstraints { make in
+            make.top.equalTo(divisionView.snp.bottom)
+            make.trailing.leading.bottom.equalToSuperview()
+            make.height.equalTo(500)
         }
         
         return view
@@ -348,11 +395,16 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.distribution = .equalCentering
-        stackView.spacing = 8.adjusted
+        stackView.spacing = 20.adjusted
         
         stackView.addArrangedSubview(diaryImage)
         stackView.addArrangedSubview(diaryContents)
         stackView.addArrangedSubview(footerView)
+        stackView.addArrangedSubview(commentTableView)
+        
+        commentTableView.snp.makeConstraints { make in
+            make.width.equalToSuperview()
+        }
         return stackView
     }()
     
@@ -372,68 +424,8 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     }()
     
     private lazy var footerView = {
-        let view = UIView()
-        emojiContainerView.snp.makeConstraints { make in
-            make.height.equalTo(Constants.SearchDiary.footerViewHeight)
-        }
-        
-        likeCircleView.snp.makeConstraints { make in
-            make.width.height.equalTo(Constants.SearchDiary.footerViewHeight)
-        }
-        
-        view.addSubview(emojiContainerView)
-        emojiContainerView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(15.adjustedH)
-            make.bottom.equalToSuperview()
-            make.leading.equalToSuperview()
-        }
-        
-        view.addSubview(likeCircleView)
-        likeCircleView.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.trailing.equalToSuperview()
-        }
-        
-        return view
-    }()
-    
-    private lazy var emojiContainerView = {
-        let view = UIStackView()
-        view.axis = .horizontal
-        view.spacing = 5.adjusted
-        
-        view.addArrangedSubview(emojiLabel1)
-        view.addArrangedSubview(emojiLabel2)
-        view.addArrangedSubview(emojiCountLabel)
-        return view
-    }()
-    
-    private lazy var emojiLabel1 = {
-        let label = UILabel()
-        label.isHidden = true
-        label.font = .systemFont(ofSize: 18)
-        return label
-    }()
-    
-    private lazy var emojiLabel2 = {
-        let label = UILabel()
-        label.isHidden = true
-        label.font = .systemFont(ofSize: 18)
-        return label
-    }()
-    
-    private lazy var emojiCountLabel = {
-        let label = UILabel()
-        label.textColor = .label
-        label.isHidden = true
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        return label
-    }()
-    
-    private lazy var likeCircleView = {
-        let view = SymbolCircleView(symbolImage: UIImage(systemName: "heart.fill"))
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(likeTapped)))
-        view.isUserInteractionEnabled = true
+        let view = LikeContainerView(size: .regular)
+        view.addLikeTapAction(target: self, action: #selector(likeTapped))
         return view
     }()
     
@@ -461,6 +453,28 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         return view
     }()
     
+    private lazy var divisionView = {
+        let view = UIView()
+        view.backgroundColor = Color.gray.uiColor.withAlphaComponent(0.5)
+//        view.clipsToBounds = true
+        view.isHidden = true
+        view.layer.cornerRadius = 0.2
+        return view
+    }()
+    
+    private lazy var commentTableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
+        tableView.register(CommentCell.self, forCellReuseIdentifier: CommentCell.reuseIdentifier)
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 100
+        tableView.showsVerticalScrollIndicator = false
+//        tableView.delegate = self
+        
+        return tableView
+    }()
+    
     private lazy var commentContainerView = {
         let view = UIStackView()
         view.axis = .vertical
@@ -472,18 +486,24 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     }()
     
     private lazy var commentView = {
-        let view = UIView()
+        let view = UIStackView()
+        view.axis = .horizontal
+        view.alignment = .bottom
+        view.spacing = 12
         
-        view.addSubview(sendButton)
-        sendButton.snp.makeConstraints { make in
-            make.top.trailing.bottom.equalToSuperview()
-        }
+        view.addArrangedSubview(inputTextView)
+        view.addArrangedSubview(sendButton)
         
-        view.addSubview(inputTextView)
-        inputTextView.snp.makeConstraints { make in
-            make.trailing.equalTo(sendButton.snp.leading).offset(-12)
-            make.top.bottom.leading.equalToSuperview()
-        }
+//        view.addSubview(sendButton)
+//        sendButton.snp.makeConstraints { make in
+//            make.top.trailing.bottom.equalToSuperview()
+//        }
+//        
+//        view.addSubview(inputTextView)
+//        inputTextView.snp.makeConstraints { make in
+//            make.trailing.equalTo(sendButton.snp.leading).offset(-12)
+//            make.top.bottom.leading.equalToSuperview()
+//        }
         return view
     }()
     
@@ -495,15 +515,23 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         textView.isScrollEnabled = false
         textView.font = UIFont(name: Constants.Font.regular, size: 14)
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 24, bottom: 12, right: 24)
-        textView.textContainer.maximumNumberOfLines = 4
-        textView.textContainer.lineBreakMode = .byTruncatingHead
+//        textView.textContainer.maximumNumberOfLines = 4
+        textView.textContainer.lineBreakMode = .byCharWrapping
         textView.textColor = .label
+        textView.delegate = self
+        textView.autocorrectionType = .no
+        textView.autocapitalizationType = .none
+        
+        textView.snp.makeConstraints { make in
+            make.height.equalTo(41)
+        }
         return textView
     }()
     
     private lazy var sendButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "send_default"), for: .normal)
+        button.addTarget(self, action: #selector(sendTapped), for: .touchUpInside)
         
         button.snp.makeConstraints { make in
             make.width.height.equalTo(40)
@@ -511,11 +539,17 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         return button
     }()
     
+    @objc private func sendTapped() {
+        guard let comment = inputTextView.text else { return }
+        viewModel.input.send(.commentSendTapped(comment: comment))
+        inputTextView.text = nil
+    }
+    
     private lazy var bottomPadding = {
         let view = UIView()
         
         view.snp.makeConstraints { make in
-            make.height.equalTo(60)
+            make.height.equalTo(50.adjustedH)
         }
         
         return view
@@ -528,5 +562,23 @@ extension MateDiaryViewController: LikeEmojiViewControllerDelegate {
         viewModel.saveLike(diaryId: diaryId, userId: user, emoji: emoji)
     }
     
-    
+}
+
+extension MateDiaryViewController: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        let size = CGSize(width: inputTextView.frame.width, height: .infinity)
+           let estimatedSize = inputTextView.sizeThatFits(size)
+
+           if estimatedSize.height <= 91 { // Define maximumHeight
+               textView.isScrollEnabled = false
+               inputTextView.snp.remakeConstraints { make in
+                   make.height.equalTo(estimatedSize)
+                   make.trailing.equalTo(sendButton.snp.leading).offset(-12)
+                   make.leading.equalToSuperview()
+               }
+               view.layoutIfNeeded()
+           } else {
+               textView.isScrollEnabled = true
+           }
+    }
 }

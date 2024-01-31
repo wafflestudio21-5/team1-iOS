@@ -12,6 +12,12 @@ class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.systemBackground
+        tabBar.isTranslucent = false
+        tabBar.barTintColor = .systemBackground
+        tabBar.tintColor = .label
+        tabBar.layer.borderWidth = 0.5
+        tabBar.layer.borderColor = UIColor.clear.cgColor
+        tabBar.clipsToBounds = true 
         
         let todoRepository = TodoRepository()
         let todoUseCase = TodoUseCase(todoRepository: todoRepository)
@@ -19,20 +25,16 @@ class TabBarController: UITabBarController {
         let diaryViewModel = DiaryPreviewViewModel()
         
         let todoVC = UINavigationController(rootViewController: HomeViewController(todoListViewModel: todoListViewModel, diaryViewModel: diaryViewModel))
-        todoVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house.fill"), tag: 0)
+        todoVC.tabBarItem = UITabBarItem(title: "피드", image: UIImage(named: "home"), tag: 0)
 
         let searchVC = UINavigationController(rootViewController: SearchViewController())
-        searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 1)
-        
-
-        let groupVC = UINavigationController(rootViewController: GroupViewController())
-        groupVC.tabBarItem = UITabBarItem(title: "Group", image: UIImage(systemName: "rectangle.3.group.fill"), tag: 2)
+        searchVC.tabBarItem = UITabBarItem(title: "검색", image: UIImage(named: "search"), tag: 1)
 
         let profileVC = UINavigationController(rootViewController: ProfileViewController(todoListViewModel: todoListViewModel))
 
-        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.crop.circle.fill"), tag: 3)
+        profileVC.tabBarItem = UITabBarItem(title: "My", image: UIImage(named: "my"), tag: 3)
 
-        viewControllers = [todoVC, searchVC, groupVC, profileVC]
+        viewControllers = [todoVC, searchVC, profileVC]
     }
     
     override func viewWillAppear(_ animated: Bool) {

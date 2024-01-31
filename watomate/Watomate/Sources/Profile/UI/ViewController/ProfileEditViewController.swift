@@ -10,12 +10,7 @@ import Combine
 import UIKit
 import SnapKit
 
-protocol ProfileEditViewDelegate: AnyObject {
-    func showProfileImage(_ image: UIImage?)
-}
-
 class ProfileEditViewController: PlainCustomBarViewController {
-    weak var delegate: ProfileEditViewDelegate?
     private let viewModel: ProfileEditViewModel
     private var cancellables = Set<AnyCancellable>()
     
@@ -185,7 +180,6 @@ extension ProfileEditViewController: UIImagePickerControllerDelegate, UINavigati
         if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             self.profileCircleView.setImage(image)
             handleImage(image)
-            delegate?.showProfileImage(image)
         }
         dismiss(animated: true)
     }

@@ -9,27 +9,55 @@
 import Combine
 import Foundation
 
-class MateDiaryViewModel {
-    private let diary: SearchDiary
+enum CommentSection: CaseIterable {
+    case main
+}
+
+class MateDiaryViewModel: ViewModelType {
+    
+    enum Input {
+        case viewDidLoad
+        case commentSendTapped(comment: String)
+    }
+    
+    enum Output {
+        case successSaveLike(emoji: String)
+        case firstComments(comments: [CommentCellViewModel])
+        case updateComments(comments: [CommentCellViewModel])
+    }
+    
+    func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
+        input.sink { [weak self] event in
+            guard let self else { return }
+            switch event {
+            case .viewDidLoad:
+                self.output.send(.firstComments(comments: self.comments))
+            case let .commentSendTapped(comment):
+                saveComment(comment: comment)
+            }
+        }.store(in: &cancellables)
+        return output.eraseToAnyPublisher()
+    }
+    
+    private let diary: SearchDiaryCellViewModel
     private var searchUseCase: SearchUseCase
     
-    private let outputSubject = PassthroughSubject<String, Never>()
-    var output: AnyPublisher<String, Never> {
-        outputSubject.eraseToAnyPublisher()
-    }
+    let input = PassthroughSubject<Input, Never>()
+    private let output = PassthroughSubject<Output, Never>()
+    private var cancellables = Set<AnyCancellable>()
     
     let id: Int
     
     var likes: [SearchLike]
     
-    var comments: [SearchComment]
+    var comments = [CommentCellViewModel]()
     
     init(diaryCellViewModel: SearchDiaryCellViewModel, searchUserCase: SearchUseCase) {
         self.searchUseCase = searchUserCase
-        self.diary = diaryCellViewModel.getDiary()
+        self.diary = diaryCellViewModel
         id = diary.id
         likes = diary.likes
-        comments = diary.comments
+        comments = diary.comments.map{ CommentCellViewModel(comment: $0, color: diary.color) }
     }
     
     var diaryId: Int {
@@ -37,15 +65,15 @@ class MateDiaryViewModel {
     }
     
     var userId: Int {
-        diary.user.id
+        diary.userId
     }
     
     var username: String {
-        diary.user.username
+        diary.username
     }
     
     var profilePic: String? {
-        diary.user.profilePic
+        diary.profilePic
     }
     
     var description: String {
@@ -80,6 +108,10 @@ class MateDiaryViewModel {
        likes.contains(where: { $0.user == User.shared.id })
     }
     
+    func commentViewModel(at indexPath: IndexPath) -> CommentCellViewModel {
+        return comments[indexPath.row]
+    }
+    
     func saveLike(diaryId: Int, userId: Int, emoji: String) {
         Task {
             do {
@@ -88,7 +120,19 @@ class MateDiaryViewModel {
                     likes.remove(at: index)
                 }
                 likes.append(SearchLike(user: userId, emoji: emoji))
-                outputSubject.send(emoji)
+                output.send(.successSaveLike(emoji: emoji))
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func saveComment(comment: String) {
+        Task {
+            do {
+                let commentResult = try await searchUseCase.postComment(diaryId: diaryId, userId: User.shared.id!, description: comment)
+                comments.append(CommentCellViewModel(comment: commentResult, color: color))
+                output.send(.updateComments(comments: comments))
             } catch {
                 print(error)
             }

@@ -35,19 +35,21 @@ class UserCell: UITableViewCell {
     private lazy var usernameLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.medium, size: 18)
+        label.font = UIFont(name: Constants.Font.medium, size: 17)
         return label
     }()
     
     private lazy var introLabel = {
         let label = UILabel()
         label.textColor = .secondaryLabel
-        label.font = UIFont(name: Constants.Font.regular, size: 14)
+        label.font = UIFont(name: Constants.Font.regular, size: 13)
         return label
     }()
     
     private func setupLayout() {
         addSubview(profileView)
+        profileView.setCenterCircleSmall()
+        profileView.makeTransparent()
         profileView.snp.makeConstraints { make in
             make.width.height.equalTo(Constants.SearchUser.profileHeight)
             make.centerY.equalToSuperview()
@@ -56,7 +58,7 @@ class UserCell: UITableViewCell {
         
         addSubview(usernameLabel)
         usernameLabel.snp.makeConstraints { make in
-            make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.offset)
+            make.leading.equalTo(profileView.snp.trailing).offset(Constants.SearchUser.spacing)
             make.top.trailing.equalToSuperview().inset(Constants.SearchUser.contentsInset)
         }
         
@@ -74,6 +76,7 @@ class UserCell: UITableViewCell {
         usernameLabel.text = viewModel.username
         introLabel.text = viewModel.intro
         profileView.setColor(color: viewModel.color)
+        profileView.makeTransparent()
         if let profilePic = viewModel.profilePic {
             profileView.addCenterCircle(url: profilePic)
         } else {

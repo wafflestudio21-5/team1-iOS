@@ -60,7 +60,7 @@ class TodoListViewModel: ViewModelType {
         var cellVMs: [TodoCellViewModel]
         var goal: Goal
         var section: Int
-        for i in 0...goals.count - 1 {
+        for i in 0..<goals.count {
             section = i + 1
             goal = goals[i]
             sectionsForGoalId[goal.id] = sectionsForGoalId.count + 1
@@ -187,7 +187,7 @@ class TodoListViewModel: ViewModelType {
         if todoUseCase.goals.count == 0 {
             return nil
         }
-        for i in 0...todoUseCase.goals.count - 1 {
+        for i in 0..<todoUseCase.goals.count {
             if todoUseCase.goals[i].id == todo.goal {
                 return i + 1
             }

@@ -37,8 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        let useCase = SearchUseCase(searchRepository: repo)
 //        Task {
 //            do {
-//                let result = try await useCase.postLike(diaryId: 61, user: 1, emoji: "👏")
-//                print(result)
+//                try await repo.postComment(diaryId: 62, user: 1, description: "아주 좋아요")
 //            } catch {
 //                print(error)
 //            }
@@ -49,14 +48,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let userDefaultsRepository = UserDefaultsRepository()
         User.shared.id = userDefaultsRepository.get(Int.self, key: .userId)
         User.shared.token = userDefaultsRepository.get(String.self, key: .accessToken)
-//        print(User.shared.id)
-//        print(User.shared.token)
         
         Task {
-            // 앱 처음 시작했을 때 사용자 정보 가져올까? 
-//            guard let id = User.shared.id else { return }
-//                print(id)
-//                let userInfo = try? await searchUseCase.getUserInfo(id: id)
             User.shared.username = userDefaultsRepository.get(String.self, key: .username)
             User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)
             User.shared.profilePic = userDefaultsRepository.get(String.self, key: .profilePic)

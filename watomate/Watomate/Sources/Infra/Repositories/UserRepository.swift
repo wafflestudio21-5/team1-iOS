@@ -36,7 +36,7 @@ class UserRepository: UserRepositoryProtocol {
         let dto = try await session.upload(multipartFormData: { multipartFormData in
             multipartFormData.append(imageData, withName: "profile_pic", fileName: "profile_pic.png", mimeType: "image/png")
         }, to: url, method: .patch, headers: header)
-        .serializingDecodable(UserDto.self, decoder: decoder).handlingError()
+        .serializingDecodable(UserInfoDto.self, decoder: decoder).handlingError()
         return dto.profilePic
     }
     
@@ -55,7 +55,7 @@ class UserRepository: UserRepositoryProtocol {
             multipartFormData.append(username.data(using: .utf8)!, withName: "username")
             multipartFormData.append(intro.data(using: .utf8)!, withName: "intro")
         }, to: url, method: .patch, headers: header)
-        .serializingDecodable(UserDto.self, decoder: decoder).handlingError()
+        .serializingDecodable(UserInfoDto.self, decoder: decoder).handlingError()
     }
     
     func signupWithEmail(email: String, password: String) async throws -> LoginInfo {

@@ -51,9 +51,9 @@ enum Constants {
     
     enum SearchUser {
         static let contentsInset = 20.0.adjusted
-        static let offset = 20.0.adjusted
-        static let spacing = 15.0.adjusted
-        static let profileHeight = 50.adjusted
+        static let offset = 18.0.adjusted
+        static let spacing = 14.0.adjusted
+        static let profileHeight = 48.adjusted
     }
 }
 
