@@ -133,6 +133,10 @@ extension DiaryFeedViewController: LikeEmojiViewControllerDelegate {
 }
 
 extension DiaryFeedViewController: MateDiaryViewControllerDelegate {
+    func addComment(diaryId: Int, comments: [CommentCellViewModel]) {
+        viewModel.input.send(.updateComment(diaryId: diaryId, comments: comments))
+    }
+    
     func likedWithEmoji(diaryId: Int, user: Int, emoji: String) {
         viewModel.input.send(.likeAppended(diaryId: diaryId, userId: user, emoji: emoji))
     }

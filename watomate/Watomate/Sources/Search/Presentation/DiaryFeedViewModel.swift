@@ -19,6 +19,7 @@ final class DiaryFeedViewModel: ViewModelType {
         case reachedEndOfScrollView
         case likeTapped(diaryId: Int, userId: Int, emoji: String)
         case likeAppended(diaryId: Int, userId: Int, emoji: String)
+        case updateComment(diaryId: Int,comments: [CommentCellViewModel])
     }
     
     enum Output {
@@ -55,6 +56,8 @@ final class DiaryFeedViewModel: ViewModelType {
                 self?.saveLike(diaryId: diaryId, userId: userId, emoji: emoji)
             case let .likeAppended(diaryId, userId, emoji):
                 self?.appendLike(diaryId: diaryId, userId: userId, emoji: emoji)
+            case let .updateComment(diaryId, comments):
+                self?.updateComment(diaryId: diaryId, comments: comments)
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -129,6 +132,12 @@ final class DiaryFeedViewModel: ViewModelType {
             diaryList[index].likes = likes
             diaryList[index].updateDiaryLikes(likes)
             output.send(.likeUpdate)
+        }
+    }
+    
+    private func updateComment(diaryId: Int, comments: [CommentCellViewModel]) {
+        if let index = diaryList.firstIndex(where: { $0.diaryId == diaryId }) {
+            diaryList[index].comments = comments.map{ SearchComment(id: $0.id, createdAtIso: $0.createdAt, user: $0.user, username: $0.username, profilePic: $0.profilePic, description: $0.description, likes: $0.likes)  }
         }
     }
 }

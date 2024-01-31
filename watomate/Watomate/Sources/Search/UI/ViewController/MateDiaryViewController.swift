@@ -12,6 +12,7 @@ import UIKit
 
 protocol MateDiaryViewControllerDelegate: AnyObject {
     func likedWithEmoji(diaryId: Int, user: Int, emoji: String)
+    func addComment(diaryId: Int, comments: [CommentCellViewModel])
 }
 
 class MateDiaryViewController: DraggableCustomBarViewController {
