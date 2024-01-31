@@ -18,8 +18,8 @@ struct SearchDiary {
     let emoji: String
     let image: String?
     let date: String
-    let likes: [SearchLike]
-    let comments: [SearchComment]
+    var likes: [SearchLike]
+    var comments: [SearchComment]
 }
 
 struct SearchLike {

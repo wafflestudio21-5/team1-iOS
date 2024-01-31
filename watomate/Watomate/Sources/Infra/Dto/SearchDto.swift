@@ -75,6 +75,7 @@ struct SearchLikeDto: Decodable {
 }
 
 struct CommentDto: Decodable {
+    let id: Int
     let createdAtIso: String
     let user: Int
     let description: String
