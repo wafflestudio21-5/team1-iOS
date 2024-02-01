@@ -28,4 +28,16 @@ struct Utils {
         formatter.dateFormat = "YYYY-MM-dd"
         return formatter
     }
+    
+    static func convertToKorean(date: String) -> String {
+        let stringFormat = "yyyy-MM-dd"
+        formatter.dateFormat = stringFormat
+        formatter.locale = Locale(identifier: "ko")
+        guard let tempDate = formatter.date(from: date) else {
+                   return ""
+        }
+        formatter.dateFormat = "MMM d일"
+        return formatter.string(from: tempDate)
+        
+    }
 }

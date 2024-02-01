@@ -92,7 +92,7 @@ class ProfileViewController: TodoTableViewController {
     }
     
     @objc private func archiveBoxTapped(_ sender: UITapGestureRecognizer) {
-        let viewController = ArchiveBoxViewController()
+        let viewController = ArchiveBoxViewController(viewModel: ArchiveBoxViewModel())
         navigationController?.pushViewController(viewController, animated: false)
     }
     

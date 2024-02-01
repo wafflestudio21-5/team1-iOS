@@ -8,6 +8,19 @@
 
 import Foundation
 
-class ImageCellViewModel {
+class ImageCellViewModel: Identifiable {
+    let id = UUID()
+    let image: String
+    let date: String
+    let goalTitle: String
+    let goalColor: String
+    let todoTitle: String
     
+    init(image: Image) {
+        self.image = image.image
+        self.date = image.date
+        self.goalTitle = image.goalTitle
+        self.goalColor = image.goalColor
+        self.todoTitle = image.todoTitle
+    }
 }

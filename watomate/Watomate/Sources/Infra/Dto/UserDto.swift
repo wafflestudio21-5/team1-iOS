@@ -25,10 +25,10 @@ struct AllImageResponseDto: Decodable {
         let date: String
         let goalTitle: String
         let goalColor: String
-        let todoTitle: String 
+        let title: String
         
         func toDomain() -> Image {
-            Image(image: image, date: date, goalTitle: goalTitle, goalColor: goalColor, todoTitle: todoTitle)
+            Image(image: image, date: date, goalTitle: goalTitle, goalColor: goalColor, todoTitle: title)
         }
     }
 }
