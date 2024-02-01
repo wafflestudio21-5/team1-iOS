@@ -116,25 +116,6 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         return stackView
     }()
     
-//    private lazy var archiveBoxButton: UIButton = {
-//        let button = UIButton()
-//        button.setTitle(" 나의 인증샷", for: .normal)
-//        button.setTitleColor(.black, for: .normal)
-//        if let image = UIImage(systemName: "archivebox.circle.fill")?.withRenderingMode(.alwaysTemplate) {
-//            button.setImage(image, for: .normal)
-//            button.tintColor = .black
-//        }
-//        button.backgroundColor = .systemGray6
-//        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-//        button.layer.cornerRadius = 16
-//       
-//        button.contentEdgeInsets = UIEdgeInsets(top: 20, left: 10 , bottom: 20, right: 10)
-//        button.contentHorizontalAlignment = .center
-//        button.contentVerticalAlignment = .center
-//
-//        return button
-//    }()
-    
     private lazy var archiveBoxButton = {
         let button = UIButton()
         button.backgroundColor = .systemGray6
