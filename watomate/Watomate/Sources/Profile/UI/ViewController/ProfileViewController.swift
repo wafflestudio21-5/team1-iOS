@@ -68,6 +68,7 @@ class ProfileViewController: TodoTableViewController {
             header.contentView.backgroundColor = .systemBackground
             header.setProfileImage(with: nil)
             header.addProfileTapEvent(target: self, action: #selector(profileImageTapped))
+            header.archiveBoxTapEvent(target: self, action: #selector(archiveBoxTapped))
             header.setFollowerCount()
             header.setFollowingCount()
             return header
@@ -88,6 +89,11 @@ class ProfileViewController: TodoTableViewController {
     @objc private func profileImageTapped(_ sender: UITapGestureRecognizer) {
         let viewController = ProfileEditViewController(viewModel: ProfileEditViewModel(userUseCase: UserUseCase(userRepository: UserRepository(), userDefaultsRepository: UserDefaultsRepository())))
         navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    @objc private func archiveBoxTapped(_ sender: UITapGestureRecognizer) {
+        let viewController = ArchiveBoxViewController()
+        navigationController?.pushViewController(viewController, animated: false)
     }
     
     override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
