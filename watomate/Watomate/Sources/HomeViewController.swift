@@ -299,6 +299,10 @@ extension HomeViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
             guard let userID else { return }
             getDiary(userID: userID, date: diaryDateString)
         }
+        if let date = selectedDate?.date {
+            let dateString = Utils.YYYYMMddFormatter().string(from: date)
+            todoListViewModel.loadTodos(on: dateString)
+        }
         reloadCalendarView(date: Calendar.current.date(from: dateComponents!))
         
     }
