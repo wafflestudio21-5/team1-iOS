@@ -215,6 +215,8 @@ class TodoCell: UITableViewCell {
     
     override func prepareForReuse() {
         viewModel?.newlyAdded = false
+        titleTextField.allowsEditingTextAttributes = false
+        titleTextField.isUserInteractionEnabled = false
         checkbox.removeCheckMark()
         checkbox.setColor(color: [])
     }
