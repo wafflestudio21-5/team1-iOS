@@ -120,7 +120,10 @@ extension DiaryFeedViewController: SearchDiaryCellDelegate {
 }
 
 extension DiaryFeedViewController: LikeEmojiViewControllerDelegate {
-    func likeWithEmoji(diaryId: Int, user: Int, emoji: String) {
+    func commentLike(commentId: Int, emoji: String) {
+    }
+    
+    func diaryLike(diaryId: Int, user: Int, emoji: String) {
         viewModel.input.send(.likeTapped(diaryId: diaryId, userId: user, emoji: emoji))
     }
     

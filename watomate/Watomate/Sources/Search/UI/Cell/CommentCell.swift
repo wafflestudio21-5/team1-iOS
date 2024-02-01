@@ -11,6 +11,7 @@ import UIKit
 protocol CommentCellDelegate: AnyObject {
     func deleteComment(commentId: Int)
     func editComment(commentId: Int, comment: String)
+    func likeComment(commentId: Int)
 }
 
 class CommentCell: UITableViewCell {
@@ -85,6 +86,7 @@ class CommentCell: UITableViewCell {
         
         commentTextView.isEditable = true
         commentTextView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
+        commentTextView.isScrollEnabled = true
     }
     
     private lazy var deleteButton = {
@@ -117,6 +119,7 @@ class CommentCell: UITableViewCell {
     }()
     
     @objc func checkTapped() {
+        commentTextView.isScrollEnabled = false
         guard let viewModel else { return }
         guard let text = commentTextView.text else { return }
         
@@ -127,16 +130,12 @@ class CommentCell: UITableViewCell {
         
         commentTextView.isEditable = false
         commentTextView.backgroundColor = .clear
-        
         delegate?.editComment(commentId: viewModel.id, comment: text)
     }
     
     @objc func likeTapped() {
-//        if let viewModel,
-//           let delegate,
-//        let userId = User.shared.id  {
-//            delegate.selectEmoji(diaryId: viewModel.diaryId, userId: userId)
-//        }
+        guard let viewModel else { return }
+        delegate?.likeComment(commentId: viewModel.id)
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -156,7 +155,9 @@ class CommentCell: UITableViewCell {
         commentTextView.text = nil
         commentTextView.isEditable = false
         commentTextView.backgroundColor = .clear
+        commentTextView.isScrollEnabled = false 
         footerView.reset()
+        backgroundColor = .clear
     }
     
     private func setupLayout() {
@@ -173,13 +174,6 @@ class CommentCell: UITableViewCell {
             make.trailing.equalToSuperview()
         }
         
-//        contentView.addSubview(commentTextView)
-//        commentTextView.snp.makeConstraints { make in
-//            make.top.equalTo(profileView.snp.bottom)
-//            make.leading.equalToSuperview()
-//            make.trailing.equalToSuperview()
-//        }
-        
         contentView.addSubview(footerView)
         footerView.snp.makeConstraints { make in
             make.top.equalTo(commentTextView.snp.bottom).offset(5)
@@ -192,38 +186,14 @@ class CommentCell: UITableViewCell {
         guard let userId = User.shared.id else { return }
         self.viewModel = viewModel
         profileView.configure(image: viewModel.profilePic, name: viewModel.username, date: viewModel.createdAt, color: viewModel.color)
-//        commentLabel.text = viewModel.description
-//        commentLabel.textColor = viewModel.color.label
         commentTextView.text = viewModel.description
         commentTextView.textColor = viewModel.color.label
         footerView.configure(likes: viewModel.likes, color: viewModel.color, userId: userId)
         if viewModel.user == userId {
             buttonStackView.isHidden = false
         }
+        backgroundColor = viewModel.color.uiColor
     }
     
 }
 
-//extension CommentCell: UITextViewDelegate {
-//    func textViewDidChange(_ textView: UITextView) {
-//        let size = CGSize(width: commentTextView.frame.width, height: .infinity)
-//           let estimatedSize = commentTextView.sizeThatFits(size)
-//        
-//        if estimatedSize.height != textViewHeight {
-//            textViewHeight = estimatedSize.height
-//            if estimatedSize.height <= 91 { // Define maximumHeight
-//                textView.isScrollEnabled = false
-//                commentTextView.snp.remakeConstraints { make in
-//                    make.height.equalTo(estimatedSize)
-//                    make.trailing.equalToSuperview()
-//                    make.leading.equalToSuperview()
-//                }
-//                layoutIfNeeded()
-//            } else {
-//                textView.isScrollEnabled = true
-//            }
-//        }
-//
-//           
-//    }
-//}

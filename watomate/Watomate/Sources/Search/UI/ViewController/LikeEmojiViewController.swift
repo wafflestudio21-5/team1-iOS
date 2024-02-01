@@ -10,11 +10,13 @@ import UIKit
 import SnapKit
 
 protocol LikeEmojiViewControllerDelegate: AnyObject {
-    func likeWithEmoji(diaryId: Int, user: Int, emoji: String)
+    func diaryLike(diaryId: Int, user: Int, emoji: String)
+    func commentLike(commentId: Int, emoji: String)
 }
 
 class LikeEmojiViewController: DraggableCustomBarViewController {
     weak var delegate: LikeEmojiViewControllerDelegate?
+    var commentId: Int?
     var diaryId: Int?
     var userId: Int?
     
@@ -64,8 +66,15 @@ extension LikeEmojiViewController: UICollectionViewDataSource {
 
 extension LikeEmojiViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let userId, let diaryId else { return }
-        delegate?.likeWithEmoji(diaryId: diaryId, user: userId, emoji: emojis[indexPath.row])
-        dismiss(animated: true)
+        guard let userId else { return }
+        if let diaryId {
+            delegate?.diaryLike(diaryId: diaryId, user: userId, emoji: emojis[indexPath.row])
+            dismiss(animated: true)
+        }
+        if let commentId {
+            delegate?.commentLike(commentId: commentId, emoji: emojis[indexPath.row])
+            dismiss(animated: true)
+        }
+        
     }
 }

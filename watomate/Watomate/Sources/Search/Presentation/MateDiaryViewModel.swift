@@ -26,6 +26,7 @@ class MateDiaryViewModel: ViewModelType {
         case successSaveLike(emoji: String)
         case showComments(comments: [CommentCellViewModel])
         case updateComments(comments: [CommentCellViewModel])
+        case reloadComments(comments: [CommentCellViewModel])
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
@@ -108,6 +109,26 @@ class MateDiaryViewModel: ViewModelType {
         }
     }
     
+    func saveCommentLike(commentId: Int, emoji: String) {
+        Task {
+            guard let userId = User.shared.id else { return }
+            do {
+                try await searchUseCase.commentLike(commentId: commentId, user: userId, emoji: emoji)
+                guard let idx = comments.firstIndex(where: { $0.id == commentId }) else { return }
+                var likes = comments[idx].likes
+                if let index = likes.lastIndex(where: { $0.user == userId }) {
+                    likes.remove(at: index)
+                }
+                likes.append(SearchLike(user: userId, emoji: emoji))
+                comments[idx].likes = likes
+                output.send(.reloadComments(comments: comments))
+                
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
     private func saveComment(comment: String) {
         Task {
             do {
@@ -141,7 +162,7 @@ class MateDiaryViewModel: ViewModelType {
                 if let index = comments.firstIndex(where: { $0.id == commentId }) {
                     comments[index].description = comment
                 }
-                output.send(.showComments(comments: comments))
+                output.send(.reloadComments(comments: comments))
             } catch {
                 print(error)
             }

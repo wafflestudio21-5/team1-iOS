@@ -18,6 +18,7 @@ enum SearchRouter: Router {
     case searchUser(username: String)
     case searchTodo(title: String)
     case likeDiary(diaryId: Int, user: Int, emoji: String)
+    case likeComment(commentId: Int, user: Int, emoji: String)
     case commentDiary(diaryId: Int, userId: Int, description: String)
     case editComment(commentId: Int, description: String)
     case deleteComment(commentId: Int)
@@ -39,6 +40,8 @@ enum SearchRouter: Router {
         case .searchTodo:
             return .get
         case .likeDiary:
+            return .put
+        case .likeComment:
             return .put
         case .commentDiary:
             return .post
@@ -73,6 +76,8 @@ enum SearchRouter: Router {
             return "/comment-detail/\(commentId)"
         case let .deleteComment(commentId: commentId):
             return "/comment-detail/\(commentId)"
+        case let .likeComment(commentId, _, _):
+            return "/comments/\(commentId)/like"
         }
     }
     
@@ -98,8 +103,10 @@ enum SearchRouter: Router {
             return ["user": userId, "description": description]
         case let .editComment(_, description):
             return ["description": description]
-        case .deleteComment(commentId: let commentId):
+        case .deleteComment:
             return [:]
+        case let .likeComment(_, user, emoji):
+            return ["user": user, "emoji": emoji]
         }
     }
 }
