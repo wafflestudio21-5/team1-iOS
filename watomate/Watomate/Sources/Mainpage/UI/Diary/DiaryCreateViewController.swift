@@ -287,7 +287,7 @@ class DiaryCreateViewController: PlainCustomBarViewController{
     
     var diaryVisibility: DiaryVisibility? = nil
     @objc private func visibilityButtonTapped() {
-        let vc = DiaryVisibilityViewController()
+        let vc = VisibilityViewController()
         setSheetLayout(for: vc)
         vc.onDismiss = { data in
             if let selectedVisibility = DiaryVisibility(rawValue: data) {
@@ -356,7 +356,8 @@ class DiaryCreateViewController: PlainCustomBarViewController{
     
     var backgroundColor : String? = nil
     @objc private func backgroundColorButtonTapped() {
-        let vc = BackgroundColorViewController()
+        let vc = ColorViewController()
+        vc.useGoalColors = false
         setSheetLayout(for: vc)
         vc.onDismiss = { data in
             self.backgroundColor = data

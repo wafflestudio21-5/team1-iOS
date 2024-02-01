@@ -1,5 +1,5 @@
 //
-//  BackgroundCollectionViewCell.swift
+//  ColorCollectionViewCell.swift
 //  Watomate
 //
 //  Created by 이수민 on 2024/01/25.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BackgroundCollectionViewCell: UICollectionViewCell {
+class ColorCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupCell()

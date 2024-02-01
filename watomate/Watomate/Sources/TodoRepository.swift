@@ -10,7 +10,7 @@ import Alamofire
 import Foundation
 
 class TodoRepository: TodoRepositoryProtocol {
-
+    
     private let session = NetworkManager.shared.session
     private let decoder = JSONDecoder()
     
@@ -68,5 +68,29 @@ class TodoRepository: TodoRepositoryProtocol {
             .handlingError()
         print("updated: \(response)")
         return response
+    }
+    
+    func addGoal(goal: GoalCreate) async throws -> GoalResponseDto {
+        let response = try await session
+            .request(TodoRouter.addGoal(userId: User.shared.id!, goal: goal))
+            .serializingDecodable(GoalResponseDto.self)
+            .handlingError()
+        return response
+    }
+    
+    func patchGoal(goalId: Int, goal: GoalCreate) async throws -> GoalResponseDto {
+        let response = try await session
+            .request(TodoRouter.patchGoal(userId: User.shared.id!, goalId: goalId, goal: goal))
+            .serializingDecodable(GoalResponseDto.self)
+            .handlingError()
+        print(response)
+        return response
+    }
+    
+    func deleteGoal(goalId: Int) async throws {
+        try await session
+            .request(TodoRouter.deleteGoal(userId: User.shared.id!, goalId: goalId))
+            .serializingString()
+            .handlingError() //let response 삭제?
     }
 }

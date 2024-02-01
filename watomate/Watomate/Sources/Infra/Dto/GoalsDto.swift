@@ -28,6 +28,7 @@ struct GoalResponseDto: Codable {
     }
 }
 
+
 struct TodoDto: Codable {
     let id: Int
     let title: String
