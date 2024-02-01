@@ -25,7 +25,6 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     private var isScrollNeeded = false
     
     init(_ viewModel: SearchDiaryCellViewModel) {
-        print(viewModel.comments)
         self.viewModel = MateDiaryViewModel(diaryCellViewModel: viewModel, searchUserCase: SearchUseCase(searchRepository: SearchRepository()))
         super.init(nibName: nil, bundle: nil)
     }
@@ -87,6 +86,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
                     showComments(comments: comments)
                     hideKeyboard()
                     delegate?.addComment(diaryId: viewModel.id, comments: comments)
+                    print(comments[comments.endIndex - 1].id)
                 }
             }.store(in: &cancellables)
         

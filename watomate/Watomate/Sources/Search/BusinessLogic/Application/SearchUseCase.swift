@@ -67,4 +67,12 @@ class SearchUseCase {
     func postComment(diaryId: Int, userId: Int, description: String) async throws -> SearchComment {
         return try await searchRepository.postComment(diaryId: diaryId, user: userId, description: description)
     }
+    
+    func editComment(commentId: Int, description: String) async throws {
+        try await searchRepository.editComment(commentId: commentId, description: description)
+    }
+    
+    func deleteComment(commentId: Int) async throws {
+        try await searchRepository.deleteComment(commentId: commentId)
+    }
 }

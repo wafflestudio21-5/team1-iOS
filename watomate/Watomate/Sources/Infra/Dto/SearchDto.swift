@@ -117,6 +117,10 @@ struct CommentDto: Decodable {
     }
 }
 
+struct CommentEditDto: Decodable {
+    let description: String
+}
+
 struct TodoFeedResponseDto: Decodable {
     let next, previous: String?
     let results: [TodoUserDto]

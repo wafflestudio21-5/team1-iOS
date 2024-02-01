@@ -22,6 +22,8 @@ protocol SearchRepositoryProtocol {
     func searchInitialTodo(title: String) async throws -> TodoPage
     func postLike(diaryId: Int, user: Int, emoji: String) async throws
     func postComment(diaryId: Int, user: Int, description: String) async throws -> SearchComment
+    func editComment(commentId: Int, description: String) async throws
+    func deleteComment(commentId: Int) async throws
 }
 
 class SearchRepository: SearchRepositoryProtocol {
@@ -128,5 +130,13 @@ class SearchRepository: SearchRepositoryProtocol {
     func postComment(diaryId: Int, user: Int, description: String) async throws -> SearchComment {
         let dto = try await session.request(SearchRouter.commentDiary(diaryId: diaryId, userId: user, description: description )).serializingDecodable(CommentDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
+    }
+    
+    func editComment(commentId: Int, description: String) async throws {
+        try await session.request(SearchRouter.editComment(commentId: commentId, description: description)).serializingDecodable(CommentEditDto.self, decoder: decoder).handlingError()
+    }
+    
+    func deleteComment(commentId: Int) async throws {
+        try await session.request(SearchRouter.deleteComment(commentId: commentId)).serializingData().handlingError()
     }
 }

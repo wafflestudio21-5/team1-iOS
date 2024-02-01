@@ -37,7 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        let useCase = SearchUseCase(searchRepository: repo)
 //        Task {
 //            do {
-//                try await repo.postComment(diaryId: 62, user: 1, description: "아주 좋아요")
+//                try await repo.deleteComment(commentId: 41)
 //            } catch {
 //                print(error)
 //            }
