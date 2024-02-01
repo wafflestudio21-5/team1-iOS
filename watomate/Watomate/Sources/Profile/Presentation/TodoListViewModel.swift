@@ -23,7 +23,7 @@ class TodoListViewModel: ViewModelType {
     private var cancellables = Set<AnyCancellable>()
     private let output = PassthroughSubject<Output, Never>()
     
-    private var viewModelsSubject = CurrentValueSubject<[Int: [TodoCellViewModel]], Never>([:]) //Int : section index에 해당
+    private var viewModelsSubject = CurrentValueSubject<[Int: [TodoCellViewModel]], Never>([:]) //Int는 section index
     var vms: AnyPublisher<[Int: [TodoCellViewModel]], Never> {
         return viewModelsSubject.eraseToAnyPublisher()
     }
@@ -31,8 +31,8 @@ class TodoListViewModel: ViewModelType {
     weak var delegate: (any TodoListViewModelDelegate)?
     private let todoUseCase: TodoUseCase
 
-    var sectionsForGoalId = [Int: Int]() // GoalId: Section index
-    var goalIdsForSections = [Int: Int]() // Section index: GoalId
+    var sectionsForGoalId = [Int: Int]() // [GoalId: Section index]
+    var goalIdsForSections = [Int: Int]() // [Section index: GoalId]
 
     init(todoUseCase: TodoUseCase) {
         self.todoUseCase = todoUseCase
@@ -239,7 +239,6 @@ extension TodoListViewModel {
             append(placeholder)
             return true
         }
-
         return false
     }
 }
