@@ -32,13 +32,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         self.window = window
         
-//        print(User.shared.id)
-//        print(User.shared.token)
+        print(User.shared.id)
+        print(User.shared.token)
 //        let repo = SearchRepository()
 //        let useCase = SearchUseCase(searchRepository: repo)
+//        let authRepo = AuthRepository()
 //        Task {
 //            do {
-//                try await repo.deleteComment(commentId: 41)
+////                try await repo.deleteComment(commentId: 41)
+//                try await authRepo.guestLogin(email: "ggg@ggg.ggg", password: "gggg")
 //            } catch {
 //                print(error)
 //            }

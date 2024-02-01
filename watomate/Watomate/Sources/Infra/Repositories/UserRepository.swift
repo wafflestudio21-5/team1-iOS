@@ -12,6 +12,8 @@ import Foundation
 protocol UserRepositoryProtocol {
     func changeProfilePic(id: Int, imageData: Data?) async throws -> String?
     func changeUserInfo(id: Int, username: String, intro: String) async throws
+    
+    func imageUpload(todoId: Int, imageData: Data?) async throws -> String?
 }
 
 class UserRepository: UserRepositoryProtocol {
@@ -58,40 +60,25 @@ class UserRepository: UserRepositoryProtocol {
         .serializingDecodable(UserInfoDto.self, decoder: decoder).handlingError()
     }
     
-    func signupWithEmail(email: String, password: String) async throws -> LoginInfo {
-        let dto = try await session.request(AuthRouter.signupWithEmail(email: email, password: password))
-            .serializingDecodable(LoginResponseDto.self, decoder: decoder).handlingError()
-        return dto.toDomain()
+    @discardableResult
+    func imageUpload(todoId: Int, imageData: Data?) async throws -> String? {
+        guard let imageData else { return nil }
+        guard let token = User.shared.token else { return nil }
+        
+        let header: HTTPHeaders = [
+            "Content-Type" : "multipart/form-data",
+            "Authorization" : "Token \(token)"
+        ]
+        
+        let url = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/image-upload/\(todoId)"
+        
+        let dto = try await session.upload(multipartFormData: { multipartFormData in
+            multipartFormData.append(imageData, withName: "image", fileName: "image.png", mimeType: "image/png")
+        }, to: url, method: .put, headers: header)
+        .serializingDecodable(ImageUploadResponseDto.self, decoder: decoder).handlingError()
+        return dto.image
     }
+    
+    
 }
 
-//private func handleImage(_ image: UIImage?) {
-//    guard let id = User.shared.id else { return }
-//    let url = "http://toyproject-envs.eba-hwxrhnpx.ap-northeast-2.elasticbeanstalk.com/api/\(id)"
-//    print(id)
-//    
-//    let header: HTTPHeaders = [
-//        "Content-Type" : "multipart/form-data",
-//        "Authorization" : "Token " + (User.shared.token ?? "")
-//    ]
-//    let parameters: [String: Any?] = [
-//        "username" : "test"
-//    ]
-//    
-//    AF.upload(multipartFormData: { multipartFormData in
-//        for (key, value) in parameters {
-//                        multipartFormData.append("\(value)".data(using: .utf8)!, withName: key)
-//                    }
-//        if let image = image?.pngData() {
-//            multipartFormData.append(image, withName: "profile_pic", fileName: "\(image).png", mimeType: "image/png")
-//        }
-//    }, to: url, usingThreshold: UInt64.init(), method: .patch, headers: header).responseJSON { response in
-//        switch response.result {
-//        case .success(let data):
-//            print(response.response?.statusCode)
-//            print(data)
-//        case .failure(let error):
-//            print(error)
-//        }
-//    }
-//}

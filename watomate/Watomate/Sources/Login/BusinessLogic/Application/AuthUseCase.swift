@@ -77,4 +77,9 @@ class AuthUseCase {
         userDefaultsRepository.set(Int.self, key: .followingCount, value: userInfo.followingCount)
     }
     
+    func guestLogin(email: String, password: String) async throws {
+        try await authRepository.guestLogin(email: email, password: password)
+        User.shared.loginMethod = .email
+        userDefaultsRepository.set(String.self, key: .loginMethod, value: "email")
+    }
 }

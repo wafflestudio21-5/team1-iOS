@@ -293,7 +293,10 @@ class TodoDetailViewController: SheetCustomViewController {
     }
     
     @objc func handleVerificationCellTap() {
-        //사진 인증 셀 터치 이벤트 처리
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .photoLibrary
+        present(imagePicker, animated: true)
     }
     
     @objc func handleDoTodayCellTap() {
@@ -326,5 +329,40 @@ class TodoDetailViewController: SheetCustomViewController {
 extension TodoDetailViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         memoCell.showDoneBtn()
+    }
+}
+
+extension TodoDetailViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            handleImage(image)
+        }
+        dismiss(animated: true)
+    }
+    
+    private func handleImage(_ image: UIImage?) {
+        guard let image else { return }
+        let resizedImage = image.resizeImage(newWidth: 400)
+        Task {
+            do {
+                let repo = UserRepository()
+                guard let todoId = viewModel.id else { return }
+                try await repo.imageUpload(todoId: todoId, imageData: resizedImage.pngData())
+                showAlert(message: "인증샷 업로드 완료!")
+            } catch {
+                if let error = error as? NetworkError{
+                    if error.statusCode == 413 {
+                        showAlert(message: "사진 용량으로 인해 업로드에 실패했습니다.")
+                    }
+                }
+                print(error)
+            }
+        }
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default ))
+        present(alert, animated: true)
     }
 }

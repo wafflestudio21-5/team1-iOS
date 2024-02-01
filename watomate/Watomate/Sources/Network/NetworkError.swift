@@ -15,6 +15,7 @@ enum NetworkError: Error {
     case methodError
     case unprocessableEntity
     case serverError
+    case tooLargeError
     case internetOffline
     case timeout
     case decodingError
@@ -36,6 +37,8 @@ enum NetworkError: Error {
             return 422
         case .serverError:
             return 500
+        case .tooLargeError:
+            return 413
         default:
             return -1
         }
@@ -57,6 +60,8 @@ extension NetworkError {
             return .unprocessableEntity
         case 500:
             return .serverError
+        case 413:
+            return .tooLargeError
         default:
             return nil
         }
@@ -90,6 +95,8 @@ extension NetworkError: LocalizedError {
             return NSLocalizedString("Kakao Login Error", comment: "Kakao Login Error")
         case .errorWithMessage(let message):
             return NSLocalizedString(message, comment: message)
+        case .tooLargeError:
+            return NSLocalizedString("Request entity too large", comment: "Request entity too large")
         }
     }
 }

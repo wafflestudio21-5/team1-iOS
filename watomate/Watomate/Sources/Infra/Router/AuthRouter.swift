@@ -16,6 +16,7 @@ enum AuthRouter: Router {
     case loginWithEmail(email: String, password: String)
     case loginWithKakao(kakaoId: Int64)
     case deleteAccount
+    case guestLogin(email: String, password: String)
     
     var method: HTTPMethod {
         switch self {
@@ -31,6 +32,8 @@ enum AuthRouter: Router {
             return .post
         case .deleteAccount:
             return .put
+        case .guestLogin:
+            return .patch
         }
     }
     
@@ -48,6 +51,8 @@ enum AuthRouter: Router {
             return "/login/kakao"
         case .deleteAccount:
             return "/\(User.shared.id!)/delete"
+        case .guestLogin:
+            return "/\(User.shared.id!)/update/"
         }
     }
     
@@ -65,6 +70,8 @@ enum AuthRouter: Router {
             return ["kakao_id": kakaoId]
         case .deleteAccount:
             return [:]
+        case let .guestLogin(email, password):
+            return ["email": email, "password": password]
         }
     }
 }

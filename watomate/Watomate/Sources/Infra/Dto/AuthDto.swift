@@ -26,3 +26,8 @@ struct GuestResponseDto: Decodable {
     }
 }
 
+struct GuestLoginResponseDto: Decodable {
+    let password: String
+    let email: String
+}
+
