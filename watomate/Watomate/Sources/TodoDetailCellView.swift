@@ -79,6 +79,11 @@ class TodoDetailCellView: UIStackView {
         icon.layer.cornerRadius = icon.frame.height / 2
     }
     
+    func toggleButtons() {
+        doneButton.isHidden = !doneButton.isHidden
+        deleteButton.isHidden = !deleteButton.isHidden
+    }
+    
     func showDoneBtn() {
         doneButton.isHidden = false
     }

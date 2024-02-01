@@ -29,6 +29,14 @@ class TodoRepository: TodoRepositoryProtocol {
         return response
     }
     
+    func getArchiveTodos() async throws -> GoalsResponseDto {
+        let response = try await session
+            .request(TodoRouter.getArchiveTodos(userId: User.shared.id!))
+            .serializingDecodable(GoalsResponseDto.self)
+            .handlingError()
+        return response
+    }
+    
     func getTodos(on date: String) async throws -> GoalsResponseDto {
         let response = try await session
             .request(TodoRouter.getTodos(userId: User.shared.id!, date: date))
