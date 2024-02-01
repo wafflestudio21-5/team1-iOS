@@ -210,6 +210,18 @@ extension HomeViewController {
         }
         return 60
     }
+    
+    override func addEmptyTodo(_ sender: UITapGestureRecognizer) {
+        guard let headerView = sender.view as? GoalStackView else { return }
+        let section = headerView.tag
+        // calendar초기선택값 지정해야함 -> 안하면 dateString못가져와서 투두 추가 불가능
+        guard let date = selectedDate?.date else { return }
+        let dateString = Utils.YYYYMMddFormatter().string(from: date)
+        let success = todoListViewModel.appendPlaceholderIfNeeded(at: section, with: dateString)//with date
+        if !success {
+            todoTableView.endEditing(false)
+        }
+    }
 }
 
 extension HomeViewController: TodoListViewModelDelegate {
@@ -299,9 +311,6 @@ extension HomeViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
     }
     
 }
-
-
-
 
 extension HomeViewController: DiaryPreviewViewControllerDelegate {
     func diaryPreviewViewControllerDidRequestDiaryCreation(_ controller: DiaryPreviewViewController) {

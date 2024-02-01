@@ -21,16 +21,17 @@ class TabBarController: UITabBarController {
         
         let todoRepository = TodoRepository()
         let todoUseCase = TodoUseCase(todoRepository: todoRepository)
-        let todoListViewModel = TodoListViewModel(todoUseCase: todoUseCase)
+        let profileTodoListViewModel = TodoListViewModel(todoUseCase: todoUseCase)
+        let homeTodoListViewModel = TodoListViewModel(todoUseCase: todoUseCase)
         let diaryViewModel = DiaryPreviewViewModel()
         
-        let todoVC = UINavigationController(rootViewController: HomeViewController(todoListViewModel: todoListViewModel, diaryViewModel: diaryViewModel))
+        let todoVC = UINavigationController(rootViewController: HomeViewController(todoListViewModel: homeTodoListViewModel, diaryViewModel: diaryViewModel))
         todoVC.tabBarItem = UITabBarItem(title: "피드", image: UIImage(named: "home"), tag: 0)
 
         let searchVC = UINavigationController(rootViewController: SearchViewController())
         searchVC.tabBarItem = UITabBarItem(title: "검색", image: UIImage(named: "search"), tag: 1)
 
-        let profileVC = UINavigationController(rootViewController: ProfileViewController(todoListViewModel: todoListViewModel))
+        let profileVC = UINavigationController(rootViewController: ProfileViewController(todoListViewModel: profileTodoListViewModel))
 
         profileVC.tabBarItem = UITabBarItem(title: "My", image: UIImage(named: "my"), tag: 3)
 

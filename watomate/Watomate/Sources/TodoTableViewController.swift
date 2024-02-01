@@ -157,15 +157,7 @@ extension TodoTableViewController: UITableViewDelegate {
         return header
     }
     
-    @objc internal func addEmptyTodo(_ sender: UITapGestureRecognizer) {
-        guard let headerView = sender.view as? GoalStackView else { return }
-            
-        let section = headerView.tag
-        let success = todoListViewModel.appendPlaceholderIfNeeded(at: section)
-        if !success {
-            todoTableView.endEditing(false)
-        }
-    }
+    @objc internal func addEmptyTodo(_ sender: UITapGestureRecognizer) { }
     
     func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
         return 60

@@ -57,7 +57,7 @@ enum TodoRouter: Router {
         case let .getTodos(_, date):
             return ["date": date]
         case let .addTodo(_, _, todo):
-            return ["title": todo.title, "is_completed": false]
+            return ["title": todo.title, "date": todo.date, "is_completed": false]
         case .deleteTodo:
             return nil
         case let .updateTodo(_, _, todo):
