@@ -16,10 +16,12 @@ protocol AuthRepositoryProtocol {
     func loginWithEmail(email: String, password: String) async throws -> LoginInfo
     func loginWithKakao(kakaoId: Int64) async throws -> LoginInfo
     func deleteAccount() async throws
+    func guestLogin(email: String, password: String) async throws
 }
 
 class AuthRepository: AuthRepositoryProtocol {
-    private let session = AF
+    private let af = AF
+    private let session = NetworkManager.shared.session
     private let decoder = JSONDecoder()
     
     init() {
@@ -27,32 +29,32 @@ class AuthRepository: AuthRepositoryProtocol {
     }
     
     func signupWithEmail(email: String, password: String) async throws -> LoginInfo {
-        let dto = try await session.request(AuthRouter.signupWithEmail(email: email, password: password))
+        let dto = try await af.request(AuthRouter.signupWithEmail(email: email, password: password))
             .serializingDecodable(LoginResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }
     
     func signupWithKakao(kakaoId: Int64) async throws -> LoginInfo {
-        let dto = try await session.request(AuthRouter.signupWithKakao(kakaoId: kakaoId))
+        let dto = try await af.request(AuthRouter.signupWithKakao(kakaoId: kakaoId))
             .serializingDecodable(LoginResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }
     
     func signupGuest() async throws -> LoginInfo {
-        let dto = try await session.request(AuthRouter.signupGuest)
+        let dto = try await af.request(AuthRouter.signupGuest)
             .serializingDecodable(GuestResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }
     
     func loginWithEmail(email: String, password: String) async throws -> LoginInfo {
-        let dto = try await session.request(AuthRouter.loginWithEmail(email: email, password: password))
+        let dto = try await af.request(AuthRouter.loginWithEmail(email: email, password: password))
             .serializingDecodable(LoginResponseDto.self, decoder: decoder).handlingError()
         return dto.toDomain()
     }
     
     func loginWithKakao(kakaoId: Int64) async throws -> LoginInfo {
         do {
-            let dto = try await session.request(AuthRouter.loginWithKakao(kakaoId: kakaoId))
+            let dto = try await af.request(AuthRouter.loginWithKakao(kakaoId: kakaoId))
                 .serializingDecodable(LoginResponseDto.self, decoder: decoder).handlingError()
             return dto.toDomain()
         } catch {
@@ -68,5 +70,9 @@ class AuthRepository: AuthRepositoryProtocol {
     
     func deleteAccount() async throws {
         try await session.request(AuthRouter.deleteAccount).serializingData().handlingError()
+    }
+    
+    func guestLogin(email: String, password: String) async throws {
+        try await session.request(AuthRouter.guestLogin(email: email, password: password)).serializingDecodable(GuestLoginResponseDto.self, decoder: decoder).handlingError()
     }
 }

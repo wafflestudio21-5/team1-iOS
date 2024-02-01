@@ -10,7 +10,12 @@ import Alamofire
 import Combine
 import UIKit
 
+protocol JoinViewControllerDelegate: AnyObject {
+    func guestJoinComplete()
+}
+
 class JoinViewController: PlainCustomBarViewController {
+    weak var delegate: JoinViewControllerDelegate?
     private let viewModel: JoinViewModel
     
     private var cancellables = Set<AnyCancellable>()
@@ -168,6 +173,8 @@ class JoinViewController: PlainCustomBarViewController {
                     self?.updateCheckmarkStatus(isChecked: isChecked)
                 case .toggleOkButton(let isEnabled):
                     self?.updateOkButtonState(isEnabled: isEnabled)
+                case .guestSignUpSucceed:
+                    self?.popController()
                 }
             }.store(in: &cancellables)
     }
@@ -187,6 +194,11 @@ class JoinViewController: PlainCustomBarViewController {
     
     @objc private func okButtonTapped() {
         viewModel.input.send(.okButtonTapped)
+    }
+    
+    private func popController() {
+        navigationController?.popViewController(animated: true)
+        delegate?.guestJoinComplete()
     }
     
     private func transitionToMainScreen() {

@@ -20,6 +20,7 @@ enum TodoRouter: Router {
     case addGoal(userId: Int, goal: GoalCreate)
     case patchGoal(userId: Int, goalId: Int, goal: GoalCreate)
     case deleteGoal(userId: Int, goalId: Int)
+//    case uploadImage(todoId: Int)
 
     var method: HTTPMethod {
         switch self {
