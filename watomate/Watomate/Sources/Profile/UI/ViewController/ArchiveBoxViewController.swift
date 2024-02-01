@@ -14,19 +14,9 @@ class ArchiveBoxViewController: PlainCustomBarViewController {
         super.viewDidLoad()
         setTitle("나의 인증샷")
         setLeftBackButton()
-        /*
-        contentView.addSubview(archiveImageCollectionView)
-        archiveImageCollectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-         */
+
     }
-    /*
-    private lazy var archiveImageCollectionView : UICollectionView = {
-        let collectionView = UICollectionView()
-        return collectionView
-    }()
-     */
+
 
    
 
