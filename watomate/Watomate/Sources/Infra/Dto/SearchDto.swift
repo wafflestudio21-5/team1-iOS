@@ -75,6 +75,9 @@ struct DiaryFeedResponseDto: Decodable {
     
     struct DiaryDto: Decodable {
         let id: Int 
+        let username: String
+        let profilePic: String?
+        let tedoori: Bool 
         let createdBy: Int
         let description: String
         let visibility: String

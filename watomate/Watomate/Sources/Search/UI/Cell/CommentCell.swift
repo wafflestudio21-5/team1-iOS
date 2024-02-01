@@ -10,6 +10,7 @@ import UIKit
 
 protocol CommentCellDelegate: AnyObject {
     func deleteComment(commentId: Int)
+    func editComment(commentId: Int, comment: String)
 }
 
 class CommentCell: UITableViewCell {
@@ -44,9 +45,6 @@ class CommentCell: UITableViewCell {
         textView.autocapitalizationType = .none
         textView.isEditable = false
         
-//        textView.snp.makeConstraints { make in
-//            make.height.equalTo(41)
-//        }
         return textView
     }()
     
@@ -119,6 +117,9 @@ class CommentCell: UITableViewCell {
     }()
     
     @objc func checkTapped() {
+        guard let viewModel else { return }
+        guard let text = commentTextView.text else { return }
+        
         buttonStackView.removeArrangedSubview(checkButton)
         checkButton.removeFromSuperview()
         buttonStackView.addArrangedSubview(editButton)
@@ -126,6 +127,8 @@ class CommentCell: UITableViewCell {
         
         commentTextView.isEditable = false
         commentTextView.backgroundColor = .clear
+        
+        delegate?.editComment(commentId: viewModel.id, comment: text)
     }
     
     @objc func likeTapped() {

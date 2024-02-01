@@ -18,6 +18,7 @@ class MateDiaryViewModel: ViewModelType {
     enum Input {
         case viewDidLoad
         case deleteComment(commentId: Int)
+        case editComment(commentId: Int, comment: String)
         case commentSendTapped(comment: String)
     }
     
@@ -37,6 +38,8 @@ class MateDiaryViewModel: ViewModelType {
                 saveComment(comment: comment)
             case let .deleteComment(commentId):
                 deleteComment(commentId: commentId)
+            case let .editComment(commentId, comment):
+                editComment(commentId: commentId, comment: comment)
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -123,6 +126,20 @@ class MateDiaryViewModel: ViewModelType {
                 try await searchUseCase.deleteComment(commentId: commentId)
                 if let index = comments.firstIndex(where: { $0.id == commentId }) {
                     comments.remove(at: index)
+                }
+                output.send(.showComments(comments: comments))
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    private func editComment(commentId: Int, comment: String) {
+        Task {
+            do {
+                try await searchUseCase.editComment(commentId: commentId, description: comment)
+                if let index = comments.firstIndex(where: { $0.id == commentId }) {
+                    comments[index].description = comment
                 }
                 output.send(.showComments(comments: comments))
             } catch {

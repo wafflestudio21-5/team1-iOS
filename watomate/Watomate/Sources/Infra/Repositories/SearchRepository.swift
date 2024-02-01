@@ -61,43 +61,55 @@ class SearchRepository: SearchRepositoryProtocol {
     func getInitialDiaries(id: Int) async throws -> DiariesPage {
         let dto = try await session.request(SearchRouter.getDiaryFeed(id: id))
             .serializingDecodable(DiaryFeedResponseDto.self, decoder: decoder).handlingError()
-        var diaries = [SearchDiary]()
-        for diaryDto in dto.results {
-            let user = try await getUserInfo(id: diaryDto.createdBy)
-            diaries.append(SearchDiary(id: diaryDto.id,
-                                       user: user,
-                                 description: diaryDto.description,
-                                       visibility: Visibility(rawValue: diaryDto.visibility) ?? .PR ,
-                                 mood: diaryDto.mood,
-                                       color: Color(rawValue: diaryDto.color) ?? Color.system,
-                                 emoji: diaryDto.emoji,
-                                 image: diaryDto.image,
-                                 date: diaryDto.date,
-                                 likes: diaryDto.likes.map{ $0.toDomain() },
-                                 comments: diaryDto.comments.map{ $0.toDomain() }))
-        }
-        return DiariesPage(nextUrl: dto.next, results: diaries)
+        return DiariesPage(nextUrl: dto.next, results: dto.results
+            .map{ SearchDiary(id: $0.id,
+                              user: UserInfo(
+                                id: $0.createdBy,
+                                tedoori: $0.tedoori,
+                                goalColors: [],
+                                intro: nil,
+                                username: $0.username,
+                                profilePic: $0.profilePic,
+                                followerCount: nil,
+                                followingCount: nil
+                              ),
+                              description: $0.description,
+                              visibility: Visibility(rawValue: $0.visibility) ?? .PR ,
+                              mood: $0.mood,
+                              color: Color(rawValue: $0.color) ?? Color.system,
+                              emoji: $0.emoji,
+                              image: $0.image,
+                              date: $0.date,
+                              likes: $0.likes.map{ $0.toDomain() },
+                              comments: $0.comments.map{ $0.toDomain() })
+            })
     }
     
     func getMoreDiaries(url: String) async throws -> DiariesPage {
         let dto = try await session.request(URL(string: url)!)
             .serializingDecodable(DiaryFeedResponseDto.self, decoder: decoder).handlingError()
-        var diaries = [SearchDiary]()
-        for diaryDto in dto.results {
-            let user = try await getUserInfo(id: diaryDto.createdBy)
-            diaries.append(SearchDiary(id: diaryDto.id, 
-                                       user: user,
-                                 description: diaryDto.description,
-                                       visibility: Visibility(rawValue: diaryDto.visibility) ?? .PR,
-                                 mood: diaryDto.mood,
-                                 color: Color(rawValue: diaryDto.color) ?? Color.system,
-                                 emoji: diaryDto.emoji,
-                                 image: diaryDto.image,
-                                 date: diaryDto.date,
-                                 likes: diaryDto.likes.map{ $0.toDomain() },
-                                 comments: diaryDto.comments.map{ $0.toDomain() }))
-        }
-        return DiariesPage(nextUrl: dto.next, results: diaries)
+        return DiariesPage(nextUrl: dto.next, results: dto.results
+            .map{ SearchDiary(id: $0.id,
+                              user: UserInfo(
+                                id: $0.createdBy,
+                                tedoori: $0.tedoori,
+                                goalColors: [],
+                                intro: nil,
+                                username: $0.username,
+                                profilePic: $0.profilePic,
+                                followerCount: nil,
+                                followingCount: nil
+                              ),
+                              description: $0.description,
+                              visibility: Visibility(rawValue: $0.visibility) ?? .PR ,
+                              mood: $0.mood,
+                              color: Color(rawValue: $0.color) ?? Color.system,
+                              emoji: $0.emoji,
+                              image: $0.image,
+                              date: $0.date,
+                              likes: $0.likes.map{ $0.toDomain() },
+                              comments: $0.comments.map{ $0.toDomain() })
+            })
     }
     
     func searchInitialUsers(username: String) async throws -> UsersPage {

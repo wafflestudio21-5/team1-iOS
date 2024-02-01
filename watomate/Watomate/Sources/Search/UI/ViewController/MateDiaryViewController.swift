@@ -24,7 +24,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     private var cancellables = Set<AnyCancellable>()
     
     private var isScrollNeeded = false
-    private var inputTableViewHeight: CGFloat = 0
+    private var inputTextViewHeight: CGFloat = 41
     
     init(_ viewModel: SearchDiaryCellViewModel) {
         self.viewModel = MateDiaryViewModel(diary: viewModel, searchUserCase: SearchUseCase(searchRepository: SearchRepository()))
@@ -91,7 +91,6 @@ class MateDiaryViewController: DraggableCustomBarViewController {
                     isScrollNeeded = true
                     showComments(comments: comments)
                     hideKeyboard()
-//                    delegate?.updateComments(diaryId: viewModel.id, comments: comments)
                 }
             }.store(in: &cancellables)
         
@@ -140,6 +139,9 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     @objc func hideKeyboard() {
         contentView.endEditing(true)
+        inputTextView.snp.remakeConstraints { make in
+            make.height.equalTo(41)
+        }
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -574,7 +576,7 @@ extension MateDiaryViewController: UITextViewDelegate {
         let size = CGSize(width: inputTextView.frame.width, height: .infinity)
        let estimatedSize = inputTextView.sizeThatFits(size)
         
-        if inputTableViewHeight != estimatedSize.height {
+        if inputTextViewHeight != estimatedSize.height {
             if estimatedSize.height <= 91 { // Define maximumHeight
                 textView.isScrollEnabled = false
                 inputTextView.snp.remakeConstraints { make in
@@ -592,6 +594,10 @@ extension MateDiaryViewController: UITextViewDelegate {
 }
 
 extension MateDiaryViewController: CommentCellDelegate {
+    func editComment(commentId: Int, comment: String) {
+        viewModel.input.send(.editComment(commentId: commentId, comment: comment))
+    }
+    
     func deleteComment(commentId: Int) {
         showAlert(message: "댓글을 삭제하시겠습니까?") { [weak self] _ in
             self?.viewModel.input.send(.deleteComment(commentId: commentId))
