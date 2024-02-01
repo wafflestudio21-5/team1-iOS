@@ -98,7 +98,7 @@ extension DiaryFeedViewController: UIScrollViewDelegate {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height
         
-        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 400) {
+        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 200) {
             viewModel.input.send(.reachedEndOfScrollView)
         }
     }

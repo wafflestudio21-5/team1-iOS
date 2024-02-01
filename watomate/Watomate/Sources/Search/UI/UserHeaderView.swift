@@ -47,8 +47,8 @@ class UserHeaderView: UITableViewHeaderFooterView {
         addSubview(usernameLabel)
         
         profileCircleView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(9)
-            make.width.height.equalTo(30)
+            make.top.bottom.equalToSuperview().inset(7)
+            make.width.height.equalTo(33)
             make.leading.equalToSuperview().offset(20)
         }
         
@@ -62,6 +62,8 @@ class UserHeaderView: UITableViewHeaderFooterView {
         usernameLabel.text = username
         if let profilePic {
             profileCircleView.setImage(profilePic)
+        } else {
+            profileCircleView.setDefault()
         }
     }
 }
