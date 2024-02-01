@@ -12,7 +12,8 @@ import UIKit
 
 protocol MateDiaryViewControllerDelegate: AnyObject {
     func likedWithEmoji(diaryId: Int, user: Int, emoji: String)
-    func addComment(diaryId: Int, comments: [CommentCellViewModel])
+    func updateComments(diaryId: Int, comments: [CommentCellViewModel])
+//    func updateComments(comments: [CommentCellViewModel])
 }
 
 class MateDiaryViewController: DraggableCustomBarViewController {
@@ -23,10 +24,10 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     private var cancellables = Set<AnyCancellable>()
     
     private var isScrollNeeded = false
+    private var inputTableViewHeight: CGFloat = 0
     
     init(_ viewModel: SearchDiaryCellViewModel) {
-        print(viewModel.comments)
-        self.viewModel = MateDiaryViewModel(diaryCellViewModel: viewModel, searchUserCase: SearchUseCase(searchRepository: SearchRepository()))
+        self.viewModel = MateDiaryViewModel(diary: viewModel, searchUserCase: SearchUseCase(searchRepository: SearchRepository()))
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -57,12 +58,16 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        delegate?.updateComments(diaryId: viewModel.diaryId, comments: viewModel.comments)
+    }
+    
     private func configureCommentDataSource() {
         commentListDataSource = UITableViewDiffableDataSource(tableView: commentTableView) { [weak self] tableView, indexPath, itemIdentifier in
             guard let self else { fatalError() }
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CommentCell.reuseIdentifier, for: indexPath) as? CommentCell else { fatalError() }
-//            cell.delegate = self
-
+            cell.delegate = self
+            cell.selectionStyle = .none
             cell.configure(with: viewModel.commentViewModel(at: indexPath))
             self.divisionView.isHidden = false 
             return cell
@@ -80,13 +85,13 @@ class MateDiaryViewController: DraggableCustomBarViewController {
                 case let .successSaveLike(emoji):
                     configure()
                     delegate?.likedWithEmoji(diaryId: self.viewModel.diaryId, user: userId, emoji: emoji)
-                case let .firstComments(comments):
+                case let .showComments(comments):
                     showComments(comments: comments)
                 case let .updateComments(comments):
                     isScrollNeeded = true
                     showComments(comments: comments)
                     hideKeyboard()
-                    delegate?.addComment(diaryId: viewModel.id, comments: comments)
+//                    delegate?.updateComments(diaryId: viewModel.id, comments: comments)
                 }
             }.store(in: &cancellables)
         
@@ -567,18 +572,38 @@ extension MateDiaryViewController: LikeEmojiViewControllerDelegate {
 extension MateDiaryViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         let size = CGSize(width: inputTextView.frame.width, height: .infinity)
-           let estimatedSize = inputTextView.sizeThatFits(size)
+       let estimatedSize = inputTextView.sizeThatFits(size)
+        
+        if inputTableViewHeight != estimatedSize.height {
+            if estimatedSize.height <= 91 { // Define maximumHeight
+                textView.isScrollEnabled = false
+                inputTextView.snp.remakeConstraints { make in
+                    make.height.equalTo(estimatedSize)
+                    make.trailing.equalTo(sendButton.snp.leading).offset(-12)
+                    make.leading.equalToSuperview()
+                }
+                view.layoutIfNeeded()
+            } else {
+                textView.isScrollEnabled = true
+            }
+        }
 
-           if estimatedSize.height <= 91 { // Define maximumHeight
-               textView.isScrollEnabled = false
-               inputTextView.snp.remakeConstraints { make in
-                   make.height.equalTo(estimatedSize)
-                   make.trailing.equalTo(sendButton.snp.leading).offset(-12)
-                   make.leading.equalToSuperview()
-               }
-               view.layoutIfNeeded()
-           } else {
-               textView.isScrollEnabled = true
-           }
     }
+}
+
+extension MateDiaryViewController: CommentCellDelegate {
+    func deleteComment(commentId: Int) {
+        showAlert(message: "댓글을 삭제하시겠습니까?") { [weak self] _ in
+            self?.viewModel.input.send(.deleteComment(commentId: commentId))
+        }
+    }
+    
+    private func showAlert(message: String, handler: ((UIAlertAction) -> Void)?) {
+        let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "취소", style: .default))
+        alert.addAction(UIAlertAction(title: "확인", style: .default, handler: handler))
+        present(alert, animated: true)
+    }
+    
+    
 }
