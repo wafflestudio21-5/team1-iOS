@@ -64,6 +64,10 @@ class SearchUseCase {
         try await searchRepository.postLike(diaryId: diaryId, user: user, emoji: emoji)
     }
     
+    func commentLike(commentId: Int, user: Int, emoji: String) async throws {
+        try await searchRepository.commentLike(commentId: commentId, user: user, emoji: emoji)
+    }
+    
     func postComment(diaryId: Int, userId: Int, description: String) async throws -> SearchComment {
         return try await searchRepository.postComment(diaryId: diaryId, user: userId, description: description)
     }

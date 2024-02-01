@@ -33,7 +33,7 @@ class TodoFeedViewController: UIViewController {
         tableView.delegate = self
         tableView.keyboardDismissMode = .onDrag
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 80
+        tableView.estimatedRowHeight = 70
         tableView.separatorStyle = .none
         tableView.backgroundColor = .systemBackground
         tableView.showsVerticalScrollIndicator = false 
@@ -103,7 +103,7 @@ extension TodoFeedViewController: UIScrollViewDelegate {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height
         
-        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 400) {
+        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 200) {
             viewModel.input.send(.reachedEndOfScrollView)
         }
     }

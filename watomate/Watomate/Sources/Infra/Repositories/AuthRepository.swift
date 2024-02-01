@@ -15,6 +15,7 @@ protocol AuthRepositoryProtocol {
     func signupGuest() async throws -> LoginInfo
     func loginWithEmail(email: String, password: String) async throws -> LoginInfo
     func loginWithKakao(kakaoId: Int64) async throws -> LoginInfo
+    func deleteAccount() async throws
 }
 
 class AuthRepository: AuthRepositoryProtocol {
@@ -63,5 +64,9 @@ class AuthRepository: AuthRepositoryProtocol {
             }
             throw error
         }
+    }
+    
+    func deleteAccount() async throws {
+        try await session.request(AuthRouter.deleteAccount).serializingData().handlingError()
     }
 }

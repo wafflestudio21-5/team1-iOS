@@ -13,7 +13,6 @@ import UIKit
 protocol MateDiaryViewControllerDelegate: AnyObject {
     func likedWithEmoji(diaryId: Int, user: Int, emoji: String)
     func updateComments(diaryId: Int, comments: [CommentCellViewModel])
-//    func updateComments(comments: [CommentCellViewModel])
 }
 
 class MateDiaryViewController: DraggableCustomBarViewController {
@@ -24,7 +23,7 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     private var cancellables = Set<AnyCancellable>()
     
     private var isScrollNeeded = false
-    private var inputTableViewHeight: CGFloat = 0
+    private var inputTextViewHeight: CGFloat = 41
     
     init(_ viewModel: SearchDiaryCellViewModel) {
         self.viewModel = MateDiaryViewModel(diary: viewModel, searchUserCase: SearchUseCase(searchRepository: SearchRepository()))
@@ -91,7 +90,8 @@ class MateDiaryViewController: DraggableCustomBarViewController {
                     isScrollNeeded = true
                     showComments(comments: comments)
                     hideKeyboard()
-//                    delegate?.updateComments(diaryId: viewModel.id, comments: comments)
+                case .reloadComments(comments: let comments):
+                    self.commentListDataSource.applySnapshotUsingReloadData(self.commentListDataSource.snapshot())
                 }
             }.store(in: &cancellables)
         
@@ -140,6 +140,9 @@ class MateDiaryViewController: DraggableCustomBarViewController {
     
     @objc func hideKeyboard() {
         contentView.endEditing(true)
+        inputTextView.snp.remakeConstraints { make in
+            make.height.equalTo(41)
+        }
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
@@ -499,16 +502,6 @@ class MateDiaryViewController: DraggableCustomBarViewController {
         view.addArrangedSubview(inputTextView)
         view.addArrangedSubview(sendButton)
         
-//        view.addSubview(sendButton)
-//        sendButton.snp.makeConstraints { make in
-//            make.top.trailing.bottom.equalToSuperview()
-//        }
-//        
-//        view.addSubview(inputTextView)
-//        inputTextView.snp.makeConstraints { make in
-//            make.trailing.equalTo(sendButton.snp.leading).offset(-12)
-//            make.top.bottom.leading.equalToSuperview()
-//        }
         return view
     }()
     
@@ -563,7 +556,11 @@ class MateDiaryViewController: DraggableCustomBarViewController {
 }
 
 extension MateDiaryViewController: LikeEmojiViewControllerDelegate {
-    func likeWithEmoji(diaryId: Int, user: Int, emoji: String) {
+    func commentLike(commentId: Int, emoji: String) {
+        viewModel.saveCommentLike(commentId: commentId, emoji: emoji)
+    }
+    
+    func diaryLike(diaryId: Int, user: Int, emoji: String) {
         viewModel.saveLike(diaryId: diaryId, userId: user, emoji: emoji)
     }
     
@@ -574,7 +571,7 @@ extension MateDiaryViewController: UITextViewDelegate {
         let size = CGSize(width: inputTextView.frame.width, height: .infinity)
        let estimatedSize = inputTextView.sizeThatFits(size)
         
-        if inputTableViewHeight != estimatedSize.height {
+        if inputTextViewHeight != estimatedSize.height {
             if estimatedSize.height <= 91 { // Define maximumHeight
                 textView.isScrollEnabled = false
                 inputTextView.snp.remakeConstraints { make in
@@ -592,6 +589,24 @@ extension MateDiaryViewController: UITextViewDelegate {
 }
 
 extension MateDiaryViewController: CommentCellDelegate {
+    func likeComment(commentId: Int) {
+        guard let userId = User.shared.id else { return }
+        let vc = LikeEmojiViewController()
+        vc.commentId = commentId
+        vc.userId = userId
+        vc.delegate = self
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                return 280
+            })]
+        }
+        present(vc, animated: true)
+    }
+    
+    func editComment(commentId: Int, comment: String) {
+        viewModel.input.send(.editComment(commentId: commentId, comment: comment))
+    }
+    
     func deleteComment(commentId: Int) {
         showAlert(message: "댓글을 삭제하시겠습니까?") { [weak self] _ in
             self?.viewModel.input.send(.deleteComment(commentId: commentId))

@@ -70,7 +70,19 @@ class SettingsViewController: PlainCustomBarViewController {
     }
     
     private func deleteAccount(action: UIAlertAction) {
-        print("delete")
+        let authRepo = AuthRepository()
+        Task {
+            try await authRepo.deleteAccount() // 왜 에러가 안나지?
+            
+            logout()
+            
+            let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), searchRepository: SearchRepository(), kakaoRepository: KakaoRepository())
+            let vc = UINavigationController(rootViewController: FirstViewController(viewModel: FirstViewModel(authUseCase: authUseCase)))
+            vc.modalPresentationStyle = .fullScreen
+            present(vc, animated: false)
+            
+        }
+
     }
     
     private func showAlert(message: String, handler: ((UIAlertAction) -> Void)?) {

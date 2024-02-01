@@ -98,7 +98,7 @@ extension DiaryFeedViewController: UIScrollViewDelegate {
         let contentOffsetY = scrollView.contentOffset.y
         let tableViewContentSize = tableView.contentSize.height
         
-        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 400) {
+        if contentOffsetY > (tableViewContentSize - tableView.bounds.size.height - 200) {
             viewModel.input.send(.reachedEndOfScrollView)
         }
     }
@@ -120,7 +120,10 @@ extension DiaryFeedViewController: SearchDiaryCellDelegate {
 }
 
 extension DiaryFeedViewController: LikeEmojiViewControllerDelegate {
-    func likeWithEmoji(diaryId: Int, user: Int, emoji: String) {
+    func commentLike(commentId: Int, emoji: String) {
+    }
+    
+    func diaryLike(diaryId: Int, user: Int, emoji: String) {
         viewModel.input.send(.likeTapped(diaryId: diaryId, userId: user, emoji: emoji))
     }
     
