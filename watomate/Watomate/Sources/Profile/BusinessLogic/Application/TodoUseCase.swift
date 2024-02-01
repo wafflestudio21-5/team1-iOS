@@ -23,6 +23,13 @@ class TodoUseCase {
         return goals
     }
     
+    func getArchiveTodos() async throws -> [Goal] {
+        let goalsDto = try await todoRepository.getArchiveTodos()
+        let goals = goalsDto.map { $0.toDomain() }
+        self.goals = goals
+        return goals
+    }
+    
     func getTodos(on date: String) async throws -> [Goal] {
         let goalsDto = try await todoRepository.getTodos(on: date)
         let goals = goalsDto.map { $0.toDomain() }
@@ -87,4 +94,21 @@ class TodoUseCase {
         }
         return nil
     }
+    
+    func addGoal(_ goal: GoalCreate) async throws -> Goal {
+        let goalResponseDto = try await todoRepository.addGoal(goal: goal)
+        return goalResponseDto.toDomain()
+    }
+    
+    func patchGoal(_ goalId: Int, goal: GoalCreate) async throws -> Goal{
+        let goalResponseDto = try await todoRepository.patchGoal(goalId: goalId, goal: goal)
+        return goalResponseDto.toDomain()
+    }
+    
+    func deleteGoal(_ goalId: Int) async throws {
+        try await todoRepository.deleteGoal(goalId: goalId)
+    }
+    
+
+
 }

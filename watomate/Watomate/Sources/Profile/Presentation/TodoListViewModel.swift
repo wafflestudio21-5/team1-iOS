@@ -44,6 +44,8 @@ class TodoListViewModel: ViewModelType {
             case .viewDidAppear(let vc):
                 if vc.isKind(of: HomeViewController.self) {
                     self?.loadTodos(on: Utils.YYYYMMddFormatter().string(from: Date()))
+                } else if vc.isKind(of: ProfileViewController.self){
+                    self?.loadArchiveTodos()
                 } else {
                     self?.loadAllTodos()
                 }
@@ -89,6 +91,19 @@ class TodoListViewModel: ViewModelType {
         }
     }
     
+    func loadArchiveTodos() {
+        guard !isCalling else { return }
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let goals = try await todoUseCase.getArchiveTodos()
+                updateViewModels(with: goals)
+            } catch {
+                self.output.send(.loadFailed(errorMessage: error.localizedDescription))
+            }
+        }
+    }
+    
     func loadTodos(on date: String) {
         Task { [weak self] in
             guard let self else { return }
@@ -127,7 +142,16 @@ class TodoListViewModel: ViewModelType {
     func todo(at indexPath: IndexPath) -> Todo? {
         guard let viewModel = viewModel(at: indexPath) else { return nil }
         guard let goal = goal(at: indexPath.section) else { return nil }
-        return Todo(uuid: viewModel.uuid, id: viewModel.id, title: viewModel.title, color: goal.color, isCompleted: viewModel.isCompleted, goal: viewModel.goal, likes: viewModel.likes)
+        return Todo(uuid: viewModel.uuid,
+                    id: viewModel.id,
+                    title: viewModel.title,
+                    color: goal.color,
+                    description: viewModel.memo,
+                    reminder: viewModel.reminder,
+                    date: viewModel.date,
+                    isCompleted: viewModel.isCompleted,
+                    goal: viewModel.goal,
+                    likes: viewModel.likes)
     }
     
     func goal(at section: Int) -> Goal? {
@@ -273,6 +297,7 @@ extension TodoListViewModel: TodoCellViewModelDelegate {
         viewModelsSubject.send(viewModelsSubject.value)
         Task {
             try await todoUseCase.updateTodo(todo)
+            delegate?.todoListViewModel(self, didChangeDateOf: viewModel)
         }
     }
 
@@ -305,4 +330,5 @@ protocol TodoListViewModelDelegate: AnyObject {
         options: ReloadOptions
     )
     func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel)
+    func todoListViewModel(_ viewModel: TodoListViewModel, didChangeDateOf cellViewModel: TodoCellViewModel)
 }

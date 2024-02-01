@@ -13,8 +13,13 @@ struct Goal {
     var title: String
     var visibility: Visibility
     var color: String
-//    let createdAt: String
     var todos: [Todo]
+}
+
+struct GoalCreate {
+    var title: String?
+    var visibility: String?
+    var color: String?
 }
 
 enum Visibility: String {

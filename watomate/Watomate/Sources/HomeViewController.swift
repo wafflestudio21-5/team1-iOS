@@ -26,7 +26,7 @@ class HomeViewController: TodoTableViewController {
     
     private lazy var logoImage : UIImageView = {
         var view = UIImageView()
-        view.image = UIImage(systemName: "gearshape") // 추후 최종 로고 이미지로 변경
+        view.image = UIImage(named: "logo") // 추후 최종 로고 이미지로 변경
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -37,11 +37,18 @@ class HomeViewController: TodoTableViewController {
         return button
     }()
     
-    private lazy var showmoreButton : UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"))
-        // button.addTarget(self, action: #selector(notificationButtonTapped), for: .touchUpInside)
-        return button
+    @objc func showmoreButtonTapped() {
+        let goalManageVC = GoalManageViewController()
+        navigationController?.pushViewController(goalManageVC, animated: false)
+   }
+    
+    private lazy var showmoreButton: UIBarButtonItem = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
+        button.addTarget(self, action: #selector(showmoreButtonTapped), for: .touchUpInside)
+        return UIBarButtonItem(customView: button)
     }()
+
     
     private lazy var followingStackView: UIStackView = {
         let stackView = UIStackView()
@@ -248,6 +255,17 @@ extension HomeViewController: TodoListViewModelDelegate {
         let vc = TodoDetailViewController(viewModel: cellViewModel)
         vc.delegate = self
         present(vc, animated: true)
+    }
+    
+    func todoListViewModel(_ viewModel: TodoListViewModel, didChangeDateOf cellViewModel: TodoCellViewModel) {
+        guard let date = selectedDate?.date else {
+            input.send(.viewDidAppear(self))
+            return
+        }
+        let dateString = Utils.YYYYMMddFormatter().string(from: date)
+        if dateString != cellViewModel.date {
+            todoListViewModel.loadTodos(on: dateString)
+        }
     }
 }
 

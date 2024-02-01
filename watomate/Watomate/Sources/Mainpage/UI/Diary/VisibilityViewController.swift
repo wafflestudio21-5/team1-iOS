@@ -1,5 +1,5 @@
 //
-//  PrivacySetViewController.swift
+//  VisibilityViewController.swift
 //  WaToDoMate
 //
 //  Created by 이수민 on 2024/01/09.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class DiaryVisibilityViewController: SheetCustomViewController {
+class VisibilityViewController: SheetCustomViewController {
     var selectedButton: UIButton?
     
     override func viewDidLoad() {
@@ -17,7 +17,7 @@ class DiaryVisibilityViewController: SheetCustomViewController {
         visibilityView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(8)
-            make.bottom.equalToSuperview().inset(8)
+            make.bottom.equalToSuperview().inset(40)
         }
         
         okButtonAction(target: self, action: #selector(okButtonTapped))
@@ -26,6 +26,7 @@ class DiaryVisibilityViewController: SheetCustomViewController {
     
     @objc private func okButtonTapped() {
         onDismiss?(selectedTitle)
+        print(selectedTitle)
         dismiss(animated: true, completion: nil)
     }
 

@@ -177,7 +177,16 @@ extension TodoTableViewController: TodoDetailViewDelegate {
     }
     
     func didEndEditingMemo(viewModel: TodoCellViewModel) {
-        let todo = Todo(uuid: viewModel.uuid, id: viewModel.id, title: viewModel.title, color: viewModel.color, description: viewModel.memo, isCompleted: viewModel.isCompleted, goal: viewModel.goal, likes: viewModel.likes)
+        let todo = Todo(uuid: viewModel.uuid, 
+                        id: viewModel.id,
+                        title: viewModel.title, 
+                        color: viewModel.color,
+                        description: viewModel.memo,
+                        reminder: viewModel.reminder,
+                        date: viewModel.date,
+                        isCompleted: viewModel.isCompleted, 
+                        goal: viewModel.goal,
+                        likes: viewModel.likes)
         todoListViewModel.todoCellViewModel(viewModel, didUpdateItem: todo)
     }
     
