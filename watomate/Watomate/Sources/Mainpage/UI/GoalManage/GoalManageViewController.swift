@@ -22,10 +22,33 @@ class GoalManageViewController: PlainCustomBarViewController {
             make.top.equalToSuperview().inset(16)
             make.leading.equalToSuperview().inset(16)
         }
+        /*
         viewModel.loadGoals { [weak self] in
             DispatchQueue.main.async {
                 self?.updateUIGoals(self?.viewModel.goal ?? [])
             }
+        }
+         */
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.loadGoals { [weak self] in
+            DispatchQueue.main.async {
+                print("Loaded goals: \(self?.viewModel.goal ?? [])")
+                self?.updateUIGoals(self?.viewModel.goal ?? [])
+            }
+        }
+    }
+    
+    private func updateUIGoals(_ goals: [Goal]) {
+        goalListView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        for goal in goals {
+            print(goal)
+            let button = createButton(withText: goal.title, withColor: goal.color){
+                self.handleGoalSelection(goal)
+            }
+            goalListView.addArrangedSubview(button)
         }
     }
     
@@ -39,42 +62,27 @@ class GoalManageViewController: PlainCustomBarViewController {
     }()
 
     
-    private func updateUIGoals(_ goals: [Goal]) {
-        goalListView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        for goal in goals {
-            let button = createButton(withText: goal.title) // Assuming each Goal has a title property
-            goalListView.addArrangedSubview(button)
-        }
-    }
-
-    
-    private func createButton(withText text: String) -> UIButton {
+    private func createButton(withText text: String, withColor color: String, tapAction: @escaping () -> Void) -> UIButton {
         let button = UIButton(type: .system)
         button.setTitle(text, for: .normal)
-        button.setTitleColor(.black, for: .normal)  // Set the text color
+        button.setTitleColor(UIColor(named: color), for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16)
-        button.backgroundColor = .secondarySystemBackground  // Set the background color
+        button.backgroundColor = .secondarySystemBackground
         button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 15, bottom: 5, right: 15)
-
-        // Apply capsule shape
-        button.layer.cornerRadius = 20  // Assuming a height of 40
+        button.addAction(UIAction { _ in tapAction() }, for: .touchUpInside)
+        button.layer.cornerRadius = 20
         button.clipsToBounds = true
-
-        // Set fixed height
         button.heightAnchor.constraint(equalToConstant: 40).isActive = true
         button.translatesAutoresizingMaskIntoConstraints = false
 
         return button
     }
 
+    private func handleGoalSelection(_ goal: Goal) {
+        let goalEditVC = GoalEditViewController(goal: goal)
+        navigationController?.pushViewController(goalEditVC, animated: false)
+    }
 
-
-
-
-   
-
-
-    
     /*
     @objc private func addButtonTapped() {
         let goalCreateVC = GoalCreateViewController()

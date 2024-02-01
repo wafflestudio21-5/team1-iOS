@@ -87,4 +87,21 @@ class TodoUseCase {
         }
         return nil
     }
+    
+    func addGoal(_ goal: GoalCreate) async throws -> Goal {
+        let goalResponseDto = try await todoRepository.addGoal(goal: goal)
+        return goalResponseDto.toDomain()
+    }
+    
+    func patchGoal(_ goalId: Int, goal: GoalCreate) async throws -> Goal{
+        let goalResponseDto = try await todoRepository.patchGoal(goalId: goalId, goal: goal)
+        return goalResponseDto.toDomain()
+    }
+    
+    func deleteGoal(_ goalId: Int) async throws {
+        try await todoRepository.deleteGoal(goalId: goalId)
+    }
+    
+
+
 }

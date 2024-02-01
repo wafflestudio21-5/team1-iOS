@@ -17,6 +17,12 @@ struct Goal {
     var todos: [Todo]
 }
 
+struct GoalCreate {
+    var title: String?
+    var visibility: String?
+    var color: String?
+}
+
 enum Visibility: String {
     case PB
     case PR
