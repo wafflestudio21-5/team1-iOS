@@ -98,7 +98,7 @@ extension ArchiveBoxViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        navigationController?.pushViewController(ArchiveDetailViewController(viewModel: viewModel.viewModel(at: indexPath)), animated: true)
     }
     
 }

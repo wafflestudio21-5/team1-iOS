@@ -76,7 +76,7 @@ class ImageCell: UICollectionViewCell {
         options: [
             .processor(DownsamplingImageProcessor(size: .init(width: 200, height: 200)))
         ])
-        dateLabel.text = Utils.convertToKorean(date: viewModel.date)
+        dateLabel.text = Utils.convertToShortKorean(date: viewModel.date)
     
     }
 }
