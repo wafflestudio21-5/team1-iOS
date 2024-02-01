@@ -6,6 +6,7 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
+import SnapKit
 import UIKit
 
 class TodoHeaderView: UITableViewHeaderFooterView {
@@ -115,22 +116,50 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         return stackView
     }()
     
-    private lazy var archiveBoxButton: UIButton = {
+//    private lazy var archiveBoxButton: UIButton = {
+//        let button = UIButton()
+//        button.setTitle(" 나의 인증샷", for: .normal)
+//        button.setTitleColor(.black, for: .normal)
+//        if let image = UIImage(systemName: "archivebox.circle.fill")?.withRenderingMode(.alwaysTemplate) {
+//            button.setImage(image, for: .normal)
+//            button.tintColor = .black
+//        }
+//        button.backgroundColor = .systemGray6
+//        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
+//        button.layer.cornerRadius = 16
+//       
+//        button.contentEdgeInsets = UIEdgeInsets(top: 20, left: 10 , bottom: 20, right: 10)
+//        button.contentHorizontalAlignment = .center
+//        button.contentVerticalAlignment = .center
+//
+//        return button
+//    }()
+    
+    private lazy var archiveBoxButton = {
         let button = UIButton()
-        button.setTitle(" 나의 인증샷", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        if let image = UIImage(systemName: "archivebox.circle.fill")?.withRenderingMode(.alwaysTemplate) {
-            button.setImage(image, for: .normal)
-            button.tintColor = .black
-        }
         button.backgroundColor = .systemGray6
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 14)
-        button.layer.cornerRadius = 16
-       
-        button.contentEdgeInsets = UIEdgeInsets(top: 20, left: 10 , bottom: 20, right: 10)
-        button.contentHorizontalAlignment = .center
-        button.contentVerticalAlignment = .center
-
+        button.layer.cornerRadius = 10
+        button.clipsToBounds = true
+        
+       let imageView = UIImageView(image: UIImage(systemName: "archivebox.circle.fill"))
+        imageView.tintColor = .black
+        button.addSubview(imageView)
+        imageView.snp.makeConstraints { make in
+            make.width.height.equalTo(26)
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(10)
+        }
+        
+        let label = UILabel()
+        label.text = "나의 인증샷"
+        label.textColor = .label
+        label.font = UIFont(name: Constants.Font.regular, size: 12)
+        button.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(12)
+        }
+        
         return button
     }()
     
@@ -172,6 +201,8 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         }
         archiveBoxButton.snp.makeConstraints{ make in
             make.centerY.equalToSuperview()
+            make.width.equalTo(80)
+            make.height.equalTo(68)
             make.trailing.equalToSuperview()
         }
         

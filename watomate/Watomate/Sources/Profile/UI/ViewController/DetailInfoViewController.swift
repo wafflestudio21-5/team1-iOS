@@ -6,6 +6,7 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
+import SnapKit
 import UIKit
 
 class DetailInfoViewController: UIViewController {
@@ -63,9 +64,9 @@ class DetailInfoViewController: UIViewController {
         
         view.addSubview(goalLabel)
         goalLabel.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(7)
-            make.leading.equalToSuperview().inset(12)
-            make.trailing.equalToSuperview().inset(12).priority(999)
+            make.top.bottom.equalToSuperview().inset(10)
+            make.leading.equalToSuperview().inset(14)
+            make.trailing.equalToSuperview().inset(14).priority(999)
         }
         
         view.snp.makeConstraints { make in
@@ -77,7 +78,7 @@ class DetailInfoViewController: UIViewController {
     private lazy var goalLabel = {
         let label = UILabel()
         label.textColor = Color(rawValue: viewModel.goalColor)?.uiColor ?? .label
-        label.font = UIFont(name: Constants.Font.medium, size: 21)
+        label.font = UIFont(name: Constants.Font.medium, size: 19)
         label.text = viewModel.goalTitle
         return label
     }()
@@ -85,7 +86,7 @@ class DetailInfoViewController: UIViewController {
     private lazy var todoLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.regular, size: 18)
+        label.font = UIFont(name: Constants.Font.regular, size: 19)
         label.text = viewModel.todoTitle
         return label
     }()
