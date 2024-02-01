@@ -157,6 +157,7 @@ class GoalCreateViewController: PlainCustomBarViewController {
     private lazy var goalVisibilityView: UIView = {
         let view = UIView()
         view.addSubview(boxView)
+        view.isUserInteractionEnabled = false
         boxView.snp.makeConstraints { make in
             make.top.bottom.leading.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.3)
@@ -171,12 +172,14 @@ class GoalCreateViewController: PlainCustomBarViewController {
     
     private lazy var boxView = {
         let view = UIImageView()
+        view.isUserInteractionEnabled = false
         view.contentMode = .scaleAspectFit
         return view
     }()
     
     private lazy var goalVisibilityLabel = {
         let label = UILabel()
+        label.isUserInteractionEnabled = false
         label.textColor = .black
         label.textAlignment = .right
         return label
@@ -216,6 +219,7 @@ class GoalCreateViewController: PlainCustomBarViewController {
     
     private lazy var goalColorView: UIView = {
         let view = UIView()
+        view.isUserInteractionEnabled = false
         view.layer.cornerRadius = 10
         view.clipsToBounds = true
         return view

@@ -172,6 +172,7 @@ class GoalEditViewController: PlainCustomBarViewController {
     
     private lazy var goalVisibilityView: UIView = {
         let view = UIView()
+        view.isUserInteractionEnabled = false
         view.addSubview(boxView)
         boxView.snp.makeConstraints { make in
             make.top.bottom.leading.equalToSuperview()
@@ -187,12 +188,14 @@ class GoalEditViewController: PlainCustomBarViewController {
     
     private lazy var boxView = {
         let view = UIImageView()
+        view.isUserInteractionEnabled = false
         view.contentMode = .scaleAspectFit
         return view
     }()
     
     private lazy var goalVisibilityLabel = {
         let label = UILabel()
+        label.isUserInteractionEnabled = false
         label.textColor = .black
         label.textAlignment = .right
         return label
@@ -233,6 +236,7 @@ class GoalEditViewController: PlainCustomBarViewController {
     
     private lazy var goalColorView: UIView = {
         let view = UIView()
+        view.isUserInteractionEnabled = false
         view.layer.cornerRadius = 10
         view.clipsToBounds = true
         return view
