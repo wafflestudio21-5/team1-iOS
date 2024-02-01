@@ -224,17 +224,19 @@ class TodoListViewModel: ViewModelType {
 }
 
 extension TodoListViewModel {
-    func appendPlaceholderIfNeeded(at section: Int) -> Bool {
+    func appendPlaceholderIfNeeded(at section: Int, with dateString: String?) -> Bool {
         guard let goal = goal(at: section) else { return false }
-//        if viewModelsSubject.value[section]?.count == 0 {
+        var placeholder: Todo = .placeholderItem(with: goal)
+        if delegate is HomeViewController {
+            placeholder.date = dateString
+        }
         if todoUseCase.goals[section - 1].todos.count == 0 {
-            append(.placeholderItem(with: goal))
+            append(placeholder)
             return true
         }
-//        guard let lastItem = viewModelsSubject.value[section]?.last else { return false }
         guard let lastItem = todoUseCase.goals[section - 1].todos.last else { return false }
         if !lastItem.title.isEmpty {
-            append(.placeholderItem(with: goal))
+            append(placeholder)
             return true
         }
 
@@ -245,7 +247,11 @@ extension TodoListViewModel {
 extension TodoListViewModel: TodoCellViewModelDelegate {
     func todoCellViewModel(_ viewModel: TodoCellViewModel, didEndEditingTitleWith title: String?) {
         guard let indexPath = indexPath(with: viewModel.uuid) else { return }
-        guard let todo = todo(at: indexPath) else { return }
+        guard var todoItem = todo(at: indexPath) else { return }
+        if delegate is HomeViewController {
+            todoItem.date = viewModel.date
+        }
+        let todo = todoItem
         if title == nil || title?.isEmpty == true {
             remove(at: indexPath)
         } else if !viewModel.newlyAdded {
@@ -260,7 +266,7 @@ extension TodoListViewModel: TodoCellViewModelDelegate {
     func todoCellViewModelDidReturnTitle(_ viewModel: TodoCellViewModel) {
         guard let section = sectionsForGoalId[viewModel.goal] else { return }
         if viewModel.newlyAdded {
-            appendPlaceholderIfNeeded(at: section)
+            appendPlaceholderIfNeeded(at: section, with: viewModel.date)
         }
     }
     
@@ -299,7 +305,5 @@ protocol TodoListViewModelDelegate: AnyObject {
         at indexPath: IndexPath,
         options: ReloadOptions
     )
-//    func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateItem: Todo, at indexPath: IndexPath)
     func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel)
-//    func indexPathForDisplayedCells(_ viewModel: TodoListViewModel, )
 }

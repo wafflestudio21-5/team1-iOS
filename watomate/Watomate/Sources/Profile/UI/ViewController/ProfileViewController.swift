@@ -96,6 +96,15 @@ class ProfileViewController: TodoTableViewController {
         }
         return 60
     }
+    
+    @objc internal override func addEmptyTodo(_ sender: UITapGestureRecognizer) {
+        guard let headerView = sender.view as? GoalStackView else { return }
+        let section = headerView.tag
+        let success = todoListViewModel.appendPlaceholderIfNeeded(at: section, with: nil)
+        if !success {
+            todoTableView.endEditing(false)
+        }
+    }
 }
 
 extension ProfileViewController: TodoListViewModelDelegate {
