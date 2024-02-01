@@ -16,7 +16,7 @@ class GoalManageViewController: PlainCustomBarViewController {
         setTitle("목표")
         setLeftBackButton()
         setRightButtonStyle(symbolName: "plus", title: nil)
-        // setRightButtonAction(target: self, action: #selector(addButtonTapped))
+        setRightButtonAction(target: self, action: #selector(addButtonTapped))
         contentView.addSubview(goalListView)
         goalListView.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(16)
@@ -83,12 +83,12 @@ class GoalManageViewController: PlainCustomBarViewController {
         navigationController?.pushViewController(goalEditVC, animated: false)
     }
 
-    /*
+    
     @objc private func addButtonTapped() {
         let goalCreateVC = GoalCreateViewController()
         navigationController?.pushViewController(goalCreateVC, animated: false)
     }
-     */
+
 
     
 
