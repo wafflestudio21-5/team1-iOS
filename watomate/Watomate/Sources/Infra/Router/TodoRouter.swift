@@ -11,6 +11,7 @@ import Foundation
 
 enum TodoRouter: Router {
     case getAllTodos(userId: Int)
+    case getArchiveTodos(userId: Int)
     case getTodos(userId: Int, date: String)
     case addTodo(userId: Int, goalId: Int, todo: Todo)
     case deleteTodo(userId: Int, goalId: Int, todoId: Int)
@@ -23,6 +24,8 @@ enum TodoRouter: Router {
     var method: HTTPMethod {
         switch self {
         case .getAllTodos:
+            return .get
+        case .getArchiveTodos:
             return .get
         case .getTodos:
             return .get
@@ -39,6 +42,8 @@ enum TodoRouter: Router {
         switch self {
         case let .getAllTodos(userId):
             return "/\(userId)/goals"
+        case let .getArchiveTodos(userId):
+            return "/\(userId)/goals"
         case let .getTodos(userId, _):
             return "/\(userId)/goals"
         case let .addTodo(userId, goalId, _):
@@ -54,6 +59,8 @@ enum TodoRouter: Router {
         switch self {
         case .getAllTodos:
             return nil
+        case .getArchiveTodos:
+            return ["date": "null"]
         case let .getTodos(_, date):
             return ["date": date]
         case let .addTodo(_, _, todo):

@@ -249,6 +249,17 @@ extension HomeViewController: TodoListViewModelDelegate {
         vc.delegate = self
         present(vc, animated: true)
     }
+    
+    func todoListViewModel(_ viewModel: TodoListViewModel, didChangeDateOf cellViewModel: TodoCellViewModel) {
+        guard let date = selectedDate?.date else {
+            input.send(.viewDidAppear(self))
+            return
+        }
+        let dateString = Utils.YYYYMMddFormatter().string(from: date)
+        if dateString != cellViewModel.date {
+            todoListViewModel.loadTodos(on: dateString)
+        }
+    }
 }
 
 extension HomeViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate {

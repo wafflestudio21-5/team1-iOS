@@ -13,7 +13,6 @@ struct Goal {
     var title: String
     var visibility: Visibility
     var color: String
-//    let createdAt: String
     var todos: [Todo]
 }
 

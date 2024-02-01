@@ -243,6 +243,11 @@ class TodoDetailViewController: SheetCustomViewController {
         deleteTodoButton.addTarget(self, action: #selector(handleDeleteBtnTap), for: .touchUpInside)
     }
     
+    func toggleReminderEditView() {
+        reminderPicker.isHidden = !reminderPicker.isHidden
+        reminderCell.toggleButtons()
+    }
+    
     @objc func handleEditBtnTap() {
         delegate?.editTitle(with: viewModel)
         dismiss(animated: true)
@@ -274,9 +279,7 @@ class TodoDetailViewController: SheetCustomViewController {
            let date = Utils.HHmmssFormatter().date(from: reminder) {
             reminderPicker.date = date
         }
-        reminderPicker.isHidden = false
-        reminderCell.showDeleteBtn()
-        reminderCell.showDoneBtn()
+        toggleReminderEditView()
     }
     
     @objc func handleReminderDoneBtnTap() {
@@ -305,10 +308,13 @@ class TodoDetailViewController: SheetCustomViewController {
     
     @objc func handleChangeDateCellTap() {
         let vc = ChangeDateViewController(viewModel: self.viewModel)
+        guard let pvc = self.presentingViewController else { return }
         vc.sheetPresentationController?.detents = [.custom(resolver: { context in
             context.maximumDetentValue * 0.7
         })]
-        present(vc, animated: true)
+        self.dismiss(animated: false) {
+            pvc.present(vc, animated: true)
+        }
     }
     
     @objc func handleMoveToArchiveCellTap() {

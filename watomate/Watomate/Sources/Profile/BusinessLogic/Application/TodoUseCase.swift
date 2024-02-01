@@ -23,6 +23,13 @@ class TodoUseCase {
         return goals
     }
     
+    func getArchiveTodos() async throws -> [Goal] {
+        let goalsDto = try await todoRepository.getArchiveTodos()
+        let goals = goalsDto.map { $0.toDomain() }
+        self.goals = goals
+        return goals
+    }
+    
     func getTodos(on date: String) async throws -> [Goal] {
         let goalsDto = try await todoRepository.getTodos(on: date)
         let goals = goalsDto.map { $0.toDomain() }
