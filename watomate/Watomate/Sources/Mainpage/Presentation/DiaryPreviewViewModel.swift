@@ -18,6 +18,7 @@ class DiaryPreviewViewModel {
             case .success(let diaryData):
                 if let data = diaryData as? Diary {
                     self.diary = data
+                    print("self.diary: \(self.diary)")
                 }
                 completion()
             case .requestErr(let message) :

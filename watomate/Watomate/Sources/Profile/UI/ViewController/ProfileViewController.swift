@@ -118,19 +118,10 @@ extension ProfileViewController: TodoListViewModelDelegate {
     func todoListViewModel(_ viewModel: TodoListViewModel, didInsertCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath) {
         Task { @MainActor in
             if let cell = todoTableView.cellForRow(at: indexPath) as? TodoCell {
-                cell.titleBecomeFirstResponder()
                 todoTableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+                cell.titleBecomeFirstResponder()
             }
-    //        updateUnavailableView()
         }
-    }
-
-    func todoListViewModel(_ viewModel: TodoListViewModel, didRemoveCellViewModel todoViewModel: TodoCellViewModel, at indexPath: IndexPath, options: ReloadOptions) {
-        if options.contains(.reload) {
-            let animated = options.contains(.animated)
-            todoTableView.deleteRows(at: [indexPath], with: animated ? .automatic : .none)
-        }
-//        updateUnavailableView()
     }
     
     func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel) {
@@ -141,7 +132,11 @@ extension ProfileViewController: TodoListViewModelDelegate {
     
     func todoListViewModel(_ viewModel: TodoListViewModel, didChangeDateOf cellViewModel: TodoCellViewModel) {
         if cellViewModel.date != nil {
-            input.send(.viewDidAppear(self))//선택된 날짜에 해당하는 데이터 불러오도록 수정 필요
+            input.send(.viewDidAppear(self))
         }
+    }
+    
+    func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateViewModel cellViewModel: TodoCellViewModel) {
+        return
     }
 }

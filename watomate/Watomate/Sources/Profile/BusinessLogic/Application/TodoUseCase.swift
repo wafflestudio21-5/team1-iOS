@@ -11,6 +11,7 @@ import Foundation
 class TodoUseCase {
     private let todoRepository: TodoRepositoryProtocol
     lazy var goals: [Goal] = []
+    lazy var todosByDate: [String: [Todo]] = [:]
     
     init(todoRepository: some TodoRepositoryProtocol) {
         self.todoRepository = todoRepository
@@ -19,7 +20,19 @@ class TodoUseCase {
     func getAllTodos() async throws -> [Goal] {
         let goalsDto = try await todoRepository.getAllTodos()
         let goals = goalsDto.map { $0.toDomain() }
-        self.goals = goals
+        todosByDate = [:]
+        for goal in goals {
+            for todo in goal.todos {
+                if let dateStr = todo.date {
+                    if var list = todosByDate[dateStr] {
+                        list.append(todo)
+                        todosByDate[dateStr] = list
+                    } else {
+                        todosByDate[dateStr] = [todo]
+                    }
+                }
+            }
+        }
         return goals
     }
     
@@ -73,7 +86,11 @@ class TodoUseCase {
             }
         }
         guard let todoDto = try await todoRepository.updateTodo(todo: todo) else { return }
-        let updatedTodo = todoDto.toDomain()
+//        let updatedTodo = todoDto.toDomain()
+    }
+    
+    func getTodoList(on date: String) -> [Todo]? {
+        return todosByDate[date]
     }
     
     private func todo(_ goalId: Int, _ todoId: Int) -> Todo? {
@@ -108,7 +125,4 @@ class TodoUseCase {
     func deleteGoal(_ goalId: Int) async throws {
         try await todoRepository.deleteGoal(goalId: goalId)
     }
-    
-
-
 }

@@ -52,4 +52,12 @@ struct Utils {
         return formatter.string(from: tempDate)
         
     }
+    
+    static func getTodayYYYYMMdd() -> String {
+        return YYYYMMddFormatter().string(from: Date())
+    }
+    
+    static func getDateOfToday() -> Date {
+        return YYYYMMddFormatter().date(from: getTodayYYYYMMdd())!
+    }
 }
