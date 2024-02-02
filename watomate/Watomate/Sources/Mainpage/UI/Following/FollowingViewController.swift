@@ -116,7 +116,7 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
                                         tedoori: (followUserInfo?.profile.tedoori)!,
                                         profilePic: followUserInfo?.profile.profilePic,
                                         username: (followUserInfo?.profile.username)!,
-                                        intro: nil)
+                                        intro: followUserInfo?.profile.intro)
             let followingUserVC = UserTodoViewController(viewModel: UserTodoViewModel(userInfo: userInfo))
             self?.navigationController?.pushViewController(followingUserVC, animated: true)
         }
@@ -159,7 +159,7 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
             make.top.bottom.equalToSuperview()
         }
         
-        let followShowMoreButton = createFollowShowMoreButton()
+        let followShowMoreButton = createFollowShowMoreButton(userId: followInfo.id)
         containerView.addSubview(followShowMoreButton)
         followShowMoreButton.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
@@ -182,11 +182,41 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
         return imageView
     }
     
-    private func createFollowShowMoreButton() -> UIButton{
+    private func createFollowShowMoreButton(userId : Int) -> UIButton{
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        button.tag = userId
+        button.addTarget(self, action: #selector(showMoreButtonTapped(_:)), for: .touchUpInside)
         return button
+    }
+    
+    @objc func showMoreButtonTapped(_ sender: UIButton) {
+        let userId = sender.tag
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+            guard let self = self else { return }
+            self.viewModel.unfollowUser(userId) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        self.removeAllArrangedSubviewsFromStackView()
+                        self.getFollowInfo()
+                    case .failure(let error):
+                        print("Error deleting goal: \(error)")
+                    }
+                }
+            }
+        }
+        
+        actionSheet.addAction(deleteAction)
+        let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        actionSheet.addAction(cancelAction)
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.present(actionSheet, animated: true)
+        }
     }
 
 }

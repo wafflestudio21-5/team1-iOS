@@ -26,4 +26,35 @@ class FollowViewModel {
             }
         }
     }
+    
+    func followUser(_ user_to_follow: Int, completion: @escaping (Result<Void, Error>) -> Void) {
+        Task {
+            do {
+                try await followUseCase.followUser(user_to_follow: user_to_follow)
+                DispatchQueue.main.async {
+                    completion(.success(()))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+    
+    func unfollowUser(_ user_to_unfollow: Int, completion: @escaping (Result<Void, Error>) -> Void) {
+        Task {
+            do {
+                try await followUseCase.unfollowUser(user_to_unfollow: user_to_unfollow)
+                DispatchQueue.main.async {
+                    completion(.success(()))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
+
 }

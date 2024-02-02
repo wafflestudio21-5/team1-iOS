@@ -21,6 +21,7 @@ struct Follow : Codable {
 struct FollowProfile : Codable{
     let username: String
     let profilePic: String?
+    let intro: String?
     let tedoori: Bool
 }
 

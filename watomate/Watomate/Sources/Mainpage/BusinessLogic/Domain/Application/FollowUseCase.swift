@@ -22,4 +22,13 @@ class FollowUseCase {
         
         return (followers, followings)
     }
+    
+    func followUser(user_to_follow : Int) async throws {
+        try await followRepository.followUser(user_to_follow: user_to_follow)
+    }
+    
+    func unfollowUser(user_to_unfollow : Int) async throws {
+        try await followRepository.unfollowUser(user_to_unfollow: user_to_unfollow)
+    }
+    
 }
