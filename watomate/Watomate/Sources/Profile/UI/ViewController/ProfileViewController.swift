@@ -135,7 +135,7 @@ extension ProfileViewController: TodoListViewModelDelegate {
     
     func todoListViewModel(_ viewModel: TodoListViewModel, didChangeDateOf cellViewModel: TodoCellViewModel) {
         if cellViewModel.date != nil {
-            input.send(.viewDidAppear(self))//선택된 날짜에 해당하는 데이터 불러오도록 수정 필요
+            input.send(.viewDidAppear(self))
         }
     }
 }

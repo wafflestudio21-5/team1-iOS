@@ -14,6 +14,9 @@ class HomeViewController: TodoTableViewController {
     lazy var userID = User.shared.id
     var selectedDate: DateComponents? = nil
     
+    let dummy_day = "2024-01-13"
+    private lazy var dummy_days = [getStringToDate(strDate: dummy_day) : [1, "green"]] // [남은 일의 수, 목표 색]
+    
     init(todoListViewModel: TodoListViewModel, diaryViewModel: DiaryPreviewViewModel) {
         self.diaryViewModel = diaryViewModel
         super.init(todoListViewModel: todoListViewModel)
@@ -167,17 +170,17 @@ class HomeViewController: TodoTableViewController {
     }
     
     private func getStringToDate(strDate: String) -> Date {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateFormatter.timeZone = NSTimeZone(name: "Ko_KR") as TimeZone?
-        
+        let dateFormatter = Utils.YYYYMMddFormatter()
         return dateFormatter.date(from: strDate)!
     } //UICalendar은 date형 데이터 사용 : string -> date 형변환 함수
     
-    
-    let dummy_day = "2024-01-13"
-    private lazy var dummy_days = [getStringToDate(strDate: dummy_day) : [1, "green"]] // [남은 일의 수, 목표 색]
-    
+    private func getDateString(from dateComponent: DateComponents?) -> String? {
+        guard let dateComponent else { return nil }
+        let dateFormatter = Utils.YYYYMMddFormatter()
+        guard let date = dateComponent.date else { return nil }
+        return dateFormatter.string(from: date)
+    }
+        
     private lazy var todoView : UITableView = {
         var tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -287,14 +290,12 @@ extension HomeViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
         selection.setSelected(dateComponents, animated: true)
         selectedDate = dateComponents
         if let selectedDate = dateComponents?.date {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let dateFormatter = Utils.YYYYMMddFormatter()
             diaryDateString = dateFormatter.string(from: selectedDate)
             guard let userID else { return }
             getDiary(userID: userID, date: diaryDateString)
         } else {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let dateFormatter = Utils.YYYYMMddFormatter()
             diaryDateString = dateFormatter.string(from: Date())
             guard let userID else { return }
             getDiary(userID: userID, date: diaryDateString)
@@ -309,29 +310,41 @@ extension HomeViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
     
     // 캘린더에 todo 띄우기
     func calendarView(_ calendarView: UICalendarView, decorationFor dateComponents: DateComponents) -> UICalendarView.Decoration? {
-        
+        guard let targetDateStr = getDateString(from: dateComponents) else { return nil }
+        let selectedDateStr = getDateString(from: selectedDate)
         let date = dateComponents.date!
-        if dateComponents == selectedDate {
+        if targetDateStr == selectedDateStr {
             // 서버 연동 후 날짜별로 맞는 emoji 가져오기
             return nil
         } else {
-            if dummy_days.keys.contains(date),
-               let data = dummy_days[date],
-               let numericValue = data.first as? Int,
-               let colorString = data.last as? String {
-                return .customView {
-                    let systemName = "\(numericValue).circle"
-                    let imageView = UIImageView(image: UIImage(systemName: systemName))
-                    imageView.tintColor = UIColor(named: colorString)
-                    return imageView
+            return .customView {
+                let view = UIView()
+                let customView = CustomSymbolView(size: 15)
+                view.addSubview(customView)
+                customView.snp.makeConstraints { make in
+                    make.height.width.equalTo(15)
+                    make.centerX.equalTo(view.snp.centerX)
+                    make.centerY.equalTo(view.snp.centerY)
                 }
-            } else {
-                return nil
+                customView.addCheckMark() //TODO: use viewModel to configure checkMark
+//                customView.setColor(color: <#T##[Color]#>)
+                return view
             }
+//            if dummy_days.keys.contains(date),
+//               let data = dummy_days[date],
+//               let numericValue = data.first as? Int,
+//               let colorString = data.last as? String {
+//                return .customView {
+//                    let systemName = "\(numericValue).circle"
+//                    let imageView = UIImageView(image: UIImage(systemName: systemName))
+//                    imageView.tintColor = UIColor(named: colorString)
+//                    return imageView
+//                }
+//            } else {
+//                return nil
+//            }
         }
-        
     }
-    
 }
 
 extension HomeViewController: DiaryPreviewViewControllerDelegate {
