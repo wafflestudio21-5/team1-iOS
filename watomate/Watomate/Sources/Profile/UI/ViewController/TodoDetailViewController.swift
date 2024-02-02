@@ -241,7 +241,7 @@ class TodoDetailViewController: SheetCustomViewController {
         verificationCell.isHidden = !viewModel.isCompleted
         editTitleButton.addTarget(self, action: #selector(handleEditBtnTap), for: .touchUpInside)
         deleteTodoButton.addTarget(self, action: #selector(handleDeleteBtnTap), for: .touchUpInside)
-        moveToArchiveCell.isHidden = viewModel.date == nil
+        moveToArchiveCell.isHidden = (viewModel.date == nil) || viewModel.isCompleted
     }
     
     func toggleReminderEditView() {
