@@ -8,12 +8,13 @@
 
 import UIKit
 
-class UserTodoHeaderView: UITableViewHeaderFooterView {
-    static let reuseIdentifier = "UserTodoHeaderView"
+class UserTodoHeaderView: UIView {
     
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
         setupLayout()
+        backgroundColor = .systemBackground
     }
 
     required init?(coder: NSCoder) {
@@ -38,7 +39,6 @@ class UserTodoHeaderView: UITableViewHeaderFooterView {
         stackView.alignment = .center
         stackView.addArrangedSubview(profileImageContainer)
         stackView.addArrangedSubview(profileLabelStackView)
-        stackView.addArrangedSubview(diaryButton)
         return stackView
     }()
     
@@ -57,7 +57,7 @@ class UserTodoHeaderView: UITableViewHeaderFooterView {
     private lazy var profileLabelStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.spacing = 4
+        stackView.spacing = 5
         stackView.addArrangedSubview(profileName)
         stackView.addArrangedSubview(profileIntro)
         stackView.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -72,15 +72,9 @@ class UserTodoHeaderView: UITableViewHeaderFooterView {
     
     private lazy var profileIntro: UILabel = {
         var label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 12)
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = .secondaryLabel
         return label
-    }()
-    
-    lazy var diaryButton : UIButton = {
-        let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "face.dashed"), for: .normal)
-        button.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        return button
     }()
     
     private lazy var headerStackView: UIStackView = {
@@ -91,17 +85,13 @@ class UserTodoHeaderView: UITableViewHeaderFooterView {
         return stackView
     }()
     
-    func setDiaryBtnAction(target: Any?, action: Selector, for event: UIControl.Event) {
-        diaryButton.addTarget(target, action: action, for: event)
-    }
-    
     func configure(with viewModel: UserTodoViewModel) {
         profileName.text = viewModel.username
         if let intro = viewModel.intro,
            !intro.isEmpty {
             profileIntro.text = intro
         } else {
-            profileIntro.text = "프로필에 자기소개를 입력해보세요"
+            profileIntro.text = ""
         }
         profileImageContainer.setImage(viewModel.profilePic)
     }

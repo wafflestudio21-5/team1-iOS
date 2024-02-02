@@ -12,17 +12,8 @@ import Combine
 
 class UserTodoTableViewController: UIViewController {
     
-    typealias DataSource = UITableViewDiffableDataSource<Int, TodoCellViewModel>
-    typealias Snapshot = NSDiffableDataSourceSnapshot<Int, TodoCellViewModel>
-    
-    var dataSource: DataSource!
-    var snapshot: Snapshot!
-    
-    internal let viewModel : UserTodoViewModel
-    
-    internal let input = PassthroughSubject<TodoListViewModel.Input, Never>()
-    internal var cancellables = Set<AnyCancellable>()
-    internal var viewModelCancellables: AnyCancellable?
+    private let viewModel : UserTodoViewModel
+    private var cancellables = Set<AnyCancellable>()
     
     init(viewModel: UserTodoViewModel) {
         self.viewModel = viewModel
@@ -33,127 +24,104 @@ class UserTodoTableViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    internal lazy var todoTableView = {
+    private lazy var userView = {
+        let view = UserTodoHeaderView()
+        view.configure(with: viewModel)
+        return view
+    }()
+    
+    private lazy var dateLabel = {
+        let label = UILabel()
+        label.text = Utils.getTodayString()
+        label.textColor = .label
+        label.font = UIFont(name: Constants.Font.semiBold, size: 16)
+        return label
+    }()
+    
+    private lazy var emptyLabel = {
+        let label = UILabel()
+        label.text = "작성된 할 일이 없어요"
+        label.textColor = .secondaryLabel
+        label.font = UIFont(name: Constants.Font.medium, size: 16)
+        return label
+    }()
+    
+    private lazy var tableView = {
         let tableView = UITableView(frame: .init(), style: .grouped)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.dataSource = self
         tableView.delegate = self
-        tableView.estimatedRowHeight = 50
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.keyboardDismissMode = .interactive
+        tableView.keyboardDismissMode = .onDrag
         tableView.separatorStyle = .none
         tableView.backgroundColor = .systemBackground
-        tableView.register(UserTodoHeaderView.self, forHeaderFooterViewReuseIdentifier: UserTodoHeaderView.reuseIdentifier)
         tableView.register(TodoHeaderView.self, forHeaderFooterViewReuseIdentifier: TodoHeaderView.reuseIdentifier)
+        tableView.register(TodoCell.self, forCellReuseIdentifier: TodoCell.reuseIdentifier)
+        
+        tableView.addSubview(emptyLabel)
+        emptyLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-30)
+        }
         return tableView
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        registerCells()
         setupLayout()
-        configureDataSource()
-//        bindViewModel()
-        registerKeyboardNotification()
+        bindViewModel()
+        viewModel.input.send(.viewDidLoad)
     }
     
     internal func setupLayout() {
-        view.addSubview(todoTableView)
-        todoTableView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
+        view.addSubview(userView)
+        userView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(15)
+            make.leading.trailing.equalToSuperview()
+        }
+        
+        view.addSubview(dateLabel)
+        dateLabel.snp.makeConstraints { make in
+            make.top.equalTo(userView.snp.bottom).offset(30)
+            make.trailing.leading.equalToSuperview().inset(20)
+        }
+        
+        view.addSubview(tableView)
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(dateLabel.snp.bottom).offset(15)
+            make.trailing.bottom.leading.equalToSuperview()
         }
     }
     
-    func registerCells() {
-        todoTableView.register(TodoCell.self, forCellReuseIdentifier: TodoCell.reuseIdentifier)
+    private func bindViewModel() {
+        let output = viewModel.transform(input: viewModel.input.eraseToAnyPublisher())
+        output.receive(on: DispatchQueue.main)
+            .sink { [weak self] event in
+                guard let viewModel = self?.viewModel else { return }
+                switch event {
+                case .updateUserTodo:
+                    if viewModel.userTodos.isEmpty {
+                        self?.emptyLabel.isHidden = false
+                    } else {
+                        self?.emptyLabel.isHidden = true
+                        self?.tableView.reloadData()
+                    }
+                }
+            }.store(in: &cancellables)
     }
-    
-    private func registerKeyboardNotification() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            todoTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height, right: 0)
-            todoTableView.scrollIndicatorInsets = todoTableView.contentInset
-        }
-    }
-    
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        todoTableView.contentInset = UIEdgeInsets.zero
-        todoTableView.scrollIndicatorInsets = UIEdgeInsets.zero
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    private func configureDataSource() {
-        dataSource = DataSource(tableView: todoTableView, cellProvider: { tableView, indexPath, itemIdentifier in
-            let cell = tableView.dequeueReusableCell(withIdentifier: TodoCell.reuseIdentifier, for: indexPath) as! TodoCell
-            cell.configure(with: itemIdentifier)
-            return cell
-        })
-    }
-    
-//    private func bindViewModel() {
-//        let output = viewModel.transform(input: input.eraseToAnyPublisher())
-//        output.receive(on: DispatchQueue.main)
-//            .sink { [weak self] event in
-//                switch event {
-//                case .loadFailed(let errorMsg):
-//                    print("error: \(errorMsg)")
-//                }
-//            }.store(in: &cancellables)
-//
-//        viewModelCancellables = viewModel.vms
-//            .receive(on: DispatchQueue.main)
-//            .sink { [weak self] viewModels in
-//                self?.applySnapshot(with: viewModels)
-//            }
-//    }
-    
-    private func applySnapshot(with viewModels: [Int: [TodoCellViewModel]]) {
-        self.snapshot = Snapshot()
-        let sections = Array(0...viewModels.count)
-        snapshot.appendSections(sections)
-        if viewModels.count == 0 {
-            return
-        }
-        for i in 0..<viewModels.count {
-            guard let cellVMs = viewModels[i + 1] else { return }
-            snapshot.appendItems(cellVMs, toSection: i + 1)
-        }
-        todoTableView.reloadData()
-        self.dataSource.apply(snapshot, animatingDifferences: false)
-    }
+
 }
 
 extension UserTodoTableViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if section == 0 {
-            guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: UserTodoHeaderView.reuseIdentifier) as? UserTodoHeaderView else { return nil }
-            header.contentView.backgroundColor = .systemBackground
-            header.configure(with: viewModel)
-            return header
-        }
-        
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TodoHeaderView.reuseIdentifier) as? TodoHeaderView else { return nil }
-//        header.goalView.tag = section
-//        header.setTitle(with: viewModel.getTitle(of: section))
-//        header.setColor(with: viewModel.getColor(of: section))
-//        header.setVisibility(with: viewModel.getVisibility(of: section))
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(addEmptyTodo))
-        header.goalView.addGestureRecognizer(tapGesture)
-        header.goalView.isUserInteractionEnabled = true
+        let goal = viewModel.userTodos[section]
+        header.setTitle(with: goal.title)
+        header.setColor(with: Color(rawValue: goal.color) ?? .blue)
+        header.setVisibility(with: Visibility(rawValue: goal.visibility) ?? .PR)
         header.contentView.backgroundColor = .systemBackground
         return header
     }
-    
-    @objc internal func addEmptyTodo(_ sender: UITapGestureRecognizer) { }
     
     func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
         return 60
@@ -164,6 +132,28 @@ extension UserTodoTableViewController: UITableViewDelegate {
         view.backgroundColor = .systemBackground
         return view
     }
+}
+
+extension UserTodoTableViewController: UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        viewModel.userTodos.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        viewModel.userTodos[section].todos.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TodoCell.reuseIdentifier, for: indexPath) as? TodoCell else { fatalError() }
+        let goal = viewModel.userTodos[indexPath.section]
+        let todo = goal.todos[indexPath.row]
+        cell.configure(with: TodoCellViewModel(todo: Todo(uuid: UUID(), title: todo.title, color: goal.color, isCompleted: todo.isCompleted, goal: 0, likes: todo.likes.map{ Like(userId: $0.user, emoji: $0.emoji) })))
+        cell.makeDotsHidden()
+        return cell
+    }
+    
+    
 }
 
 

@@ -22,6 +22,7 @@ class UserTodoViewController: PlainCustomBarViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setFollowButton()
         setLeftBackXButton()
         addChildViewController()
     }

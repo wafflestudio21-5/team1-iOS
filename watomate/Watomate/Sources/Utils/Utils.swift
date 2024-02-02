@@ -52,4 +52,10 @@ struct Utils {
         return formatter.string(from: tempDate)
         
     }
+    
+    static func getTodayString() -> String {
+        formatter.locale = Locale(identifier: "ko")
+        formatter.dateFormat = "yyyy년 MMM d일"
+        return formatter.string(from: Date())
+    }
 }

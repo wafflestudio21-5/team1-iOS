@@ -227,6 +227,10 @@ class TodoCell: UITableViewCell {
         titleTextField.isUserInteractionEnabled = true
         titleTextField.becomeFirstResponder()
     }
+    
+    func makeDotsHidden() {
+        threeDotImage.isHidden = true 
+    }
 }
 
 extension TodoCell: UITextFieldDelegate {
