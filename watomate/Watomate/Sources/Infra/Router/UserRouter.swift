@@ -13,12 +13,13 @@ enum UserRouter: Router {
     case changeProfilePic(id: Int)
     case changeUserInfo(id: Int)
     case getAllImage
+    case getTodoToday(id: Int)
     
     var method: HTTPMethod {
         switch self {
         case .changeProfilePic, .changeUserInfo:
             return .patch
-        case .getAllImage:
+        case .getAllImage, .getTodoToday:
             return .get
         }
     }
@@ -29,8 +30,10 @@ enum UserRouter: Router {
             return "/\(id)"
         case let .changeUserInfo(id):
             return "/\(id)"
-        case let .getAllImage:
+        case .getAllImage:
             return "/image-all"
+        case let .getTodoToday(id):
+            return "/\(id)/todos-today"
         }
     }
     
@@ -40,7 +43,7 @@ enum UserRouter: Router {
             return [:]
         case .changeUserInfo:
             return [:]
-        case .getAllImage:
+        case .getAllImage, .getTodoToday:
             return [:]
         }
     }

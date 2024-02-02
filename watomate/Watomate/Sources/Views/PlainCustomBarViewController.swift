@@ -36,6 +36,21 @@ class PlainCustomBarViewController: UIViewController {
         return button
     }()
     
+    private lazy var followButton = {
+        var titleContainer = AttributeContainer()
+        titleContainer.font = UIFont(name: Constants.Font.semiBold, size: 15)
+        
+        let button = UIButton()
+        button.configuration = .filled()
+        button.configuration?.baseForegroundColor = .white
+        button.configuration?.baseBackgroundColor = .systemBlue
+        button.configuration?.attributedTitle = AttributedString("팔로우", attributes: titleContainer)
+        button.layer.cornerRadius = 5
+        button.clipsToBounds = true
+        button.isHidden = true
+        return button
+    }()
+    
     lazy var contentView = UIView()
 
     override func viewDidLoad() {
@@ -88,6 +103,12 @@ class PlainCustomBarViewController: UIViewController {
         
         navigationBarView.addSubview(rightButton)
         rightButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-30)
+            make.centerY.equalToSuperview()
+        }
+        
+        navigationBarView.addSubview(followButton)
+        followButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-30)
             make.centerY.equalToSuperview()
         }
@@ -163,8 +184,21 @@ extension PlainCustomBarViewController {
         setLeftButtonAction(target: self, action: #selector(backButtonTapped))
     }
     
+    func setLeftBackXButton() {
+        setLeftButtonStyle(symbolName: "xmark", title: nil)
+        setLeftButtonAction(target: self, action: #selector(xButtonTapped))
+    }
+    
+    func setFollowButton() {
+        followButton.isHidden = false 
+    }
+    
     @objc func backButtonTapped() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc func xButtonTapped() {
+        dismiss(animated: true)
     }
     
 }

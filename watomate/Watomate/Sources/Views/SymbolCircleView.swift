@@ -82,9 +82,14 @@ class SymbolCircleView: UIImageView {
         symbolImageView.image = nil
     }
     
-    func setImage(_ url: String) {
-        symbolImageView.image = nil
-        kf.setImage(with: URL(string: url)!)
+    func setImage(_ url: String?) {
+        if let url {
+            symbolImageView.image = nil
+            kf.setImage(with: URL(string: url)!)
+        } else {
+            setDefault()
+        }
+        
     }
     
     func setProfileImage() {
