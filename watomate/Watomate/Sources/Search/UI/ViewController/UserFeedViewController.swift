@@ -84,7 +84,7 @@ class UserFeedViewController: UIViewController {
 
 extension UserFeedViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let vc = UserTodoViewController(viewModel: UserTodoViewModel(userInfo: TodoUserInfo(userCellViewModel: viewModel.viewModel(at: indexPath))))
+        let vc = UserTodoViewController(viewModel: UserTodoViewModel(userInfo: TodoUserInfo(userCellViewModel: viewModel.viewModel(at: indexPath))), followViewModel: FollowViewModel(followUseCase: FollowUseCase(followRepository: FollowRepository())), naviagateMethod: false)
         vc.modalTransitionStyle = .coverVertical
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true)

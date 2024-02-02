@@ -37,14 +37,7 @@ class PlainCustomBarViewController: UIViewController {
     }()
     
     private lazy var followButton = {
-        var titleContainer = AttributeContainer()
-        titleContainer.font = UIFont(name: Constants.Font.semiBold, size: 15)
-        
         let button = UIButton()
-        button.configuration = .filled()
-        button.configuration?.baseForegroundColor = .white
-        button.configuration?.baseBackgroundColor = .systemBlue
-        button.configuration?.attributedTitle = AttributedString("팔로우", attributes: titleContainer)
         button.layer.cornerRadius = 5
         button.clipsToBounds = true
         button.isHidden = true
@@ -194,9 +187,20 @@ extension PlainCustomBarViewController {
         setLeftButtonAction(target: self, action: #selector(backButtonTapped))
     }
     
-    func setFollowButton() {
-        followButton.isHidden = false 
+    func setFollowButton(isFollowing: Bool) {
+        followButton.isHidden = false
+        var config = UIButton.Configuration.filled()
+        config.baseBackgroundColor = isFollowing ? .systemGray : .systemBlue
+        let title = isFollowing ? "팔로잉" : "팔로우"
+        var container = AttributeContainer()
+        container.font = UIFont.systemFont(ofSize: 16)
+        container.foregroundColor = UIColor.white
+        let attributedString = AttributedString(title , attributes: container)
+        config.attributedTitle = attributedString
+        
+        followButton.configuration = config
     }
+
     
     func setFollowAction(target: Any, action: Selector) {
         followButton.addTarget(target, action: action, for: .touchUpInside)
