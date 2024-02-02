@@ -51,7 +51,7 @@ class HomeViewController: TodoTableViewController {
 
     
     private lazy var followingView = FollowingView()
-
+    
     
     
     override func viewWillAppear(_ animated: Bool) {
@@ -66,6 +66,10 @@ class HomeViewController: TodoTableViewController {
         guard let userID else { return }
         updateUserTedoori()
         getHomeUser(userID: userID)
+        followingView.onTap = { [weak self] in
+            let followingVC = FollowingViewController()
+            self?.navigationController?.pushViewController(followingVC, animated: true)
+        }
     }
     
     override func setupLayout() {
