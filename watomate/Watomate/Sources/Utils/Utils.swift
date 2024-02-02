@@ -53,9 +53,18 @@ struct Utils {
         
     }
     
+
     static func getTodayString() -> String {
         formatter.locale = Locale(identifier: "ko")
         formatter.dateFormat = "yyyy년 MMM d일"
         return formatter.string(from: Date())
+
+    static func getTodayYYYYMMdd() -> String {
+        return YYYYMMddFormatter().string(from: Date())
+    }
+    
+    static func getDateOfToday() -> Date {
+        return YYYYMMddFormatter().date(from: getTodayYYYYMMdd())!
+
     }
 }
