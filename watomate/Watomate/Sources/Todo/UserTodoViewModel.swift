@@ -42,6 +42,10 @@ class UserTodoViewModel: ViewModelType {
     
     var userTodos = [UserGoal]()
     
+    var userId: Int {
+        userInfo.id
+    }
+    
     var username: String {
         userInfo.username
     }

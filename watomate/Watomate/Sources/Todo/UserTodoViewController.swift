@@ -23,8 +23,16 @@ class UserTodoViewController: PlainCustomBarViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setFollowButton()
+        setFollowAction(target: self, action: #selector(followTapped))
         setLeftBackXButton()
         addChildViewController()
+    }
+    
+    @objc private func followTapped() {
+        guard let myId = User.shared.id else { return } // 내 아이디
+        let tappedId = viewModel.userId // 팔로우할 유저 아이디
+        
+        // 여기에 팔로우 구현 
     }
     
     private func addChildViewController() {

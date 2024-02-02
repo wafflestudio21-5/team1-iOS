@@ -193,6 +193,10 @@ extension PlainCustomBarViewController {
         followButton.isHidden = false 
     }
     
+    func setFollowAction(target: Any, action: Selector) {
+        followButton.addTarget(target, action: action, for: .touchUpInside)
+    }
+    
     @objc func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
