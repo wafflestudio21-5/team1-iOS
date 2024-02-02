@@ -141,7 +141,9 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
         
         let followProfileImageContainer = createFollowProfileImageContainer()
         stackView.addArrangedSubview(followProfileImageContainer)
-        followProfileImageContainer.setFollowProfileImage(imageUrl: followInfo.profile.profilePic)
+        if followInfo.profile.profilePic != nil{
+            followProfileImageContainer.setFollowProfileImage(imageUrl: followInfo.profile.profilePic!)
+        }
         followProfileImageContainer.snp.makeConstraints { make in
             make.width.height.equalTo(50)
         }

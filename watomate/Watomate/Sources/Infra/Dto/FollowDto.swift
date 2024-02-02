@@ -28,7 +28,7 @@ struct FollowDto : Codable {
 
 struct FollowProfileDto : Codable{
     let username: String
-    let profile_pic: String
+    let profile_pic: String?
     let tedoori: Bool
     
     func toDomain() -> FollowProfile {

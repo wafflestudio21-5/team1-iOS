@@ -20,7 +20,7 @@ struct Follow : Codable {
 
 struct FollowProfile : Codable{
     let username: String
-    let profilePic: String //?
+    let profilePic: String?
     let tedoori: Bool
 }
 
