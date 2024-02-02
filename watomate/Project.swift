@@ -5,8 +5,8 @@ let infoPlist: [String: Plist.Value] = [
     "NSAppTransportSecurity": [
         "NSAllowsArbitraryLoads": true,
     ],
-    "CFBundleShortVersionString": "2.0.1",
-    "CFBundleVersion": "2.0.1",
+    "CFBundleShortVersionString": "2.0.2",
+    "CFBundleVersion": "2.0.2",
     "UILaunchStoryboardName": "LaunchScreen",
     "UIApplicationSceneManifest": [
                 "UIApplicationSupportsMultipleScenes": false,
