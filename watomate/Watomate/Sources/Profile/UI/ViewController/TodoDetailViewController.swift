@@ -184,7 +184,7 @@ class TodoDetailViewController: SheetCustomViewController {
     private lazy var moveToArchiveCell = {
         let cellView = TodoDetailCellView()
         cellView.setTitle("보관함으로 이동")
-        cellView.setIcon(UIImage(systemName: "checkmark.rectangle.stack.fill")!)
+        cellView.setIcon(UIImage(systemName: "checkmark.square.fill")!)
         cellView.setIconBackgroundColor(.systemPurple)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMoveToArchiveCellTap))
         cellView.addGestureRecognizer(tapGesture)

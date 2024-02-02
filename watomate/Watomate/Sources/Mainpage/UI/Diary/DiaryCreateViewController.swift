@@ -83,7 +83,7 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         tapGesture.delegate = self
-        self.view.addGestureRecognizer(tapGesture)
+        contentView.addGestureRecognizer(tapGesture)
         
     }
     

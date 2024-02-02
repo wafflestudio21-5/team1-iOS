@@ -9,6 +9,8 @@
 
 import Foundation
 
+// 다이어리를 가져오고 삭제함
+// diary에 다이어리 저장 
 class DiaryPreviewViewModel {
     private let diaryService = DiaryService.shared
     var diary: Diary? = nil

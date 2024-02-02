@@ -32,6 +32,7 @@ class ProfileViewController: TodoTableViewController {
         todoTableView.register(ProfileHeaderView.self, forHeaderFooterViewReuseIdentifier: ProfileHeaderView.reuseIdentifier)
         super.viewDidLoad()
         
+        hideKeyboardWhenTappedAround()
         setLeftButton()
     }
     

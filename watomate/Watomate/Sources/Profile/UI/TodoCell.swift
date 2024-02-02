@@ -231,6 +231,10 @@ class TodoCell: UITableViewCell {
     func makeDotsHidden() {
         threeDotImage.isHidden = true 
     }
+    
+    func disableCheckbox() {
+        checkbox.isUserInteractionEnabled = false 
+    }
 }
 
 extension TodoCell: UITextFieldDelegate {

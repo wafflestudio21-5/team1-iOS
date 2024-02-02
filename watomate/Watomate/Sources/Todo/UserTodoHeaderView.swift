@@ -95,5 +95,16 @@ class UserTodoHeaderView: UIView {
         }
         profileImageContainer.setImage(viewModel.profilePic)
     }
+    
+    func configure(name: String, intro: String?, profilePic: String?) {
+        profileName.text = name
+        if let intro ,
+           !intro.isEmpty {
+            profileIntro.text = intro
+        } else {
+            profileIntro.text = "프로필에 자기소개를 입력해보세요"
+        }
+        profileImageContainer.setImage(profilePic)
+    }
 
 }
