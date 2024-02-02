@@ -13,6 +13,7 @@ protocol FollowRepositoryProtocol {
     func getFollowInfo() async throws -> FollowResponseDto
     func followUser(user_to_follow: Int) async throws
     func unfollowUser(user_to_unfollow: Int) async throws
+    func removeUser(user_to_remove: Int) async throws
 }
 
 class FollowRepository: FollowRepositoryProtocol {
@@ -41,6 +42,13 @@ class FollowRepository: FollowRepositoryProtocol {
     func unfollowUser(user_to_unfollow: Int) async throws{
         try await session
             .request(FollowRouter.unfollowUser(user_to_unfollow: user_to_unfollow))
+            .serializingString()
+            .handlingError()
+    }
+    
+    func removeUser(user_to_remove: Int) async throws{
+        try await session
+            .request(FollowRouter.removeUser(userId: User.shared.id!, user_to_remove: user_to_remove))
             .serializingString()
             .handlingError()
     }

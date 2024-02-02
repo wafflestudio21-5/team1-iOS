@@ -31,4 +31,8 @@ class FollowUseCase {
         try await followRepository.unfollowUser(user_to_unfollow: user_to_unfollow)
     }
     
+    func removeUser(user_to_remove : Int) async throws {
+        try await followRepository.removeUser(user_to_remove: user_to_remove)
+    }
+    
 }

@@ -56,5 +56,20 @@ class FollowViewModel {
             }
         }
     }
+    
+    func removeUser(_ user_to_remove: Int, completion: @escaping (Result<Void, Error>) -> Void) {
+        Task {
+            do {
+                try await followUseCase.removeUser(user_to_remove: user_to_remove)
+                DispatchQueue.main.async {
+                    completion(.success(()))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(error))
+                }
+            }
+        }
+    }
 
 }

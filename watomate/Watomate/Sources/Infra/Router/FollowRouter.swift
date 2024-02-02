@@ -13,7 +13,7 @@ enum FollowRouter: Router {
     case getFollowInfo(userId: Int)
     case followUser(user_to_follow: Int)
     case unfollowUser(user_to_unfollow: Int)
-    // case deleteFollow(userId: Int)
+    case removeUser(userId: Int, user_to_remove: Int)
     
     var method: HTTPMethod {
         switch self {
@@ -22,6 +22,8 @@ enum FollowRouter: Router {
         case .followUser:
             return .put
         case .unfollowUser:
+            return .put
+        case .removeUser:
             return .put
         }
     }
@@ -34,6 +36,8 @@ enum FollowRouter: Router {
             return "/follow"
         case let .unfollowUser(user_to_unfollow):
             return "/unfollow"
+        case let .removeUser(userId, user_to_remove):
+            return "/\(userId)/follows"
         }
     }
     
@@ -45,6 +49,8 @@ enum FollowRouter: Router {
             return ["user_to_follow" : user_to_follow]
         case let .unfollowUser(user_to_unfollow):
             return ["user_to_unfollow" : user_to_unfollow]
+        case let .removeUser(_, user_to_remove):
+            return ["user_to_remove" : user_to_remove]
         }
     }
     

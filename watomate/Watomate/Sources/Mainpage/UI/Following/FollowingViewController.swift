@@ -194,23 +194,42 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
     @objc func showMoreButtonTapped(_ sender: UIButton) {
         let userId = sender.tag
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        
-        let deleteAction = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
-            guard let self = self else { return }
-            self.viewModel.unfollowUser(userId) { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success:
-                        self.removeAllArrangedSubviewsFromStackView()
-                        self.getFollowInfo()
-                    case .failure(let error):
-                        print("Error deleting goal: \(error)")
+        if isFollowingList{
+            let deleteAction = UIAlertAction(title: "언팔로우", style: .destructive) { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.unfollowUser(userId) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success:
+                            self.removeAllArrangedSubviewsFromStackView()
+                            self.getFollowInfo()
+                        case .failure(let error):
+                            print("Error deleting goal: \(error)")
+                        }
                     }
                 }
             }
+            actionSheet.addAction(deleteAction)
+        }
+        else{
+            let deleteAction = UIAlertAction(title: "팔로워 삭제", style: .destructive) { [weak self] _ in
+                guard let self = self else { return }
+                self.viewModel.removeUser(userId) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success:
+                            self.removeAllArrangedSubviewsFromStackView()
+                            self.getFollowInfo()
+                        case .failure(let error):
+                            print("Error deleting goal: \(error)")
+                        }
+                    }
+                }
+            }
+            actionSheet.addAction(deleteAction)
         }
         
-        actionSheet.addAction(deleteAction)
+        
         let cancelAction = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         actionSheet.addAction(cancelAction)
         
