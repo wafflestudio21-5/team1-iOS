@@ -189,6 +189,11 @@ extension PlainCustomBarViewController {
         setLeftButtonAction(target: self, action: #selector(xButtonTapped))
     }
     
+    func setLeftBackXNavigateButton() {
+        setLeftButtonStyle(symbolName: "xmark", title: nil)
+        setLeftButtonAction(target: self, action: #selector(backButtonTapped))
+    }
+    
     func setFollowButton() {
         followButton.isHidden = false 
     }

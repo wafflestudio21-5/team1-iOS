@@ -24,7 +24,7 @@ class UserTodoViewController: PlainCustomBarViewController {
         super.viewDidLoad()
         setFollowButton()
         setFollowAction(target: self, action: #selector(followTapped))
-        setLeftBackXButton()
+        setLeftBackXNavigateButton()
         addChildViewController()
     }
     
