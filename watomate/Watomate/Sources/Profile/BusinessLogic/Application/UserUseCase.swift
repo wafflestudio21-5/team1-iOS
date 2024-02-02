@@ -31,4 +31,16 @@ class UserUseCase {
         User.shared.username = username
         User.shared.intro = intro
     }
+    
+    func getInitialImages() async throws -> ImagePage {
+        return try await userRepository.getAllImage()
+    }
+    
+    func getMoreImages(url: String) async throws -> ImagePage {
+        return try await userRepository.getMoreImage(url: url)
+    }
+    
+    func getUserTodo(id: Int) async throws -> [UserGoal] {
+        return try await userRepository.getUserTodo(id: id)
+    }
 }

@@ -28,4 +28,45 @@ struct Utils {
         formatter.dateFormat = "YYYY-MM-dd"
         return formatter
     }
-}
+    
+    static func convertToShortKorean(date: String) -> String {
+        let stringFormat = "yyyy-MM-dd"
+        formatter.dateFormat = stringFormat
+        formatter.locale = Locale(identifier: "ko")
+        guard let tempDate = formatter.date(from: date) else {
+            return ""
+        }
+        formatter.dateFormat = "MMM d일"
+        return formatter.string(from: tempDate)
+        
+    }
+    
+    static func convertToKorean(date: String) -> String {
+        let stringFormat = "yyyy-MM-dd"
+        formatter.dateFormat = stringFormat
+        formatter.locale = Locale(identifier: "ko")
+        guard let tempDate = formatter.date(from: date) else {
+            return ""
+        }
+        formatter.dateFormat = "yy년 MMM d일"
+        return formatter.string(from: tempDate)
+        
+    }
+    
+    
+    static func getTodayString() -> String {
+        formatter.locale = Locale(identifier: "ko")
+        formatter.dateFormat = "yyyy년 MMM d일"
+        return formatter.string(from: Date())
+    }
+        
+        static func getTodayYYYYMMdd() -> String {
+            return YYYYMMddFormatter().string(from: Date())
+        }
+        
+        static func getDateOfToday() -> Date {
+            return YYYYMMddFormatter().date(from: getTodayYYYYMMdd())!
+            
+        }
+    }
+    

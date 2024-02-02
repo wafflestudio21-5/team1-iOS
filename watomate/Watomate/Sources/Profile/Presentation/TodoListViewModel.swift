@@ -46,9 +46,8 @@ class TodoListViewModel: ViewModelType {
                     self?.loadTodos(on: Utils.YYYYMMddFormatter().string(from: Date()))
                 } else if vc.isKind(of: ProfileViewController.self){
                     self?.loadArchiveTodos()
-                } else {
-                    self?.loadAllTodos()
                 }
+                self?.loadAllTodos()
             }
         }.store(in: &cancellables)
         return output.eraseToAnyPublisher()
@@ -84,7 +83,6 @@ class TodoListViewModel: ViewModelType {
             guard let self else { return }
             do {
                 let goals = try await todoUseCase.getAllTodos()
-                updateViewModels(with: goals)
             } catch {
                 self.output.send(.loadFailed(errorMessage: error.localizedDescription))
             }
@@ -123,6 +121,23 @@ class TodoListViewModel: ViewModelType {
             guard let viewModel = viewModel(at: indexPath) else { return }
             viewModel.id = addedTodo.id
         }
+    }
+    
+    func getTodosInfo(on date: String) -> (Int, [Color])? {
+        guard let todos: [Todo] = todoUseCase.getTodoList(on: date) else { return nil }
+        var count = 0
+        var colors: [Color] = .init()
+        for item in todos {
+            if item.isCompleted {
+                if let color = Color(rawValue: item.color),
+                   !colors.contains(color) {
+                    colors.append(color)
+                }
+            } else {
+                count = count + 1
+            }
+        }
+        return (count, colors)
     }
 
     func indexPath(with uuid: UUID) -> IndexPath? {
@@ -323,12 +338,7 @@ protocol TodoListViewModelDelegate: AnyObject {
         didInsertCellViewModel todoViewModel: TodoCellViewModel,
         at indexPath: IndexPath
     )
-    func todoListViewModel(
-        _ viewModel: TodoListViewModel,
-        didRemoveCellViewModel todoViewModel: TodoCellViewModel,
-        at indexPath: IndexPath,
-        options: ReloadOptions
-    )
     func todoListViewModel(_ viewModel: TodoListViewModel, showDetailViewWith cellViewModel: TodoCellViewModel)
     func todoListViewModel(_ viewModel: TodoListViewModel, didChangeDateOf cellViewModel: TodoCellViewModel)
+    func todoListViewModel(_ viewModel: TodoListViewModel, didUpdateViewModel cellViewModel: TodoCellViewModel)
 }

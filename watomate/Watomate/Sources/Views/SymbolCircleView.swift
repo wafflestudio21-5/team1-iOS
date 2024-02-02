@@ -13,6 +13,8 @@ class SymbolCircleView: UIImageView {
     private var symbolImage: UIImage?
     private var borderColor: UIColor? = nil
     
+    private var small: Bool
+    
     // 심볼 기본 컬러: 화이트
     private lazy var symbolImageView = {
         let imageView = UIImageView()
@@ -23,7 +25,8 @@ class SymbolCircleView: UIImageView {
         return imageView
     }()
 
-    init(symbolImage: UIImage?) {
+    init(symbolImage: UIImage?, small: Bool = false) {
+        self.small = small
         super.init(frame: .zero)
         self.symbolImage = symbolImage
         contentMode = .scaleAspectFill
@@ -48,7 +51,11 @@ class SymbolCircleView: UIImageView {
     private func setupLayout() {
         addSubview(symbolImageView)
         symbolImageView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(frame.width / 6)
+            if small {
+                make.edges.equalToSuperview().inset(frame.width / 3)
+            } else {
+                make.edges.equalToSuperview().inset(frame.width / 5.5)
+            }
         }
     }
     
@@ -75,9 +82,14 @@ class SymbolCircleView: UIImageView {
         symbolImageView.image = nil
     }
     
-    func setImage(_ url: String) {
-        symbolImageView.image = nil
-        kf.setImage(with: URL(string: url)!)
+    func setImage(_ url: String?) {
+        if let url {
+            symbolImageView.image = nil
+            kf.setImage(with: URL(string: url)!)
+        } else {
+            setDefault()
+        }
+        
     }
     
     func setProfileImage() {

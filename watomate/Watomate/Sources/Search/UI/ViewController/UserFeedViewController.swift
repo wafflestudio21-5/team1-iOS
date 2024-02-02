@@ -83,7 +83,12 @@ class UserFeedViewController: UIViewController {
 }
 
 extension UserFeedViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = UserTodoViewController(viewModel: UserTodoViewModel(userInfo: TodoUserInfo(userCellViewModel: viewModel.viewModel(at: indexPath))))
+        vc.modalTransitionStyle = .coverVertical
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true)
+    }
 }
 
 extension UserFeedViewController: UIScrollViewDelegate {

@@ -14,6 +14,9 @@ protocol UserRepositoryProtocol {
     func changeUserInfo(id: Int, username: String, intro: String) async throws
     
     func imageUpload(todoId: Int, imageData: Data?) async throws -> String?
+    func getAllImage() async throws -> ImagePage
+    func getMoreImage(url: String) async throws -> ImagePage
+    func getUserTodo(id: Int) async throws -> [UserGoal]
 }
 
 class UserRepository: UserRepositoryProtocol {
@@ -79,6 +82,20 @@ class UserRepository: UserRepositoryProtocol {
         return dto.image
     }
     
+    func getAllImage() async throws -> ImagePage {
+        let dto = try await session.request(UserRouter.getAllImage).serializingDecodable(AllImageResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func getMoreImage(url: String) async throws -> ImagePage {
+        let dto = try await session.request(URL(string: url)!).serializingDecodable(AllImageResponseDto.self, decoder: decoder).handlingError()
+        return dto.toDomain()
+    }
+    
+    func getUserTodo(id: Int) async throws -> [UserGoal] {
+        let dto = try await session.request(UserRouter.getTodoToday(id: id)).serializingDecodable(UserTodoResponseDto.self, decoder: decoder).handlingError()
+        return dto.map{ $0.toDomain() }
+    }
     
 }
 

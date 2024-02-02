@@ -68,7 +68,8 @@ class CommentCell: UITableViewCell {
     
     private lazy var editButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "edit"), for: .normal)
+        button.tintColor = .label.withAlphaComponent(0.5)
+        button.setImage(UIImage(systemName: "square.and.pencil"), for: .normal)
         
         button.snp.makeConstraints { make in
             make.width.height.equalTo(22)
@@ -91,7 +92,8 @@ class CommentCell: UITableViewCell {
     
     private lazy var deleteButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: "delete"), for: .normal)
+        button.tintColor = .label.withAlphaComponent(0.5)
+        button.setImage(UIImage(systemName: "trash"), for: .normal)
         
         button.snp.makeConstraints { make in
             make.width.equalTo(22)

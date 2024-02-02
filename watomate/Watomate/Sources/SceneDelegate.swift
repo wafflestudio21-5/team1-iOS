@@ -32,15 +32,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         self.window = window
         
-        print(User.shared.id)
-        print(User.shared.token)
-//        let repo = SearchRepository()
-//        let useCase = SearchUseCase(searchRepository: repo)
+//        print(User.shared.id)
+//        print(User.shared.token)
+//        let repo = UserRepository()
 //        let authRepo = AuthRepository()
 //        Task {
 //            do {
-////                try await repo.deleteComment(commentId: 41)
-//                try await authRepo.guestLogin(email: "ggg@ggg.ggg", password: "gggg")
+//                print(try await repo.getUserTodo(id: 2))
 //            } catch {
 //                print(error)
 //            }
@@ -52,13 +50,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         User.shared.id = userDefaultsRepository.get(Int.self, key: .userId)
         User.shared.token = userDefaultsRepository.get(String.self, key: .accessToken)
         
-        Task {
-            User.shared.username = userDefaultsRepository.get(String.self, key: .username)
-            User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)
-            User.shared.profilePic = userDefaultsRepository.get(String.self, key: .profilePic)
-            User.shared.followerCount = userDefaultsRepository.get(Int.self, key: .followerCount)
-            User.shared.followingCount = userDefaultsRepository.get(Int.self, key: .followingCount)
-        }
+        User.shared.username = userDefaultsRepository.get(String.self, key: .username)
+        User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)
+        User.shared.profilePic = userDefaultsRepository.get(String.self, key: .profilePic)
+        User.shared.followerCount = userDefaultsRepository.get(Int.self, key: .followerCount)
+        User.shared.followingCount = userDefaultsRepository.get(Int.self, key: .followingCount)
         
         User.shared.loginMethod = LoginMethod(rawValue: userDefaultsRepository.get(String.self, key: .loginMethod) ?? "")
     }

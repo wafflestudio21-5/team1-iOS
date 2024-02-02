@@ -35,7 +35,7 @@ class SearchTodoCell: UITableViewCell {
     private lazy var titleLabel = {
         let label = UILabel()
         label.textColor = .label
-        label.font = UIFont(name: Constants.Font.light, size: 16)
+        label.font = UIFont(name: Constants.Font.regular, size: 16)
         return label
     }()
     

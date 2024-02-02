@@ -81,6 +81,7 @@ class SearchTabBarController: UITabBarController {
         let vc = UINavigationController(rootViewController: viewController)
         vc.tabBarItem.title = title
         vc.tabBarItem.image = image
+    
         return vc
     }
 
