@@ -6,18 +6,65 @@
 //  Copyright © 2023 tuist.io. All rights reserved.
 //
 
+import KakaoSDKAuth
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = ViewController()
-        window?.makeKeyAndVisible()
+        let window = UIWindow(windowScene: windowScene)
+
+        
+        let userDefaultsRepository = UserDefaultsRepository()
+        let isLoggedIn = userDefaultsRepository.get(Bool.self, key: .isLoggedIn) ?? false
+        User.shared.isLoggedin = isLoggedIn
+        if isLoggedIn {
+            getUserInfo()
+            window.rootViewController = TabBarController()
+        } else {
+            let authUseCase = AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), searchRepository: SearchRepository(), kakaoRepository: KakaoRepository())
+            window.rootViewController = UINavigationController(rootViewController: FirstViewController(viewModel: FirstViewModel(authUseCase: authUseCase)))
+        }
+
+        window.makeKeyAndVisible()
+        self.window = window
+        
+//        print(User.shared.id)
+//        print(User.shared.token)
+//        let repo = UserRepository()
+//        let authRepo = AuthRepository()
+//        Task {
+//            do {
+//                print(try await repo.getUserTodo(id: 2))
+//            } catch {
+//                print(error)
+//            }
+//        }
+    }
+    
+    private func getUserInfo() {
+        let userDefaultsRepository = UserDefaultsRepository()
+        User.shared.id = userDefaultsRepository.get(Int.self, key: .userId)
+        User.shared.token = userDefaultsRepository.get(String.self, key: .accessToken)
+        
+        User.shared.username = userDefaultsRepository.get(String.self, key: .username)
+        User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)
+        User.shared.profilePic = userDefaultsRepository.get(String.self, key: .profilePic)
+        User.shared.followerCount = userDefaultsRepository.get(Int.self, key: .followerCount)
+        User.shared.followingCount = userDefaultsRepository.get(Int.self, key: .followingCount)
+        
+        User.shared.loginMethod = LoginMethod(rawValue: userDefaultsRepository.get(String.self, key: .loginMethod) ?? "")
+    }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if let url = URLContexts.first?.url {
+            if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                _ = AuthController.handleOpenUrl(url: url)
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
