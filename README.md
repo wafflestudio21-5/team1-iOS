@@ -1,33 +1,25 @@
-# team1-iOS
+# Team1: Watomate
 
-- 프로젝트 파일 생성 방법
-  - Tuist 설치 (Tuist 없다면)
-    ```
-      curl -Ls https://install.tuist.io | bash
-    ```
-  - 설치 확인
-    ```
-      tuist version 
-    ```
-    - 버전 나오면 제대로 설치된 것
-    - 노란색 warning은 무시
-- watomate 폴더(Project.swift 파일 있는 폴더) 내에서
-  - 외부라이브러리 가져오기
-    ```
-      tuist fetch 
-    ```
-  - 프로젝트 파일 생성
-    ```
-      tuist generate 
-    ```
+친구들과 투두를 공유하는 앱, 투두메이트를 클론 코딩했습니다
 
-- 카카오 앱키 추가하기
-  - Derived/InfoPlists/Watomate-Info 안에 들어가기
-      ![image](https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/ac86e360-5ade-4578-b0a1-9199dc4efc64)
+- 작성한 소스코드는 watomate/Watomate/Sources 안에서 볼 수 있습니다
 
-  - URL Schemes 안에 kakao 찾아서 kakao 뒤에 앱키 붙여넣기
-      ![image](https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/5184c88f-4f32-4205-8030-a3b939097fd4)
 
-  - 예) 앱키 1234면 kakao1234
- 
-  - 다시 run..? (tuist fetch, tuist generate X)
+## Built With
+
+| 이지현 (JH713) | 이수민 | 권현구 |
+| :----------------------------------------: | :---------------------------------: | :---------------------------------: |
+| <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/b4ab62ab-37e8-465a-b51b-3d5c758ade14" width="300px"> | <img src="" width="300px"> | <img src="" width="300px"> |
+| 로그인, 서치탭 담당 | | |
+
+## 프로젝트 뷰 및 기능 소개 
+
+### 1. 회원가입 및 로그인
+
+| | | |
+|---|---|---|
+| <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/306f1a63-f533-44fb-9853-c90e1f32e1bf" width="300px"> | <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/f39f8e0c-096b-4a45-a037-92da1ff2f4b0" width="300px"> | <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/5ee02076-91df-4f1e-885e-49a7cb9ed090" width="300px"> |
+
+- 이메일 회원가입, 로그인과 카카오 로그인, 게스트 로그인이 가능하도록 했습니다.
+
+
