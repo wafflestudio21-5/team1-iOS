@@ -34,7 +34,7 @@ struct Utils {
         formatter.dateFormat = stringFormat
         formatter.locale = Locale(identifier: "ko")
         guard let tempDate = formatter.date(from: date) else {
-                   return ""
+            return ""
         }
         formatter.dateFormat = "MMM d일"
         return formatter.string(from: tempDate)
@@ -46,25 +46,27 @@ struct Utils {
         formatter.dateFormat = stringFormat
         formatter.locale = Locale(identifier: "ko")
         guard let tempDate = formatter.date(from: date) else {
-                   return ""
+            return ""
         }
         formatter.dateFormat = "yy년 MMM d일"
         return formatter.string(from: tempDate)
         
     }
     
-
+    
     static func getTodayString() -> String {
         formatter.locale = Locale(identifier: "ko")
         formatter.dateFormat = "yyyy년 MMM d일"
         return formatter.string(from: Date())
-
-    static func getTodayYYYYMMdd() -> String {
-        return YYYYMMddFormatter().string(from: Date())
+    }
+        
+        static func getTodayYYYYMMdd() -> String {
+            return YYYYMMddFormatter().string(from: Date())
+        }
+        
+        static func getDateOfToday() -> Date {
+            return YYYYMMddFormatter().date(from: getTodayYYYYMMdd())!
+            
+        }
     }
     
-    static func getDateOfToday() -> Date {
-        return YYYYMMddFormatter().date(from: getTodayYYYYMMdd())!
-
-    }
-}
