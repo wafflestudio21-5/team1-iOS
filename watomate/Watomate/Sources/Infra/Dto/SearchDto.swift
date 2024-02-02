@@ -135,10 +135,12 @@ struct TodoFeedResponseDto: Decodable {
     struct TodoUserDto: Decodable {
         let username: String
         let profilePic: String?
+        let intro : String?
+        let tedoori : Bool
         let todos: [TodoDto]
         
         func toDomain() -> TodoUser {
-            return .init(username: username, profilePic: profilePic, todos: todos.map{ $0.toDomain() })
+            return .init(username: username, profilePic: profilePic, intro: intro, tedoori: tedoori, todos: todos.map{ $0.toDomain() })
         }
     }
     
