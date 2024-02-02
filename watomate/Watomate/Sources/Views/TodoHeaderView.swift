@@ -49,6 +49,7 @@ class TodoHeaderView: UITableViewHeaderFooterView {
     func setVisibility(with visibility: Visibility) {
         self.goalView.setVisibility(visibility: visibility)
     }
+    
 }
 
 class ProfileHeaderView: UITableViewHeaderFooterView {

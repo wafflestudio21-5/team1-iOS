@@ -12,7 +12,7 @@ import Combine
 
 class UserTodoTableViewController: UIViewController {
     
-    private let viewModel : UserTodoViewModel
+    private let viewModel: UserTodoViewModel
     private var cancellables = Set<AnyCancellable>()
     
     init(viewModel: UserTodoViewModel) {
@@ -150,6 +150,8 @@ extension UserTodoTableViewController: UITableViewDataSource {
         let todo = goal.todos[indexPath.row]
         cell.configure(with: TodoCellViewModel(todo: Todo(uuid: UUID(), title: todo.title, color: goal.color, isCompleted: todo.isCompleted, goal: 0, likes: todo.likes.map{ Like(userId: $0.user, emoji: $0.emoji) })))
         cell.makeDotsHidden()
+        cell.disableCheckbox()
+        cell.selectionStyle = .none
         return cell
     }
     
