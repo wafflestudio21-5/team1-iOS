@@ -99,4 +99,9 @@ class SymbolCircleView: UIImageView {
         image = nil
     }
     
+    func setFollowProfileImage(imageUrl : String){
+        symbolImageView.image = nil
+        kf.setImage(with: URL(string: imageUrl)!)
+    }
+    
 }

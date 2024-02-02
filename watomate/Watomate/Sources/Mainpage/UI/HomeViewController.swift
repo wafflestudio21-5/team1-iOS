@@ -48,15 +48,29 @@ class HomeViewController: TodoTableViewController {
         button.addTarget(self, action: #selector(showmoreButtonTapped), for: .touchUpInside)
         return UIBarButtonItem(customView: button)
     }()
+    
+    @objc func followingButtonTapped() {
+        let followingVC = FollowingViewController()
+        followingVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(followingVC, animated: false)
+   }
 
+    private lazy var followingButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "chevron.right.circle"), for: .normal)
+        button.addTarget(self, action: #selector(followingButtonTapped), for: .touchUpInside)
+        return button
+    }()
     
     private lazy var followingStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 10
         stackView.backgroundColor = .gray
+        stackView.addArrangedSubview(followingButton)
         return stackView
     }()
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -81,7 +95,7 @@ class HomeViewController: TodoTableViewController {
         view.addSubview(followingStackView)
         followingStackView.snp.makeConstraints { make in
             make.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(100)
+            make.height.equalTo(70)
         }
         
         view.addSubview(todoTableView)
