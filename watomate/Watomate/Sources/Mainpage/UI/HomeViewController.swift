@@ -54,8 +54,11 @@ class HomeViewController: TodoTableViewController {
         button.addTarget(self, action: #selector(showmoreButtonTapped), for: .touchUpInside)
         return UIBarButtonItem(customView: button)
     }()
+
     
     private lazy var followingView = FollowingView()
+    
+    
     
     override func viewWillAppear(_ animated: Bool) {
            super.viewWillAppear(animated)
@@ -73,6 +76,11 @@ class HomeViewController: TodoTableViewController {
         updateUserTedoori()
         getHomeUser(userID: userID)
         getTodayDiary()
+        followingView.onTap = { [weak self] in
+            let followingVC = FollowingViewController()
+            self?.navigationController?.pushViewController(followingVC, animated: true)
+        }
+        
     }
     
     private func getTodayDiary() {
@@ -81,7 +89,6 @@ class HomeViewController: TodoTableViewController {
             guard let diary = self?.diaryViewModel.diary else { return }
             self?.emoji = diary.emoji
             self?.reload()
-        }
     }
     
     override func setupLayout() {
@@ -90,6 +97,7 @@ class HomeViewController: TodoTableViewController {
             make.height.width.equalTo(30)
         }
         
+
         view.addSubview(followingView)
         followingView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(10)

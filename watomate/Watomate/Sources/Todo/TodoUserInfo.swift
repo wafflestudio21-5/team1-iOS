@@ -22,4 +22,12 @@ struct TodoUserInfo {
         username = userCellViewModel.username
         intro = userCellViewModel.intro
     }
+    
+    init(id: Int, tedoori: Bool, profilePic: String?, username: String, intro: String?) {
+        self.id = id
+        self.tedoori = tedoori
+        self.profilePic = profilePic
+        self.username = username
+        self.intro = intro
+    }
 }

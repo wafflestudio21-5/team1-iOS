@@ -38,6 +38,12 @@ class FollowingView: UIView {
         return view
     }()
     
+    var onTap: (() -> Void)?
+    
+    @objc private func handleTap() {
+        onTap?()
+    }
+    
     private lazy var button = {
         let button = UIButton()
         button.backgroundColor = .systemBackground
@@ -52,6 +58,8 @@ class FollowingView: UIView {
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview().offset(-10)
         }
+        
+        button.addTarget(self, action: #selector(handleTap), for: .touchUpInside)
         
         return button
     }()
@@ -86,6 +94,8 @@ class FollowingView: UIView {
             make.trailing.equalTo(button.snp.leading).offset(-4)
         }
     }
+    
+    
     
     
 }
