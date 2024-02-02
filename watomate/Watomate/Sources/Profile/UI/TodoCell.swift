@@ -185,6 +185,7 @@ class TodoCell: UITableViewCell {
         }
         memoStackView.isHidden = viewModel.isMemoHidden
         configureCheckbox(isComplete: viewModel.isCompleted)
+        checkbox.isUserInteractionEnabled = viewModel.date != nil
     }
 
     @objc private func showBottomSheetView() {
