@@ -89,6 +89,7 @@ class HomeViewController: TodoTableViewController {
             guard let diary = self?.diaryViewModel.diary else { return }
             self?.emoji = diary.emoji
             self?.reload()
+        }
     }
     
     override func setupLayout() {
