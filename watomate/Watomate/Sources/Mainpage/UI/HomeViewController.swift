@@ -57,6 +57,11 @@ class HomeViewController: TodoTableViewController {
     
     private lazy var followingView = FollowingView()
     
+    override func viewWillAppear(_ animated: Bool) {
+           super.viewWillAppear(animated)
+           navigationController?.setNavigationBarHidden(false, animated: true)
+           setupTopBarItems()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
