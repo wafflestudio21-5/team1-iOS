@@ -5,8 +5,8 @@ let infoPlist: [String: Plist.Value] = [
     "NSAppTransportSecurity": [
         "NSAllowsArbitraryLoads": true,
     ],
-    "CFBundleShortVersionString": "2.0.2",
-    "CFBundleVersion": "2.0.2",
+    "CFBundleShortVersionString": "2.0.3",
+    "CFBundleVersion": "2.0.3",
     "UILaunchStoryboardName": "LaunchScreen",
     "UIApplicationSceneManifest": [
                 "UIApplicationSupportsMultipleScenes": false,
@@ -37,7 +37,7 @@ let infoPlist: [String: Plist.Value] = [
     "CFBundleURLTypes": [
         [
             "CFBundleTypeRole": "Editor",
-            "CFBundleURLSchemes": ["kakaobc3d466403d1a451cdc43038925a906e"]
+            "CFBundleURLSchemes": ["kakao"]
         ],
     ],
     "UISupportedInterfaceOrientations":
