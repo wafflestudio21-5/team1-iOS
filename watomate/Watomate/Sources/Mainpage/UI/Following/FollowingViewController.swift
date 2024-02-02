@@ -12,6 +12,7 @@ import Kingfisher
 class FollowingViewController: PlainCustomBarViewController, UITabBarControllerDelegate {
     var viewModel = FollowViewModel(followUseCase: FollowUseCase(followRepository: FollowRepository()))
     private var isFollowingList: Bool = true // Default to "팔로잉"
+    private var followMapping: [Int: Follow] = [:]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,7 +87,7 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
     
     private func updateUI(_ follows: [Follow]) {
         for follow in follows {
-            let followView = createFollowView(withText: follow.profile.username, withImage: follow.profile.profilePic, withID: follow.id)
+            let followView = createFollowView(withFollow: follow)
             allFollowStackView.addArrangedSubview(followView)
             followView.snp.makeConstraints { make in
                 make.leading.trailing.equalToSuperview()
@@ -106,19 +107,25 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
         return stackView
     }()
     
+   
     @objc func followViewTapped(_ sender: UITapGestureRecognizer) {
         guard let view = sender.view else { return }
-        let followID = view.tag
-
+        let followUserInfo = followMapping[view.tag]
         DispatchQueue.main.async { [weak self] in
-            let followingUserVC = testfollowingViewController(userID: followID)
+            let userInfo = TodoUserInfo(id: (followUserInfo?.id)!,
+                                        tedoori: (followUserInfo?.profile.tedoori)!,
+                                        profilePic: followUserInfo?.profile.profilePic,
+                                        username: (followUserInfo?.profile.username)!,
+                                        intro: nil)
+            let followingUserVC = UserTodoViewController(viewModel: UserTodoViewModel(userInfo: userInfo))
             self?.navigationController?.pushViewController(followingUserVC, animated: true)
         }
     }
-
-    private func createFollowView(withText text: String, withImage image: String, withID id: Int) -> UIView {
+   
+    private func createFollowView(withFollow followInfo: Follow) -> UIView {
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.isUserInteractionEnabled = true
         
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -126,15 +133,19 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
         stackView.alignment = .leading
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.isUserInteractionEnabled = true
-        stackView.tag = id
+        stackView.tag = followInfo.id
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(followViewTapped))
+        stackView.addGestureRecognizer(tapGesture)
+        followMapping[followInfo.id] = followInfo
+        //print(followMapping[followInfo.id])
         
         let followProfileImageContainer = createFollowProfileImageContainer()
         stackView.addArrangedSubview(followProfileImageContainer)
-        followProfileImageContainer.setFollowProfileImage(imageUrl: image)
+        followProfileImageContainer.setFollowProfileImage(imageUrl: followInfo.profile.profilePic)
         followProfileImageContainer.snp.makeConstraints { make in
             make.width.height.equalTo(50)
         }
-        let followProfileName = createFollowProfileName(withText: text)
+        let followProfileName = createFollowProfileName(withText: followInfo.profile.username)
         stackView.addArrangedSubview(followProfileName)
         followProfileName.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
@@ -152,9 +163,6 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
             make.top.bottom.equalToSuperview()
             make.trailing.equalToSuperview().inset(8)
         }
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(followViewTapped))
-            stackView.addGestureRecognizer(tapGesture)
 
         return containerView
     }
