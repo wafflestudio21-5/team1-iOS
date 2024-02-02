@@ -27,6 +27,22 @@ class FollowViewModel {
         }
     }
     
+    func checkFollow(checkId: Int, completion: @escaping (Bool) -> Void){
+        getFollowInfo { result in
+            switch result {
+            case .success(let followInfo):
+                let followings = followInfo.followings
+                let isFollowing = followings.contains { following in
+                    following.id == checkId
+                }
+                completion(isFollowing)
+            case .failure(_):
+                completion(false)
+            }
+        }
+    }
+
+    
     func followUser(_ user_to_follow: Int, completion: @escaping (Result<Void, Error>) -> Void) {
         Task {
             do {
@@ -71,5 +87,6 @@ class FollowViewModel {
             }
         }
     }
-
+    
+    
 }

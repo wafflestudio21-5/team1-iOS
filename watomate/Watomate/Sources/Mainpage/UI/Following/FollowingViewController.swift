@@ -117,7 +117,7 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
                                         profilePic: followUserInfo?.profile.profilePic,
                                         username: (followUserInfo?.profile.username)!,
                                         intro: followUserInfo?.profile.intro)
-            let followingUserVC = UserTodoViewController(viewModel: UserTodoViewModel(userInfo: userInfo))
+            let followingUserVC = UserTodoViewController(viewModel: UserTodoViewModel(userInfo: userInfo), followViewModel: FollowViewModel(followUseCase: FollowUseCase(followRepository: FollowRepository())))
             self?.navigationController?.pushViewController(followingUserVC, animated: true)
         }
     }
@@ -204,7 +204,7 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
                             self.removeAllArrangedSubviewsFromStackView()
                             self.getFollowInfo()
                         case .failure(let error):
-                            print("Error deleting goal: \(error)")
+                            print("Error unfollowing user: \(error)")
                         }
                     }
                 }
@@ -221,7 +221,7 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
                             self.removeAllArrangedSubviewsFromStackView()
                             self.getFollowInfo()
                         case .failure(let error):
-                            print("Error deleting goal: \(error)")
+                            print("Error removing user: \(error)")
                         }
                     }
                 }
