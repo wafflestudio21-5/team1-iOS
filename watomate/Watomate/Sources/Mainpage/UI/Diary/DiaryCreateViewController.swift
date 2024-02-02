@@ -370,7 +370,7 @@ class DiaryCreateViewController: PlainCustomBarViewController{
         if backgroundColor == nil {
             contentView.backgroundColor = .systemBackground
         } else {
-            setBackgroundColor(UIColor(named: backgroundColor ?? "system") ?? .systemBackground)
+            setAllColor(UIColor(named: backgroundColor ?? "system") ?? .systemBackground)
         }
     }
 

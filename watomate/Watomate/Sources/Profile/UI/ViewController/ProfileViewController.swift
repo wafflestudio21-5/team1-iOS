@@ -92,8 +92,8 @@ class ProfileViewController: TodoTableViewController {
     }
     
     @objc private func archiveBoxTapped(_ sender: UITapGestureRecognizer) {
-        let viewController = ArchiveBoxViewController()
-        navigationController?.pushViewController(viewController, animated: false)
+        let viewController = ArchiveBoxViewController(viewModel: ArchiveBoxViewModel())
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     override func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {

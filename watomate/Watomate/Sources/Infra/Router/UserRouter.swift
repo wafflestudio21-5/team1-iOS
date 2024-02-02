@@ -12,11 +12,14 @@ import Foundation
 enum UserRouter: Router {
     case changeProfilePic(id: Int)
     case changeUserInfo(id: Int)
+    case getAllImage
     
     var method: HTTPMethod {
         switch self {
         case .changeProfilePic, .changeUserInfo:
             return .patch
+        case .getAllImage:
+            return .get
         }
     }
     
@@ -26,6 +29,8 @@ enum UserRouter: Router {
             return "/\(id)"
         case let .changeUserInfo(id):
             return "/\(id)"
+        case let .getAllImage:
+            return "/image-all"
         }
     }
     
@@ -34,6 +39,8 @@ enum UserRouter: Router {
         case .changeProfilePic:
             return [:]
         case .changeUserInfo:
+            return [:]
+        case .getAllImage:
             return [:]
         }
     }
