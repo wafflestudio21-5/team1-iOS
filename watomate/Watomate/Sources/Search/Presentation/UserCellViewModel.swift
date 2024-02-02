@@ -17,8 +17,15 @@ class UserCellViewModel: Identifiable {
     
     let id = UUID()
     
+    var userId: Int {
+        userInfo.id
+    }
+    
     var username: String {
         userInfo.username
+    }
+    var tedoori: Bool {
+        userInfo.tedoori
     }
     
     var intro: String {

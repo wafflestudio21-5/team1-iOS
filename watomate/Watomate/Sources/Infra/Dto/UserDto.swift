@@ -33,3 +33,28 @@ struct AllImageResponseDto: Decodable {
     }
 }
 
+typealias UserTodoResponseDto = [UserTodoDto]
+
+struct UserTodoDto: Decodable {
+    let title: String
+    let color: String
+    let visibility: String
+    let todos: [TodoDto]
+    
+    struct TodoDto: Decodable {
+        let id: Int
+        let title: String
+        let color: String
+        let isCompleted: Bool
+        let likes: [SearchLikeDto]
+        
+        func toDomain() -> UserTodo {
+            UserTodo(id: id, title: title, color: color, isCompleted: isCompleted, likes: likes.map{ $0.toDomain() })
+        }
+    }
+    
+    func toDomain() -> UserGoal {
+        UserGoal(title: title, color: color, visibility: visibility, todos: todos.map{ $0.toDomain() })
+    }
+}
+

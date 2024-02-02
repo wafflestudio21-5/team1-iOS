@@ -34,13 +34,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
 //        print(User.shared.id)
 //        print(User.shared.token)
-//        let repo = SearchRepository()
-//        let useCase = SearchUseCase(searchRepository: repo)
+//        let repo = UserRepository()
 //        let authRepo = AuthRepository()
 //        Task {
 //            do {
-////                try await repo.deleteComment(commentId: 41)
-//                try await authRepo.guestLogin(email: "ggg@ggg.ggg", password: "gggg")
+//                print(try await repo.getUserTodo(id: 2))
 //            } catch {
 //                print(error)
 //            }
