@@ -11,9 +11,11 @@ import UIKit
 class UserTodoViewController: PlainCustomBarViewController {
     var viewModel: UserTodoViewModel
     var followViewModel : FollowViewModel
-    init(viewModel: UserTodoViewModel, followViewModel: FollowViewModel) {
+    var navigateMethod : Bool
+    init(viewModel: UserTodoViewModel, followViewModel: FollowViewModel, naviagateMethod : Bool) {
         self.viewModel = viewModel
         self.followViewModel = followViewModel
+        self.navigateMethod = naviagateMethod
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -23,19 +25,32 @@ class UserTodoViewController: PlainCustomBarViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        checkFollow(tappedId: viewModel.userId)
+        methodLeftXButton()
+        checkFollowStatus(checkId: viewModel.userId)
         setFollowButton(isFollowing: self.isFollowing)
         setFollowAction(target: self, action: #selector(followTapped))
-        setLeftBackXNavigateButton()
         addChildViewController()
     }
     
-    var isFollowing = true
-    private func checkFollow(tappedId : Int){
-        self.followViewModel.checkFollow(checkId: tappedId) { isFollowing in
-            self.isFollowing = isFollowing
+    private func methodLeftXButton(){
+        if navigateMethod{
+            setLeftBackXNavigateButton()
+        }
+        else{
+            setLeftBackXButton()
         }
     }
+    
+    var isFollowing = true
+    private func checkFollowStatus(checkId: Int) {
+        followViewModel.checkFollow(checkId: checkId) { [weak self] isFollowingResult in
+            DispatchQueue.main.async {
+                self?.isFollowing = isFollowingResult
+                self!.setFollowButton(isFollowing: isFollowingResult)
+            }
+        }
+    }
+    
     
     @objc private func followTapped(_ sender: UIButton) {
         guard let myId = User.shared.id else { return } // 내 아이디

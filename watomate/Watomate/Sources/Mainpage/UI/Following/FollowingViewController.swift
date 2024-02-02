@@ -117,7 +117,7 @@ class FollowingViewController: PlainCustomBarViewController, UITabBarControllerD
                                         profilePic: followUserInfo?.profile.profilePic,
                                         username: (followUserInfo?.profile.username)!,
                                         intro: followUserInfo?.profile.intro)
-            let followingUserVC = UserTodoViewController(viewModel: UserTodoViewModel(userInfo: userInfo), followViewModel: FollowViewModel(followUseCase: FollowUseCase(followRepository: FollowRepository())))
+            let followingUserVC = UserTodoViewController(viewModel: UserTodoViewModel(userInfo: userInfo), followViewModel: FollowViewModel(followUseCase: FollowUseCase(followRepository: FollowRepository())), naviagateMethod: true)
             self?.navigationController?.pushViewController(followingUserVC, animated: true)
         }
     }
