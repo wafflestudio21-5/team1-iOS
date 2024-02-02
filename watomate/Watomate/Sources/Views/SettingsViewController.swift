@@ -12,6 +12,9 @@ class SettingsViewController: PlainCustomBarViewController {
     private let items = ["프로필 설정", "로그아웃", "계정 삭제하기"]
     private lazy var functions = [profileFunc, logoutFunc, deleteFunc]
     
+    private let guestItems = ["가입하기", "프로필 설정", "계정 삭제하기"]
+    private lazy var guestFunctions = [guestLoginFunc, profileFunc, deleteFunc]
+    
     private lazy var tableView = {
         let tableView = UITableView()
         tableView.dataSource = self
@@ -36,6 +39,12 @@ class SettingsViewController: PlainCustomBarViewController {
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+    
+    private lazy var guestLoginFunc = { [weak self] in
+        let vc = JoinViewController(viewModel: JoinViewModel(authUseCase: AuthUseCase(authRepository: AuthRepository(), userDefaultsRepository: UserDefaultsRepository(), searchRepository: SearchRepository(), kakaoRepository: KakaoRepository())))
+        vc.delegate = self
+        self?.navigationController?.pushViewController(vc, animated: true)
     }
     
     private lazy var profileFunc = {[weak self] in
@@ -97,13 +106,13 @@ class SettingsViewController: PlainCustomBarViewController {
 
 extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        items.count
+        User.shared.loginMethod == .guest ? guestItems.count : items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
         cell.selectionStyle = .none
-        cell.textLabel?.text = items[indexPath.row]
+        cell.textLabel?.text = User.shared.loginMethod == .guest ? guestItems[indexPath.row] : items[indexPath.row]
         cell.textLabel?.font = UIFont(name: "Pretendard-Regular", size: 16)
         if indexPath.row == 2 {
             cell.textLabel?.textColor = .systemRed
@@ -114,7 +123,15 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        functions[indexPath.row]()
+        User.shared.loginMethod == .guest ? guestFunctions[indexPath.row]() : functions[indexPath.row]()
+    }
+    
+    
+}
+
+extension SettingsViewController: JoinViewControllerDelegate {
+    func guestJoinComplete() {
+        tableView.reloadData()
     }
     
     

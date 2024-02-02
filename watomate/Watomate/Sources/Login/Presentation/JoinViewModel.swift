@@ -20,6 +20,7 @@ final class JoinViewModel: ViewModelType {
     enum Output {
         case signupFailed(errorMessage: String)
         case signupSucceed
+        case guestSignUpSucceed
         case toggleCheckButton(isChecked: Bool)
         case toggleOkButton(isEnabled: Bool)
     }
@@ -72,8 +73,14 @@ final class JoinViewModel: ViewModelType {
         Task { [weak self] in
             guard let self else { return }
             do {
-                try await self.authUseCase.signupWithEmail(email: self.email, password: self.password)
-                self.output.send(.signupSucceed)
+                if let loginMethod = User.shared.loginMethod,
+                   loginMethod == .guest {
+                    try await self.authUseCase.guestLogin(email: self.email, password: self.password)
+                    self.output.send(.guestSignUpSucceed)
+                } else {
+                    try await self.authUseCase.signupWithEmail(email: self.email, password: self.password)
+                    self.output.send(.signupSucceed)
+                }
                 self.isCalling = false
             } catch {
                 self.output.send(.signupFailed(errorMessage: error.localizedDescription))

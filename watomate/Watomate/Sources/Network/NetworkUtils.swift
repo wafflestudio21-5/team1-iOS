@@ -35,6 +35,9 @@ extension DataTask {
                 if let errorDto = try? decoder.decode(UsernameErrorDto.self, from: data) {
                     throw NetworkError.errorWithMessage(message: errorDto.username[0])
                 }
+                if let errorDto = try? decoder.decode(EmailErrorDto.self, from: data) {
+                    throw NetworkError.errorWithMessage(message: errorDto.email[0])
+                }
             }
             if let statusCode = response.response?.statusCode {
                 print(statusCode)

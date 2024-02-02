@@ -6,6 +6,7 @@
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
+import SnapKit
 import UIKit
 
 class TodoHeaderView: UITableViewHeaderFooterView {
@@ -115,6 +116,40 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         return stackView
     }()
     
+    private lazy var archiveBoxButton = {
+        let button = UIButton()
+        button.backgroundColor = .systemGray6
+        button.layer.cornerRadius = 10
+        button.clipsToBounds = true
+        
+       let imageView = UIImageView(image: UIImage(systemName: "archivebox.circle.fill"))
+        imageView.tintColor = .black
+        button.addSubview(imageView)
+        imageView.snp.makeConstraints { make in
+            make.width.height.equalTo(26)
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(10)
+        }
+        
+        let label = UILabel()
+        label.text = "나의 인증샷"
+        label.textColor = .label
+        label.font = UIFont(name: Constants.Font.regular, size: 12)
+        button.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalToSuperview().inset(12)
+        }
+        
+        return button
+    }()
+    
+    private lazy var topProfileView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private lazy var archiveLabel = {
         let label = UILabel()
         label.text = "보관함"
@@ -135,26 +170,37 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         profileStackView.addArrangedSubview(profileImageView)
         profileStackView.addArrangedSubview(followerStackView)
         profileStackView.addArrangedSubview(followingStackView)
-
+        
         profileImageView.snp.makeConstraints { make in
             make.height.width.equalTo(60)
+        }
+        
+        topProfileView.addSubview(profileStackView)
+        topProfileView.addSubview(archiveBoxButton)
+        profileStackView.snp.makeConstraints { make in
+            make.top.bottom.leading.equalToSuperview()
+        }
+        archiveBoxButton.snp.makeConstraints{ make in
+            make.centerY.equalToSuperview()
+            make.width.equalTo(80)
+            make.height.equalTo(68)
+            make.trailing.equalToSuperview()
         }
         
         let headerStackView = UIStackView()
         headerStackView.axis = .vertical
         headerStackView.spacing = 30
-        headerStackView.alignment = .leading
+        headerStackView.alignment = .fill
         headerStackView.translatesAutoresizingMaskIntoConstraints = false
         
-        headerStackView.addArrangedSubview(profileStackView)
+        headerStackView.addArrangedSubview(topProfileView)
         headerStackView.addArrangedSubview(archiveLabel)
 
-        
         addSubview(headerStackView)
         headerStackView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
             make.top.bottom.equalToSuperview().inset(10)
-            make.trailing.lessThanOrEqualToSuperview().inset(16)
+            make.trailing.equalToSuperview().inset(16)
         }
     }
     
@@ -162,6 +208,12 @@ class ProfileHeaderView: UITableViewHeaderFooterView {
         let gestureRecognizer = UITapGestureRecognizer(target: target, action: action)
         profileImageView.addGestureRecognizer(gestureRecognizer)
         profileImageView.isUserInteractionEnabled = true
+    }
+    
+    func archiveBoxTapEvent(target: Any?, action: Selector?) {
+        let gestureRecognizer = UITapGestureRecognizer(target: target, action: action)
+        archiveBoxButton.addGestureRecognizer(gestureRecognizer)
+        archiveBoxButton.isUserInteractionEnabled = true
     }
 }
 

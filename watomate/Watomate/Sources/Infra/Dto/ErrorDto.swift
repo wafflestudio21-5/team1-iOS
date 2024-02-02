@@ -15,3 +15,7 @@ struct ErrorDto: Decodable {
 struct UsernameErrorDto: Decodable {
     let username: [String]
 }
+
+struct EmailErrorDto: Decodable {
+    let email: [String]
+}

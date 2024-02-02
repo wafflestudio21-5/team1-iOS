@@ -51,15 +51,17 @@ class HomeViewController: TodoTableViewController {
         button.addTarget(self, action: #selector(showmoreButtonTapped), for: .touchUpInside)
         return UIBarButtonItem(customView: button)
     }()
+    
+    private lazy var followingView = FollowingView()
 
     
-    private lazy var followingStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.spacing = 10
-        stackView.backgroundColor = .gray
-        return stackView
-    }()
+//    private lazy var followingStackView: UIStackView = {
+//        let stackView = UIStackView()
+//        stackView.axis = .horizontal
+//        stackView.spacing = 10
+//        stackView.backgroundColor = .gray
+//        return stackView
+//    }()
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -81,15 +83,16 @@ class HomeViewController: TodoTableViewController {
             make.height.width.equalTo(30)
         }
         
-        view.addSubview(followingStackView)
-        followingStackView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(100)
+        view.addSubview(followingView)
+        followingView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(10)
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.height.equalTo(80)
         }
         
         view.addSubview(todoTableView)
         todoTableView.snp.makeConstraints { make in
-            make.top.equalTo(followingStackView.snp.bottom)
+            make.top.equalTo(followingView.snp.bottom).offset(15)
             make.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }

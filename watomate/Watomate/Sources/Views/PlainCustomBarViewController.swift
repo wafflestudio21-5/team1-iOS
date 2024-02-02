@@ -46,7 +46,7 @@ class PlainCustomBarViewController: UIViewController {
 
         setupLayout()
         setupContainerView()
-        setBackgroundColor(backgroundColor)
+        setAllColor(backgroundColor)
         setTitleAndButtonColor(titleAndButtonColor)
     }
     
@@ -99,7 +99,7 @@ extension PlainCustomBarViewController: UIGestureRecognizerDelegate { }
 
 extension PlainCustomBarViewController {
     
-    func setBackgroundColor(_ color: UIColor) {
+    func setAllColor(_ color: UIColor) {
         backgroundColor = color
         topInsetView.backgroundColor = color 
         navigationBarView.backgroundColor = color
