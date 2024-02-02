@@ -52,13 +52,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         User.shared.id = userDefaultsRepository.get(Int.self, key: .userId)
         User.shared.token = userDefaultsRepository.get(String.self, key: .accessToken)
         
-        Task {
-            User.shared.username = userDefaultsRepository.get(String.self, key: .username)
-            User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)
-            User.shared.profilePic = userDefaultsRepository.get(String.self, key: .profilePic)
-            User.shared.followerCount = userDefaultsRepository.get(Int.self, key: .followerCount)
-            User.shared.followingCount = userDefaultsRepository.get(Int.self, key: .followingCount)
-        }
+        User.shared.username = userDefaultsRepository.get(String.self, key: .username)
+        User.shared.intro = userDefaultsRepository.get(String.self, key: .intro)
+        User.shared.profilePic = userDefaultsRepository.get(String.self, key: .profilePic)
+        User.shared.followerCount = userDefaultsRepository.get(Int.self, key: .followerCount)
+        User.shared.followingCount = userDefaultsRepository.get(Int.self, key: .followingCount)
         
         User.shared.loginMethod = LoginMethod(rawValue: userDefaultsRepository.get(String.self, key: .loginMethod) ?? "")
     }

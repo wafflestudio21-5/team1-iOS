@@ -1,18 +1,14 @@
 //
-//  UserCollectionViewCell.swift
+//  UserSmallView.swift
 //  Watomate
 //
 //  Created by 이지현 on 2/2/24.
 //  Copyright © 2024 tuist.io. All rights reserved.
 //
 
-import Kingfisher
-import SnapKit
-import UIKit
+import UIKit 
 
-class UserCollectionViewCell: UICollectionViewCell {
-    static let id = "userCollectionViewCell"
-    
+class UserSmallView : UIView {
     private lazy var profileView = SymbolCircleView(symbolImage: nil)
     
     private lazy var nameLabel = {
@@ -25,13 +21,15 @@ class UserCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        contentView.addSubview(profileView)
+        addSubview(profileView)
         profileView.snp.makeConstraints { make in
-            make.top.trailing.leading.equalToSuperview()
-            make.height.equalTo(contentView.frame.width)
+            make.top.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.width.height.equalTo(55)
+//            make.height.equalTo(frame.width)
         }
         
-        contentView.addSubview(nameLabel)
+        addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
             make.top.equalTo(profileView.snp.bottom).offset(5)
             make.trailing.leading.equalToSuperview()
@@ -42,10 +40,6 @@ class UserCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func prepareForReuse() {
-        profileView.reset()
-        nameLabel.text = nil
-    }
     
     func configure(image: String?, name: String) {
         if let image {
@@ -55,5 +49,4 @@ class UserCollectionViewCell: UICollectionViewCell {
         }
         nameLabel.text = name
     }
-    
 }
