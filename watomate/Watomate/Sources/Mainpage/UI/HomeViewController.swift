@@ -61,9 +61,11 @@ class HomeViewController: TodoTableViewController {
     
     
     override func viewWillAppear(_ animated: Bool) {
-           super.viewWillAppear(animated)
-           navigationController?.setNavigationBarHidden(false, animated: true)
-           setupTopBarItems()
+        frontend/mainpage
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        setupTopBarItems()
+        followingView.refreshData()
     }
     
     override func viewDidLoad() {
@@ -81,7 +83,6 @@ class HomeViewController: TodoTableViewController {
             self?.navigationController?.pushViewController(followingVC, animated: true)
         }
         
-    }
     
     private func getTodayDiary() {
         guard let userID else { return }
@@ -90,6 +91,7 @@ class HomeViewController: TodoTableViewController {
             self?.emoji = diary.emoji
             self?.reload()
         }
+
     }
     
     override func setupLayout() {

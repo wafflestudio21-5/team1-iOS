@@ -31,6 +31,7 @@ class UserHeaderView: UITableViewHeaderFooterView {
         super.init(reuseIdentifier: reuseIdentifier)
         
         setupLayout()
+        //addGestureRecognizer()
     }
     
     required init?(coder: NSCoder) {
@@ -58,13 +59,37 @@ class UserHeaderView: UITableViewHeaderFooterView {
         }
     }
     
-    func configure(username: String, profilePic: String?) {
+    var sendingInfo : SendingInfo?
+    func configure(id: UUID, username: String, profilePic: String?, intro: String?, tedoori: Bool) {
         usernameLabel.text = username
         if let profilePic {
             profileCircleView.setImage(profilePic)
         } else {
             profileCircleView.setDefault()
         }
+        //sendingInfo = SendingInfo(id: id, username: username, profilePic: profilePic, intro: intro, tedoori: tedoori) //여기!!
+        
     }
+    
+    /*
+    private func addGestureRecognizer() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(userHeaderTapped))
+        self.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc func userHeaderTapped(_ sender: UITapGestureRecognizer) {
+        guard let view = sender.view else { return }
+        DispatchQueue.main.async { [weak self] in
+            let userInfo = TodoUserInfo(
+                id: sendingInfo.id, //여기!!
+                tedoori: sendingInfo!.tedoori,
+                profilePic: sendingInfo?.profilePic,
+                username: sendingInfo!.username,
+                intro: sendingInfo?.intro)
+            let followingUserVC = UserTodoViewController(viewModel: UserTodoViewModel(userInfo: userInfo), followViewModel: FollowViewModel(followUseCase: FollowUseCase(followRepository: FollowRepository())), naviagateMethod: true)
+            self?.navigationController?.pushViewController(followingUserVC, animated: true)
+        }
+    }
+     */
 }
 

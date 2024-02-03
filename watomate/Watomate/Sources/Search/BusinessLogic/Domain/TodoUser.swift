@@ -12,5 +12,7 @@ struct TodoUser: Identifiable {
     let id = UUID()
     let username: String
     let profilePic: String?
+    let intro: String?
+    let tedoori: Bool
     let todos: [SearchTodo]
 }
