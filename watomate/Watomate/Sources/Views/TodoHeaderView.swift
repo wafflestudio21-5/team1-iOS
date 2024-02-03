@@ -12,7 +12,27 @@ import UIKit
 class TodoHeaderView: UITableViewHeaderFooterView {
 
     static let reuseIdentifier = "TodoHeaderView"
-
+    /*
+    let userID = User.shared.id
+    var followingCount : Int = 0
+    var followerCount: Int = 0
+    var viewModel = FollowCountViewModel(useCase: SearchUseCase(searchRepository: SearchRepository()))
+    
+    private func fetchFollowCount(userId: Int) {
+        Task {
+            do {
+                let userInfo = try await viewModel.getUserInfo(id: userId)
+                DispatchQueue.main.async {
+                    self.followerCount = userInfo.followerCount ?? User.shared.followerCount!
+                    self.followingCount = userInfo.followingCount ?? User.shared.followingCount!
+                }
+            } catch {
+                print("An error occurred: \(error)")
+            }
+        }
+    }
+     */
+    
     lazy var goalView = {
         let goalView = GoalStackView()
         goalView.setTitleFont(font: .boldSystemFont(ofSize: 18))
@@ -21,6 +41,7 @@ class TodoHeaderView: UITableViewHeaderFooterView {
 
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
+        // fetchFollowCount(userId: userID!)
         setupLayout()
     }
 
@@ -227,15 +248,12 @@ extension ProfileHeaderView {
         profileImageView.image = image
     }
     
-    func setFollowerCount() {
-        if let count = User.shared.followerCount {
-            followerCountLabel.text = "\(count)"
-        }
+    func setFollowerCount(count : Int) {
+        followerCountLabel.text = "\(count)"
     }
     
-    func setFollowingCount() {
-        if let count = User.shared.followingCount {
-            followingCountLabel.text = "\(count)"
-        }
+    func setFollowingCount(count: Int) {
+        followingCountLabel.text = "\(count)"
     }
+    
 }
