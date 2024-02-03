@@ -29,6 +29,14 @@ class TodoSectionViewModel: Identifiable {
         todoUser.profilePic
     }
     
+    var intro: String? {
+        todoUser.intro
+    }
+    
+    var tedoori: Bool {
+        todoUser.tedoori
+    }
+    
     var todoCount: Int {
         todoCells.count
     }

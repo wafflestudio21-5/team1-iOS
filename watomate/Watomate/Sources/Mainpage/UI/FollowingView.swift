@@ -10,6 +10,22 @@ import SnapKit
 import UIKit
 
 class FollowingView: UIView {
+    private var viewModel = FollowViewModel(followUseCase: FollowUseCase(followRepository: FollowRepository()))
+    private var followings: [Follow] = []
+    
+    private func fetchFollowings() {
+        viewModel.getFollowInfo { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let followInfo):
+                    self?.followings = followInfo.followings
+                    self?.collectionView.reloadData()
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
     
     private let flowLayout = {
         let layout = UICollectionViewFlowLayout()
@@ -64,10 +80,14 @@ class FollowingView: UIView {
         return button
     }()
     
+    func refreshData() {
+        fetchFollowings()
+    }
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         setupLayout()
+        fetchFollowings()
     }
     
     required init?(coder: NSCoder) {
@@ -102,14 +122,13 @@ class FollowingView: UIView {
 
 extension FollowingView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        20
+        return followings.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: UserCollectionViewCell.id, for: indexPath) as! UserCollectionViewCell
-        cell.configure(image: nil, name: "me")
+        let following = followings[indexPath.row]
+        cell.configure(image: following.profile.profilePic, name: following.profile.username)
         return cell
     }
-    
-    
 }

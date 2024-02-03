@@ -61,14 +61,15 @@ class HomeViewController: TodoTableViewController {
     
     
     override func viewWillAppear(_ animated: Bool) {
-           super.viewWillAppear(animated)
-           navigationController?.setNavigationBarHidden(false, animated: true)
-           setupTopBarItems()
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        setupTopBarItems()
+        followingView.refreshData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        navigationController?.setNavigationBarHidden(false, animated: true)
+        //        navigationController?.setNavigationBarHidden(false, animated: true)
         setupTopBarItems()
         hideKeyboardWhenTappedAround()
         
@@ -80,8 +81,8 @@ class HomeViewController: TodoTableViewController {
             let followingVC = FollowingViewController()
             self?.navigationController?.pushViewController(followingVC, animated: true)
         }
-        
     }
+        
     
     private func getTodayDiary() {
         guard let userID else { return }
@@ -90,6 +91,7 @@ class HomeViewController: TodoTableViewController {
             self?.emoji = diary.emoji
             self?.reload()
         }
+
     }
     
     override func setupLayout() {

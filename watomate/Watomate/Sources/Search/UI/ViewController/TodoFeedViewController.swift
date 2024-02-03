@@ -92,7 +92,7 @@ extension TodoFeedViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: UserHeaderView.reuseIdentifier) as? UserHeaderView else { fatalError() }
-        header.configure(username: viewModel.sectionUsername(at: section), profilePic: viewModel.sectionProfilePic(at: section))
+        header.configure(id: viewModel.sectionID(at: section), username: viewModel.sectionUsername(at: section), profilePic: viewModel.sectionProfilePic(at: section), intro: viewModel.sectionIntro(at: section), tedoori: viewModel.sectionTedoori(at: section))
         return header
     }
     
