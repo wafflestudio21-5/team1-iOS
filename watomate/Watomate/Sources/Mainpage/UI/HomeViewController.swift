@@ -58,6 +58,7 @@ class HomeViewController: TodoTableViewController {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
         setupTopBarItems()
+        followingView.refreshData()
     }
     
     override func viewDidLoad() {
@@ -70,6 +71,7 @@ class HomeViewController: TodoTableViewController {
             let followingVC = FollowingViewController()
             self?.navigationController?.pushViewController(followingVC, animated: true)
         }
+        
     }
     
     override func setupLayout() {

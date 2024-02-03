@@ -31,7 +31,7 @@ class UserHeaderView: UITableViewHeaderFooterView {
         super.init(reuseIdentifier: reuseIdentifier)
         
         setupLayout()
-        addGestureRecognizer()
+        //addGestureRecognizer()
     }
     
     required init?(coder: NSCoder) {
@@ -67,10 +67,11 @@ class UserHeaderView: UITableViewHeaderFooterView {
         } else {
             profileCircleView.setDefault()
         }
-        sendingInfo = SendingInfo(id: id, username: username, profilePic: profilePic, intro: intro, tedoori: tedoori) //여기!!
+        //sendingInfo = SendingInfo(id: id, username: username, profilePic: profilePic, intro: intro, tedoori: tedoori) //여기!!
         
     }
     
+    /*
     private func addGestureRecognizer() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(userHeaderTapped))
         self.addGestureRecognizer(tapGesture)
@@ -89,5 +90,6 @@ class UserHeaderView: UITableViewHeaderFooterView {
             self?.navigationController?.pushViewController(followingUserVC, animated: true)
         }
     }
+     */
 }
 
