@@ -38,7 +38,20 @@
 - 투두에 알림이 설정되어있거나 메모가 존재할 경우 제목 밑에 나타납니다.
 - 각 투두들을 탭하면 투두를 편집할 수 있는 화면이 올라오며 수정, 삭제, 메모 추가, 알림 설정, 사진 인증(투두 완료 시), 날짜 지정 및 변경, 보관함으로 이동(날짜 삭제 기능, 투두 미완료시에만 보임) 등을 할 수 있습니다.
 - 투두를 완료했을 경우 사진인증을 할 수 있습니다.
-  
+
+## 목표 관리
+| | | |
+|---|---|---|
+| <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/b2bab831-906d-4ec9-a315-480ca9ccf80d" width="300px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/6f3e9998-4d42-4031-a3be-f2ddf7c301c2" width="300px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/366ce945-9050-4819-93c6-623cccf3f019" width="300px"> |
+- 목표를 관리하고 수정 및 새 목표를 추가할 수 있습니다.
+
+## 팔로우 
+| | | | |
+|---|---|---|---|
+| <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/bdbff558-885c-413a-b2ec-3e19bed214f0" width="300px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/bedd683c-80f9-46d5-85b7-f01f7f1406c2" width="300px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/83cf811c-0b12-410b-9ce4-17fef2bae45b" width="300px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/932c10da-10a0-42bb-bbbb-c9bb6b86cbef" width="300px"> |
+- 팔로잉/팔로워 목록을 조회하고 유저 언팔로우 및 팔로워 삭제를 할 수 있습니다.
+- 유저 프로필 클릭 시 유저의 할 일 화면으로 이동합니다.
+
 ### 다이어리
 | | | | | | | 
 |---|---|---|---|---|---|
