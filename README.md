@@ -9,7 +9,7 @@
 
 | 이지현 (JH713) | 이수민 (cirtuare) | 권현구 (h9kwon) |
 | :----------------------------------------: | :---------------------------------: | :---------------------------------: |
-| <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/b4ab62ab-37e8-465a-b51b-3d5c758ade14" width="300px"> | <img src="" width="300px"> | <img src="https://avatars.githubusercontent.com/u/112813777?s=400&v=4" width="300px"> |
+| <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/b4ab62ab-37e8-465a-b51b-3d5c758ade14" width="300px"> | <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/e35fa1af-7d63-4c1b-a7a4-bc54bdb66ab4" width="300px"> | <img src="https://avatars.githubusercontent.com/u/112813777?s=400&v=4" width="300px"> |
 | 로그인, 서치탭 담당 | 홈 탭, 다이어리, 팔로우 담당 | 프로필 탭, 투두리스트 담당 |
 
 ## 프로젝트 뷰 및 기능 소개 
@@ -26,7 +26,7 @@
 
 | | | | | |
 |---|---|---|---|---|
-| <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/086efd7a-298b-4616-bcaf-5c2b82e96b19" width="300px"> | 이미지2 | 이미지3 | 이미지4 | 이미지5 |
+| <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/086efd7a-298b-4616-bcaf-5c2b82e96b19" width="200px"> | 이미지2 | 이미지3 | 이미지4 | 이미지5 |
 
 - 홈 탭 우측 상단의 더보기 버튼을 탭하면 목표를 추가하거나 편집할 수 있습니다.
 - 홈 탭 상단에서 팔로잉하는 사람의 목록을 볼 수 있습니다.
@@ -38,6 +38,13 @@
 - 투두에 알림이 설정되어있거나 메모가 존재할 경우 제목 밑에 나타납니다.
 - 각 투두들을 탭하면 투두를 편집할 수 있는 화면이 올라오며 수정, 삭제, 메모 추가, 알림 설정, 사진 인증(투두 완료 시), 날짜 지정 및 변경, 보관함으로 이동(날짜 삭제 기능, 투두 미완료시에만 보임) 등을 할 수 있습니다.
 - 투두를 완료했을 경우 사진인증을 할 수 있습니다.
+  
+### 다이어리
+|---|---|---|---|---|---|
+| <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/1b82707c-c0cc-4eaa-9512-c4d16966f9d8" width="100px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/3eea81d9-dd4a-4cbe-b023-21bdbfe9c859" width="100px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/0078ab77-dd2c-42a4-bda3-f41f5dfd7192" width="100px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/06018c57-34b4-4145-8049-bcb3d7eef997" width="100px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/0b9c1c28-8f1a-4d3c-8528-c97f42ee9691" width="100px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/7eb08a7d-d432-4a2e-8e01-a57920c6523" width="100px"> |
+
+- 다이어리 생성 화면에서 이모지, 공개설정, 다이어리 내용, 배경 색상, 마음 온도를 설정할 수 있습니다.
+
 
 ### 3. 검색 탭
 
