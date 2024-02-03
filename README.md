@@ -41,6 +41,27 @@
 
 ### 3. 검색 탭
 
+### 계정 
+
+| | | |
+|---|---|---|
+| <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/da243856-5615-4b94-9baf-0f99b36dce95" width="300px"> | <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/a40092cd-2e06-44db-801c-4b42fc213344" width="300px"> | <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/62930374-0bbc-43a5-a165-0c8c6504d566" width="300px"> |
+
+- 기본 화면에서 게스트를 제외한 모든 계정을 볼 수 있습니다.
+- 검색어를 입력하면 검색어를 포함하는 모든 계정을 볼 수 있습니다.
+- 계정을 클릭하면 해당 계정의 오늘의 투두를 보여주고, 팔로우할 수 있는 버튼을 보여줍니다.
+
+### 할 일 
+
+| | | 
+|---|---|
+| <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/f473705d-145c-4fe7-b31c-4e9c1fc3e3b4" width="300px"> | <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/c3951d8a-8831-465e-b3c0-84552e781909" width="300px">  | 
+
+- 기본 화면에서 게스트를 제외한 모든 계정의 할 일(전체공개)을 볼 수 있습니다.
+- 검색어를 입력하면 검색어를 포함하는 모든 할 일을 볼 수 있습니다.
+
+
+
 
 ### 4. 프로필 탭
 
