@@ -57,6 +57,7 @@ class TodoCell: UITableViewCell {
         let imageView = UIImageView(image: image)
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        imageView.tintColor = .secondaryLabel
         return imageView
     }()
 
@@ -79,7 +80,7 @@ class TodoCell: UITableViewCell {
     private lazy var reminderImage = {
         let image = UIImage(systemName: "clock")
         let imageView = UIImageView(image: image)
-        imageView.tintColor = .darkText
+        imageView.tintColor = .label
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return imageView
@@ -106,7 +107,7 @@ class TodoCell: UITableViewCell {
     private lazy var memoImage = {
         let image = UIImage(systemName: "note.text")
         let imageView = UIImageView(image: image)
-        imageView.tintColor = .darkText
+        imageView.tintColor = .label
         imageView.contentMode = .scaleAspectFit
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return imageView
@@ -124,6 +125,8 @@ class TodoCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.backgroundColor = .systemBackground
+        self.selectionStyle = .none
         setupLayout()
         observeTextChanges()
     }

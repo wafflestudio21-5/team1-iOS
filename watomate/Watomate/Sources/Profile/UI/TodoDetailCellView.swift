@@ -14,6 +14,7 @@ class TodoDetailCellView: UIStackView {
     
     private lazy var titleLabel = {
         let label = UILabel()
+        label.textColor = .label
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         return label
     }()
