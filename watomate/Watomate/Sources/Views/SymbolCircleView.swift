@@ -94,7 +94,10 @@ class SymbolCircleView: UIImageView {
     
     func setProfileImage() {
         symbolImageView.image = nil
-        guard let imageUrl = User.shared.profilePic else { return }
+        guard let imageUrl = User.shared.profilePic else {
+            setDefault()
+            return
+        }
         kf.setImage(with: URL(string: imageUrl)!)
     }
     

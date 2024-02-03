@@ -184,7 +184,7 @@ class TodoDetailViewController: SheetCustomViewController {
     private lazy var moveToArchiveCell = {
         let cellView = TodoDetailCellView()
         cellView.setTitle("보관함으로 이동")
-        cellView.setIcon(UIImage(systemName: "checkmark.rectangle.stack.fill")!)
+        cellView.setIcon(UIImage(systemName: "checkmark.square.fill")!)
         cellView.setIconBackgroundColor(.systemPurple)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleMoveToArchiveCellTap))
         cellView.addGestureRecognizer(tapGesture)
@@ -200,6 +200,7 @@ class TodoDetailViewController: SheetCustomViewController {
     }
     
     func setupDetailViewLayout() {
+        view.backgroundColor = .systemBackground
         sheetView.addSubview(detailStackView)
         
         detailStackView.addArrangedSubview(editDeleteStackView)
@@ -221,11 +222,11 @@ class TodoDetailViewController: SheetCustomViewController {
         detailStackView.snp.makeConstraints { make in
             make.edges.equalTo(sheetView.safeAreaLayoutGuide).inset(20)
         }
-        editTitleButton.snp.makeConstraints { make in
-            make.height.equalTo(100)
+        editDeleteStackView.snp.makeConstraints { make in
+            make.height.equalTo(80)
         }
         memoTextField.snp.makeConstraints { make in
-            make.height.equalTo(100)
+            make.height.equalTo(60)
         }
         reminderPicker.snp.makeConstraints { make in
             make.height.equalTo(100)
@@ -241,6 +242,7 @@ class TodoDetailViewController: SheetCustomViewController {
         verificationCell.isHidden = !viewModel.isCompleted
         editTitleButton.addTarget(self, action: #selector(handleEditBtnTap), for: .touchUpInside)
         deleteTodoButton.addTarget(self, action: #selector(handleDeleteBtnTap), for: .touchUpInside)
+        moveToArchiveCell.isHidden = (viewModel.date == nil) || viewModel.isCompleted
     }
     
     func toggleReminderEditView() {

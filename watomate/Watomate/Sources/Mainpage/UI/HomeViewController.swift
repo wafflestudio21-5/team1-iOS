@@ -11,8 +11,14 @@ import UIKit
 class HomeViewController: TodoTableViewController {
     let diaryViewModel: DiaryPreviewViewModel
     var homeViewModel = HomeViewModel()
-    lazy var userID = User.shared.id
+    let userID = User.shared.id
     var selectedDate: DateComponents? = nil
+    
+    private var diaryDateString: String = {
+        return Utils.YYYYMMddFormatter().string(from: Date())
+    }()
+    
+    var emoji = "no emoji"
     
     init(todoListViewModel: TodoListViewModel, diaryViewModel: DiaryPreviewViewModel) {
         self.diaryViewModel = diaryViewModel
@@ -27,15 +33,14 @@ class HomeViewController: TodoTableViewController {
     private lazy var logoImage : UIImageView = {
         var view = UIImageView()
         view.image = UIImage(named: "logo") // 추후 최종 로고 이미지로 변경
-        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    private lazy var notificationButton : UIBarButtonItem = {
-        let button = UIBarButtonItem(image: UIImage(systemName: "bell"))
-        // button.addTarget(self, action: #selector(notificationButtonTapped), for: .touchUpInside)
-        return button
-    }()
+//    private lazy var notificationButton : UIBarButtonItem = {
+//        let button = UIBarButtonItem(image: UIImage(systemName: "bell"))
+//        // button.addTarget(self, action: #selector(notificationButtonTapped), for: .touchUpInside)
+//        return button
+//    }()
     
     @objc func showmoreButtonTapped() {
         let goalManageVC = GoalManageViewController()
@@ -44,6 +49,7 @@ class HomeViewController: TodoTableViewController {
     
     private lazy var showmoreButton: UIBarButtonItem = {
         let button = UIButton(type: .system)
+        button.tintColor = .label
         button.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
         button.addTarget(self, action: #selector(showmoreButtonTapped), for: .touchUpInside)
         return UIBarButtonItem(customView: button)
@@ -55,6 +61,7 @@ class HomeViewController: TodoTableViewController {
     
     
     override func viewWillAppear(_ animated: Bool) {
+        frontend/mainpage
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
         setupTopBarItems()
@@ -62,16 +69,29 @@ class HomeViewController: TodoTableViewController {
     }
     
     override func viewDidLoad() {
-        todoTableView.register(CalendarHeaderView.self, forHeaderFooterViewReuseIdentifier: CalendarHeaderView.reuseIdentifier)
         super.viewDidLoad()
+//        navigationController?.setNavigationBarHidden(false, animated: true)
+        setupTopBarItems()
+        hideKeyboardWhenTappedAround()
+        
         guard let userID else { return }
         updateUserTedoori()
         getHomeUser(userID: userID)
+        getTodayDiary()
         followingView.onTap = { [weak self] in
             let followingVC = FollowingViewController()
             self?.navigationController?.pushViewController(followingVC, animated: true)
         }
         
+    
+    private func getTodayDiary() {
+        guard let userID else { return }
+        diaryViewModel.getDiary(userID: userID, date: Utils.YYYYMMddFormatter().string(from: Utils.getDateOfToday())) {[weak self] in
+            guard let diary = self?.diaryViewModel.diary else { return }
+            self?.emoji = diary.emoji
+            self?.reload()
+        }
+
     }
     
     override func setupLayout() {
@@ -96,7 +116,7 @@ class HomeViewController: TodoTableViewController {
     }
     
     private func setupTopBarItems() {
-        self.navigationItem.rightBarButtonItems = [showmoreButton, notificationButton]
+        self.navigationItem.rightBarButtonItems = [showmoreButton]
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: logoImage)
     }
     
@@ -120,12 +140,7 @@ class HomeViewController: TodoTableViewController {
 //            profileImage.layer.borderWidth = 0
         }
     } // todo 상태 바뀔 때마다 updateusertedoori 불러와야 함
-
-    private var diaryDateString: String = {
-        return Utils.YYYYMMddFormatter().string(from: Date())
-    }()
     
-    var emoji = "no emoji"
     @objc func diaryButtonTapped() {
         if emoji == "no emoji" {
              let diaryCreateVC = DiaryCreateViewController()
@@ -133,7 +148,7 @@ class HomeViewController: TodoTableViewController {
              diaryCreateVC.existence = false
              diaryCreateVC.completionClosure = { receivedValue in
                  self.emoji = receivedValue
-                 self.updateDiaryButtonAppearance()
+                 self.reload()
              }
             diaryCreateVC.setupProfile()
             diaryCreateVC.hidesBottomBarWhenPushed = true //tabBar 숨기기
@@ -141,6 +156,7 @@ class HomeViewController: TodoTableViewController {
         }
         else{
             let diaryPreviewVC = DiaryPreviewViewController()
+            diaryPreviewVC.viewModel = diaryViewModel
             diaryPreviewVC.receivedDateString = diaryDateString
             diaryPreviewVC.userName = homeViewModel.user?.username
             diaryPreviewVC.userProfile = homeViewModel.user?.profile_pic
@@ -150,16 +166,8 @@ class HomeViewController: TodoTableViewController {
         }
    }
     
-    private func updateDiaryButtonAppearance() {
-        let headerView = tableView(todoTableView, viewForHeaderInSection: 0) as! CalendarHeaderView
-        let diaryButton = headerView.diaryButton
-        if emoji == "no emoji" {
-            diaryButton.setTitle(nil, for: .normal)
-            diaryButton.setImage(UIImage(systemName: "face.dashed"), for: .normal)
-        } else {
-            diaryButton.setImage(nil, for: .normal)
-            diaryButton.setTitle(emoji, for: .normal)
-        }
+    private func reload() {
+        dataSource.applySnapshotUsingReloadData(dataSource.snapshot())
     }
     
     private func reloadCalendarView(date: Date?) {
@@ -194,6 +202,16 @@ extension HomeViewController {
             let dateSelection = UICalendarSelectionSingleDate(delegate: self)
             header.calendarView.selectionBehavior = dateSelection
             header.calendarView.fontDesign = .rounded
+            
+            if emoji == "no emoji" {
+                header.diaryButton.setTitle(nil, for: .normal)
+                header.diaryButton.setImage(UIImage(systemName: "face.dashed"), for: .normal)
+            } else {
+                header.diaryButton.setImage(nil, for: .normal)
+                header.diaryButton.setTitle(emoji, for: .normal)
+                header.diaryButton.titleLabel?.font = .systemFont(ofSize: 35)
+            }
+            
             return header
         }
         
@@ -269,19 +287,15 @@ extension HomeViewController: TodoListViewModelDelegate {
 
 extension HomeViewController: UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate {
     func getDiary(userID: Int, date: String) {
-        emoji = "no emoji"
-        updateDiaryButtonAppearance()
-        diaryViewModel.getDiary(userID: userID, date: date) {
-            DispatchQueue.main.async { [weak self] in
-                if let emoji = self?.diaryViewModel.diary?.emoji {
-                    self?.emoji = emoji
-                    self?.updateDiaryButtonAppearance()
-                }
-            }
+        diaryViewModel.getDiary(userID: userID, date: date) { [weak self] in
+            guard let diary = self?.diaryViewModel.diary else { return }
+            self?.emoji = diary.emoji
+            self?.reload()
         }
     }
     
     func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
+        emoji = "no emoji"
         selection.setSelected(dateComponents, animated: true)
         selectedDate = dateComponents
         if let selectedDate = dateComponents?.date {
@@ -323,6 +337,7 @@ extension HomeViewController: UICalendarViewDelegate, UICalendarSelectionSingleD
             if let dateTodosInfo = self.todoListViewModel.getTodosInfo(on: targetDateStr) {
                 if dateTodosInfo.0 == 0 {
                     customView.setColor(color: dateTodosInfo.1)
+                    customView.makeTransparent()
                     customView.addCheckMark()
                 } else {
                     customView.addNumber(numberString: "\(dateTodosInfo.0)")
@@ -342,7 +357,7 @@ extension HomeViewController: DiaryPreviewViewControllerDelegate {
             diaryCreateVC.existence = true
             diaryCreateVC.completionClosure = { receivedValue in
                 self.emoji = receivedValue
-                self.updateDiaryButtonAppearance()
+                self.reload()
             }
             diaryCreateVC.hidesBottomBarWhenPushed = true //tabBar 숨기기
             self.navigationController?.pushViewController(diaryCreateVC, animated: false)

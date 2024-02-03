@@ -35,7 +35,6 @@ class TodoTableViewController: UIViewController {
     
     internal lazy var todoTableView = {
         let tableView = UITableView(frame: .init(), style: .grouped)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.delegate = self
         tableView.estimatedRowHeight = 50
         tableView.rowHeight = UITableView.automaticDimension
@@ -53,6 +52,7 @@ class TodoTableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         todoTableView.register(TodoHeaderView.self, forHeaderFooterViewReuseIdentifier: TodoHeaderView.reuseIdentifier)
+        todoTableView.register(CalendarHeaderView.self, forHeaderFooterViewReuseIdentifier: CalendarHeaderView.reuseIdentifier)
         registerCells()
         setupLayout()
         configureDataSource()
@@ -114,7 +114,7 @@ class TodoTableViewController: UIViewController {
         viewModelCancellables = todoListViewModel.vms
             .receive(on: DispatchQueue.main)
             .sink { [weak self] viewModels in
-                self?.applySnapshot(with: viewModels)
+                self?.applySnapshot(with: viewModels) 
             }
     }
     

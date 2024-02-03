@@ -82,7 +82,7 @@ class TodoListViewModel: ViewModelType {
         Task { [weak self] in
             guard let self else { return }
             do {
-                let goals = try await todoUseCase.getAllTodos()
+                try await todoUseCase.getAllTodos()
             } catch {
                 self.output.send(.loadFailed(errorMessage: error.localizedDescription))
             }
