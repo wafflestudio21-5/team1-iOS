@@ -61,7 +61,6 @@ class HomeViewController: TodoTableViewController {
     
     
     override func viewWillAppear(_ animated: Bool) {
-        frontend/mainpage
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
         setupTopBarItems()
@@ -70,7 +69,7 @@ class HomeViewController: TodoTableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        navigationController?.setNavigationBarHidden(false, animated: true)
+        //        navigationController?.setNavigationBarHidden(false, animated: true)
         setupTopBarItems()
         hideKeyboardWhenTappedAround()
         
@@ -82,6 +81,7 @@ class HomeViewController: TodoTableViewController {
             let followingVC = FollowingViewController()
             self?.navigationController?.pushViewController(followingVC, animated: true)
         }
+    }
         
     
     private func getTodayDiary() {
