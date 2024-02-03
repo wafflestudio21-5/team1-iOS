@@ -68,7 +68,14 @@
 - 기본 화면에서 게스트를 제외한 모든 계정의 할 일(전체공개)을 볼 수 있습니다.
 - 검색어를 입력하면 검색어를 포함하는 모든 할 일을 볼 수 있습니다.
 
+### 일기 
 
+| | | 
+|---|---|
+| <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/99f6c5e3-e51b-4990-a2c9-d42622b3edbd" width="300px"> | <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/ea1e6191-3b6e-4d9f-bf41-1ba9fb8a31a6" width="300px"> | 
+
+- 게스트 계정을 제외한 모든 계정의 일기(전체 공개)를 볼 수 있습니다.
+- 일기에 댓글과 좋아요룰 작성할 수 있습니다.
 
 
 ### 4. 프로필 탭
