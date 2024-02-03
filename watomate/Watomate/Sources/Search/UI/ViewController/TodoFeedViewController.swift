@@ -50,6 +50,11 @@ class TodoFeedViewController: UIViewController {
         viewModel.input.send(.viewDidLoad)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.input.send(.viewDidLoad)
+    }
+    
     private func setupLayout() {
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
