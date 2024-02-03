@@ -9,7 +9,7 @@
 
 | 이지현 (JH713) | 이수민 (cirtuare) | 권현구 (h9kwon) |
 | :----------------------------------------: | :---------------------------------: | :---------------------------------: |
-| <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/b4ab62ab-37e8-465a-b51b-3d5c758ade14" width="300px"> | <img src="" width="300px"> | <img src="" width="300px"> |
+| <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/86519350/b4ab62ab-37e8-465a-b51b-3d5c758ade14" width="300px"> | <img src="" width="300px"> | <img src="https://avatars.githubusercontent.com/u/112813777?s=400&v=4" width="300px"> |
 | 로그인, 서치탭 담당 | 홈 탭, 다이어리, 팔로우 담당 | 프로필 탭, 투두리스트 담당 |
 
 ## 프로젝트 뷰 및 기능 소개 
@@ -65,9 +65,9 @@
 
 ### 4. 프로필 탭
 
-| | | | | |
-|---|---|---|---|---|
-| 이미지1 | 이미지2 | 이미지3 | 이미지4 | 이미지5 |
+| | | | |
+|---|---|---|---|
+| <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/112813777/8ec630b2-f389-4fbc-a26e-0dd29741e03c"> | <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/112813777/ab7f2c11-da3e-4985-8efa-b3d117573946"> | <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/112813777/b8a868c2-48d9-4fca-8199-4f99378e2d3c"> | <img src="https://github.com/wafflestudio21-5/team1-iOS/assets/112813777/7c392f72-9eee-4e5b-b793-769699c7db71"> |
 
 - 유저정보(유저네임, 프로필 사진, 팔로워 수, 팔로잉 수) 및 보관함에 들어있는 투두들이 보이도록 했습니다.
 - 나의 인증샷에 들어가면 업로드한 인증샷들을 날짜별로 볼 수 있습니다.
@@ -92,3 +92,4 @@
   - 구현하지는 못했지만, 이를 대신해 동일한 뷰모델 인스턴스를 사용하여 하나의 탭에서 데이터가 수정될 때 다른 탭에도 combine으로 전달해 주도록 개선할 수 있을 것 같습니다.
 - 느낀 점
   - 클래스를 구현할 때 항상 확장 가능하고, 재사용 가능하도록 구현하는 것이 중요함을 배울 수 있었습니다.
+
