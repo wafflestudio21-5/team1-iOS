@@ -40,6 +40,7 @@
 - 투두를 완료했을 경우 사진인증을 할 수 있습니다.
   
 ### 다이어리
+| | | | | | | 
 |---|---|---|---|---|---|
 | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/1b82707c-c0cc-4eaa-9512-c4d16966f9d8" width="150px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/3eea81d9-dd4a-4cbe-b023-21bdbfe9c859" width="150px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/0078ab77-dd2c-42a4-bda3-f41f5dfd7192" width="150px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/06018c57-34b4-4145-8049-bcb3d7eef997" width="150px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/0b9c1c28-8f1a-4d3c-8528-c97f42ee9691" width="150px"> | <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/7eb08a7d-d432-4a2e-8e01-a57920c6523" width="150px"> |
 
