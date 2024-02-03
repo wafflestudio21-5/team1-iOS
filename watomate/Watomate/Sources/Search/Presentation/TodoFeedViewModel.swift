@@ -43,12 +43,24 @@ final class TodoFeedViewModel: ViewModelType {
         return todoList[indexPath.section].viewModel(at: indexPath)
     }
     
+    func sectionID(at section: Int) -> UUID {
+        return todoList[section].id
+    }
+    
     func sectionUsername(at section: Int) -> String {
         return todoList[section].username
     }
     
     func sectionProfilePic(at section: Int) -> String? {
         return todoList[section].profilePic
+    }
+    
+    func sectionIntro(at section: Int) -> String? {
+        return todoList[section].intro
+    }
+    
+    func sectionTedoori(at section: Int) -> Bool {
+        return todoList[section].tedoori
     }
     
     func transform(input: AnyPublisher<Input, Never>) -> AnyPublisher<Output, Never> {
