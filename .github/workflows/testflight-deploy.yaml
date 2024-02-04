@@ -42,7 +42,7 @@ jobs:
 
       - name: Find and Replace
         run: |
-          sed -i '' 's/\["kakao"\]/\["'"$KAKAO_KEY"'"\]/g' ./Project.swift
+          sed -i '' 's/\["kakao"\]/\["kakao$KAKAO_KEY"\]/g' ./Project.swift
 
       - uses: jdx/mise-action@v2
       - run: |
