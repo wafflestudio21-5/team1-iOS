@@ -40,6 +40,10 @@ jobs:
       
       - uses: actions/checkout@v3
 
+      - name: Find and Replace
+        run: |
+          sed -i '' 's/\["kakao"\]/\["'"$KAKAO_KEY"'"\]/g' ./Project.swift
+
       - uses: jdx/mise-action@v2
       - run: |
           mise use tuist@3.38.0
