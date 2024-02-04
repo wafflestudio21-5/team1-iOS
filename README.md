@@ -24,9 +24,9 @@
 
 ### 2. 홈 탭
 
-| | | | | |
-|---|---|---|---|---|
-| <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/086efd7a-298b-4616-bcaf-5c2b82e96b19" width="200px"> | 이미지2 | 이미지3 | 이미지4 | 이미지5 |
+| | 
+|---|
+| <img src ="https://github.com/wafflestudio21-5/team1-iOS/assets/86866423/086efd7a-298b-4616-bcaf-5c2b82e96b19" width="300px"> | 
 
 - 홈 탭 우측 상단의 더보기 버튼을 탭하면 목표를 추가하거나 편집할 수 있습니다.
 - 홈 탭 상단에서 팔로잉하는 사람의 목록을 볼 수 있습니다.
