@@ -12,6 +12,24 @@ import Combine
 
 class ProfileViewController: TodoTableViewController {
     
+    var followingCount : Int = 0
+    var followerCount: Int = 0
+    var viewModel = FollowCountViewModel(useCase: SearchUseCase(searchRepository: SearchRepository()))
+    
+    private func fetchFollowCount(userId: Int) {
+        Task {
+            do {
+                let userInfo = try await viewModel.getUserInfo(id: userId)
+                DispatchQueue.main.async {
+                    self.followerCount = userInfo.followerCount ?? User.shared.followerCount!
+                    self.followingCount = userInfo.followingCount ?? User.shared.followingCount!
+                }
+            } catch {
+                print("An error occurred: \(error)")
+            }
+        }
+    }
+    
     private var usernameLabel = {
         let label = UILabel()
         label.text = "Username"
@@ -34,12 +52,14 @@ class ProfileViewController: TodoTableViewController {
         
         hideKeyboardWhenTappedAround()
         setLeftButton()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
         setupTopBarItems()
+        fetchFollowCount(userId: User.shared.id ?? 0)
     }
     
     private func setLeftButton() {
@@ -70,8 +90,8 @@ class ProfileViewController: TodoTableViewController {
             header.setProfileImage(with: nil)
             header.addProfileTapEvent(target: self, action: #selector(profileImageTapped))
             header.archiveBoxTapEvent(target: self, action: #selector(archiveBoxTapped))
-            header.setFollowerCount()
-            header.setFollowingCount()
+            header.setFollowerCount(count: followerCount)
+            header.setFollowingCount(count: followingCount)
             return header
         }
         
