@@ -131,7 +131,8 @@ class DiaryPreviewViewController: SheetCustomViewController {
         } else {
             moodView.isHidden = true
         }
-        sheetView.backgroundColor = UIColor(named: viewModel.diary?.color ?? "system")
+//        sheetView.backgroundColor = UIColor(named: viewModel.diary?.color ?? "system")
+        setColor(UIColor(named: viewModel.diary?.color ?? "system") ?? .systemBackground)
         
     }
 

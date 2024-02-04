@@ -37,7 +37,7 @@ let infoPlist: [String: Plist.Value] = [
     "CFBundleURLTypes": [
         [
             "CFBundleTypeRole": "Editor",
-            "CFBundleURLSchemes": ["kakaobc3d466403d1a451cdc43038925a906e"]
+            "CFBundleURLSchemes": ["kakao"]
         ],
     ],
     "UISupportedInterfaceOrientations":

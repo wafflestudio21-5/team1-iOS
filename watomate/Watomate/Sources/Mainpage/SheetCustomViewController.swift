@@ -35,6 +35,13 @@ class SheetCustomViewController: UIViewController {
         }
     }
     
+    func setColor(_ color: UIColor) {
+        navigationBarView.backgroundColor = color
+        sheetView.backgroundColor = color
+//        okButton.backgroundColor = color
+        view.backgroundColor = color
+    }
+    
     private lazy var navigationBarView : UIView = {
         let view = UIView()
         view.addSubview(titleLabel)

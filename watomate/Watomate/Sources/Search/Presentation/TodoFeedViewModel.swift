@@ -72,7 +72,6 @@ final class TodoFeedViewModel: ViewModelType {
                 } else {
                     self?.fetchInitialTodo()
                 }
-                self?.fetchInitialTodo()
             case .reachedEndOfScrollView:
                 self?.fetchMoreTodo()
             }
